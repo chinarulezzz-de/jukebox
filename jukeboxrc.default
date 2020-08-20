@@ -1,4 +1,4 @@
-# Set default options for the first time gmusicbrowser is launched
+# Set default options for the first time jukebox is launched
 # lines starting with a "#" are comments
 
 # default audio backend :
@@ -23,4 +23,4 @@ CustomKeyBindings:
   c-e: RunPerlCode(OpenSpecialWindow('Equalizer');)
   c-r: RunPerlCode(IdleCheck(); IdleScan();)
 
-# for more possible values, look at the [Options] section of ~/.gmusicbrowser/gmbrc
+# for more possible values, look at the [Options] section of ~/.jukebox/jukeboxrc

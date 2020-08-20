@@ -1,7 +1,9 @@
-# Copyright (C) 2009 Quentin Sculo <squentin@free.fr>
+# Copyright (c) Quentin Sculo  <squentin@free.fr>
+# Copyright (c) Alexandr Savca <drop@chinarulezzz.fun>
 #
-# This file is part of Gmusicbrowser.
-# Gmusicbrowser is free software; you can redistribute it and/or modify
+# This file is part of jukebox.
+#
+# jukebox is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 
@@ -13,9 +15,12 @@ req	perl(Gnome2::Wnck, libgnome2-wnck-perl perl-Gnome2-Wnck)
 =cut
 
 package GMB::Plugin::TitleBar;
+
 use strict;
 use warnings;
+
 use Gnome2::Wnck;
+
 use constant {OPT => 'PLUGIN_TITLEBAR_',};
 
 ::SetDefaultOptions(OPT,
@@ -130,7 +135,7 @@ sub init {
     $Popupwin = Layout::Window->new(
         $::Options{OPT . 'layout'},
         fallback    => 'O_play',
-        title       => "gmusicbrowser_titlebar_overlay",
+        title       => "jukebox_titlebar_overlay",
         uniqueid    => 'titlebar',
         ifexist     => 'replace',
         wintype     => 'popup',
@@ -209,4 +214,7 @@ sub window_changed {
     }
 }
 
-1
+1;
+
+# vim:sw=4:ts=4:sts=4:et:cc=80
+# End of file

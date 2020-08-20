@@ -87,7 +87,7 @@ sub launch_mplayer {
     $ChildPID = fork;
 
     if (!defined $ChildPID) {
-        warn "jukebox : fork failed : $!\n";
+        warn "jukebox_mplayer : fork failed : $!\n";
         ::ErrorPlay("Fork failed : $!");
         return;
     }

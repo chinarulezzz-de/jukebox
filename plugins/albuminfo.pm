@@ -1,7 +1,9 @@
-# Copyright (C) 2011 Øystein Tråsdahl
+# Copyright (c) Øystein Tråsdahl
+# Copyright (c) Alexandr Savca  <drop@chinarulezzz.fun>
 #
-# This file is part of Gmusicbrowser.
-# Gmusicbrowser is free software; you can redistribute it and/or modify
+# This file is part of jukebox.
+#
+# jukebox is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 
@@ -18,9 +20,11 @@ desc	Retrieves album-relevant information (review etc.) from allmusic.com.
 # - Consider searching google instead, or add google search if amg fails.
 
 package GMB::Plugin::ALBUMINFO;
+
 use strict;
 use warnings;
 use utf8;
+
 require $::HTTP_module;
 use Gtk2::Gdk::Keysyms;
 use base 'Gtk2::Box';
@@ -82,12 +86,13 @@ my @showfields = (
 );
 
 ::SetDefaultOptions(OPT,
-    PathFile      => "~/.config/gmusicbrowser/review/%a - %l.txt",
+    PathFile      => "~/.config/jukebox/review/%a - %l.txt",
     ShowCover     => 1,
     CoverSize     => 100,
     StyleAsGenre  => 0,
     mass_download => 'missing',
 );
+
 ::SetDefaultOptions(OPT, 'Show' . $_->{short} => $_->{defaultshow})
   for (@showfields);
 delete $::Options{OPT . 'Column' . $_} for 0 .. 3;   #remove old column options
@@ -1208,5 +1213,7 @@ sub cancel {
     $self->{abort} = 1;
 }
 
-1
+1;
 
+# vim:sw=4:ts=4:sts=4:et:cc=80
+# End of file

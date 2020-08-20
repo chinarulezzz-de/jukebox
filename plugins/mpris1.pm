@@ -1,7 +1,9 @@
-# Copyright (C) 2010 Quentin Sculo <squentin@free.fr>
+# Copyright (c) Quentin Sculo  <squentin@free.fr>
+# Copyright (c) Alexandr Savca <drop@chinarulezzz.fun>
 #
-# This file is part of Gmusicbrowser.
-# Gmusicbrowser is free software; you can redistribute it and/or modify
+# This file is part of jukebox.
+#
+# jukebox is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 
@@ -14,8 +16,10 @@ version 1.0
 =cut
 
 package GMB::Plugin::MPRIS;
+
 use strict;
 use warnings;
+
 use constant {OPT => 'PLUGIN_MPRIS_',};
 
 my $bus = $GMB::DBus::bus;
@@ -303,4 +307,7 @@ sub CapsChange {
     $_[0]->emit_signal(CapsChange => GetCaps());
 }
 
-1
+1;
+
+# vim:sw=4:ts=4:sts=4:et:cc=80
+# End of file

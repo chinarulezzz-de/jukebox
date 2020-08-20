@@ -116,7 +116,7 @@ my %Sites
         undef,
         sub {
             return 0, 'http://lyrics.wikia.com/' . $1
-              if $_[0] =~ m#<span class="redirectText"><a href="/([^"]+)"#;
+              if $_[0] =~ m#<ul class="redirectText"><li><a href="/([^"]+)"#;
             $_[0]
               =~ s!.*<div class='lyricbox'>.*?((?:&\#\d+;|<br ?/>|</?[bi]>){5,}).*!$1!s
               ;    #keep only the "lyric box"

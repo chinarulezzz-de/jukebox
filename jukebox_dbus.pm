@@ -1,7 +1,9 @@
-# Copyright (C) 2005-2009 Quentin Sculo <squentin@free.fr>
+# Copyright (c) Quentin Sculo  <squentin@free.fr>
+# Copyright (c) Alexandr Savca <drop@chinarulezzz.fun>
 #
-# This file is part of Gmusicbrowser.
-# Gmusicbrowser is free software; you can redistribute it and/or modify
+# This file is part of jukebox.
+#
+# jukebox is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 
@@ -11,11 +13,11 @@ use warnings;
 package GMB::DBus::Object;
 
 use base 'Net::DBus::Object';
-use Net::DBus::Exporter 'org.gmusicbrowser';
+use Net::DBus::Exporter 'org.jukebox';
 
 sub new {
     my ($class, $service) = @_;
-    my $self = $class->SUPER::new($service, '/org/gmusicbrowser');
+    my $self = $class->SUPER::new($service, '/org/jukebox');
     bless $self, $class;
 
     Glib::Idle->add(
@@ -165,7 +167,7 @@ Glib::Idle->add(\&init);    #initialize once the main gmb init is finished
 
 sub init {                  #my $bus = Net::DBus->session;
     my $service = $bus->export_service($::DBus_id)
-      ;                     # $::DBus_id is 'org.gmusicbrowser' by default
+      ;                     # $::DBus_id is 'org.jukebox' by default
     my $object = GMB::DBus::Object->new($service);
     DBus_mainloop_hack() if $not_glib_dbus;
     0;                      #called in an idle, return 0 to run only once
@@ -227,3 +229,6 @@ sub DBus_mainloop_hack
 }
 
 1;
+
+# vim:sw=4:ts=4:sts=4:et:cc=80
+# End of file

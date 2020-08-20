@@ -1,51 +1,71 @@
-# Copyright (C) 2010-2011 Quentin Sculo <squentin@free.fr> and Simon Steinbeiß <simon.steinbeiss@shimmerproject.org>
+# Copyright (C) 2010-2011 Quentin Sculo    <squentin@free.fr>
+# Copyright (C) 2010-2011 Simon Steinbeiß  <simon.steinbeiss@shimmerproject.org>
+# Copyright (C)           Pasi Lallinaho   <pasi@shimmerproject.org>
+# Copyright (C)           Alexandr Savca   <drop@chinarulezzz.fun>
 #
 # This file is part of Gmusicbrowser.
+#
 # Gmusicbrowser is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 
-=for gmbplugin ARTISTINFO
-name	Artistinfo
-title	Artistinfo plugin
-version	0.5
-author  Simon Steinbeiß <simon.steinbeiss@shimmerproject.org>
-author  Pasi Lallinaho <pasi@shimmerproject.org>
-desc	This plugin retrieves artist-relevant information (biography, upcoming events, similar artists) from last.fm.
-url	http://gmusicbrowser.org/dokuwiki/doku.php?id=plugins:artistinfo
+=for gmbplugin LASTFM
+name        LastFM
+title       LastFM plugin
+version     0.6
+author      Simon Steinbeiß <simon.steinbeiss@shimmerproject.org>
+author      Pasi Lallinaho <pasi@shimmerproject.org>
+author      Alexandr Savca <drop@chinarulezzz.fun>
+desc        This plugin retrieves artist-relevant information from last.fm.
+url         http://gmusicbrowser.org/dokuwiki/doku.php?id=plugins:lastfm
 =cut
 
-package GMB::Plugin::ARTISTINFO;
+package GMB::Plugin::LASTFM;
+
 use strict;
 use warnings;
 use utf8;
+
+use JSON::PP;
+
+my $API_URL = "http://ws.audioscrobbler.com/2.0";
+my $API_KEY = "7aa688c2466dc17263847da16f297835";
+my $SECRET  = "18cdd008e76705eb5f942892d49a71e2";
+
 require $::HTTP_module;
 use base 'Gtk2::Box';
+
 use constant {
-    OPT => 'PLUGIN_ARTISTINFO_'
+    OPT => 'PLUGIN_LASTFM_'
     ,    # MUST begin by PLUGIN_ followed by the plugin ID / package name
     SITEURL => 0,
 };
 
 my %sites = (
     biography => [
-        'http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=%a&api_key=7aa688c2466dc17263847da16f297835&autocorrect=1',
+        "$API_URL/?method=artist.getinfo&artist=%a&api_key=$API_KEY&autocorrect=1",
         _ "Biography",
         _ "Show artist's biography"
     ],
-    events => [
-        'http://ws.audioscrobbler.com/2.0/?method=artist.getevents&artist=%a&api_key=7aa688c2466dc17263847da16f297835&autocorrect=1',
-        _ "Events",
-        _ "Show artist's upcoming events"
+    albums => [
+        "$API_URL/?method=artist.getTopAlbums&artist=%a&api_key=$API_KEY"
+          . "&autocorrect=1&format=json",
+        _ "Albums",
+        _ "Show artist's albums"
     ],
     similar => [
-        'http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist=%a&api_key=7aa688c2466dc17263847da16f297835&autocorrect=1&limit=%l',
+        "$API_URL/?method=artist.getsimilar&artist=%a&api_key=$API_KEY"
+          . "&autocorrect=1&limit=%l",
         _ "Similar",
         _ "Show similar artists"
     ]
 );
 
 my @External = (
+    [   'rutracker',
+        "https://rutracker.org/forum/tracker.php?nm=%a",
+        _ "Search for Artist on rutracker torrent tracker"
+    ],
     ['lastfm', "http://www.last.fm/music/%a", _ "Show Artist page on last.fm"],
     [   'wikipedia', "http://en.wikipedia.org/wiki/%a",
         _ "Show Artist page on wikipedia"
@@ -96,18 +116,15 @@ my %queuemode = (
 );
 
 =dop
-my @similarity=
-(	['super',	'0.9',	'#ff0101'],
-	['very high',	'0.7',	'#e9c102'],
-	['high',	'0.5',	'#05bd4c'],
-	['medium',	'0.3',	'#453e45'],
-	['lower',	'0.1',	'#9a9a9a'],
+my @similarity= (
+    ['super',       '0.9',  '#ff0101'],
+	['very high',   '0.7',  '#e9c102'],
+	['high',        '0.5',  '#05bd4c'],
+	['medium',      '0.3',  '#453e45'],
+	['lower',       '0.1',  '#9a9a9a'],
 );
 
 =cut
-
-# lastfm api key 7aa688c2466dc17263847da16f297835
-# "secret" string: 18cdd008e76705eb5f942892d49a71e2
 
 ::SetDefaultOptions(OPT,
     PathFile           => "~/.config/gmusicbrowser/bio/%a",
@@ -117,15 +134,18 @@ my @similarity=
     SimilarRating      => 20,
     SimilarLocal       => 0,
     SimilarExcludeSeed => 0,
-    Eventformat => '%title at %name<br>%startDate<br>%city (%country)<br><br>',
-    Eventformat_history =>
-      ['%title<br>%startDate<br><br>', '%title on %startDate<br><br>'],
+
+#   Eventformat => '%title at %name<br>%startDate<br>%city (%country)<br><br>',
+#   Eventformat_history => [
+#       '%title<br>%startDate<br><br>',
+#       '%title on %startDate<br><br>'
+#   ],
 );
 
-my $artistinfowidget = {
+my $lastfmwidget = {
     class       => __PACKAGE__,
-    tabicon     => 'plugin-artistinfo', # no icon by that name by default (yet)
-    tabtitle    => _ "Artistinfo",
+    tabicon     => 'plugin-lastfm',    # no icon by that name by default (yet)
+    tabtitle    => "LastFM",
     saveoptions => 'site',
     schange      => sub { $_[0]->SongChanged; },
     group        => 'Play',
@@ -133,14 +153,14 @@ my $artistinfowidget = {
 };
 
 sub Start {
-    Layout::RegisterWidget(PluginArtistinfo => $artistinfowidget);
+    Layout::RegisterWidget(PluginLastFM => $lastfmwidget);
     push @::cMenuAA, \%menuitem;
     $::QActions{'autofill-similar-artists'} = \%queuemode;
     ::Update_QueueActionList();
 }
 
 sub Stop {
-    Layout::RegisterWidget(PluginArtistinfo => undef);
+    Layout::RegisterWidget(PluginLastFM => undef);
     @::cMenuAA = grep $_ != \%menuitem, @::SongCMenu;
     delete $::QActions{'autofill-similar-artists'};
     ::Update_QueueActionList();
@@ -212,7 +232,7 @@ sub new {
         $child->show_all;
         $box->add($child);
     };
-    ::Watch($artistpic, plugin_artistinfo_option_pic => $artistpic_create);
+    ::Watch($artistpic, plugin_lastfm_option_pic => $artistpic_create);
     $artistpic_create->($artistpic);
 
     my $textview = Gtk2::TextView->new;
@@ -243,9 +263,9 @@ sub new {
     $tc_artist->set_resizable(1);
     $treeview->append_column($tc_artist);
     $treeview->set_has_tooltip(1);
-    $treeview->set_tooltip_text(_
-          "Middle-click on local artists to set a filter on them, right-click non-local artists to search for them on the web."
-    );
+    $treeview->set_tooltip_text(
+        _ "Middle-click on local artists to set a filter on them, "
+          . "right-click non-local artists to search for them on the web.");
     my $renderer = Gtk2::CellRendererText->new;
     my $tc_similar =
       Gtk2::TreeViewColumn->new_with_attributes("%", $renderer, text => 1);
@@ -334,13 +354,13 @@ sub new {
             $item->set_no_show_all(1);
             my $update =
               sub { $_[0]->set_visible(!$::Options{OPT . 'AutoSave'}); };
-            ::Watch($item, plugin_artistinfo_option_save => $update);
+            ::Watch($item, plugin_lastfm_option_save => $update);
             $update->($item);
         }
     }
-    my $artistinfobox = Gtk2::VBox->new(0, 0);
-    $artistinfobox->pack_start($artistbox, 1, 1, 0);
-    $artistinfobox->pack_start($toolbar,   0, 0, 0);
+    my $lastfmbox = Gtk2::VBox->new(0, 0);
+    $lastfmbox->pack_start($artistbox, 1, 1, 0);
+    $lastfmbox->pack_start($toolbar,   0, 0, 0);
 
     #$statbox->pack_start($toolbar,0,0,0);
     $self->{buffer} = $textview->get_buffer;
@@ -361,12 +381,15 @@ sub new {
         $treeview->show;
         $sw2->set_no_show_all(1);
     }    # only show the correct widget at startup
-    else { $textview->show; $sw1->set_no_show_all(1); }
+    else {
+        $textview->show;
+        $sw1->set_no_show_all(1);
+    }
     $self->{sw1} = $sw1;
     $self->{sw2} = $sw2;
 
-    $self->pack_start($artistinfobox, 0, 0, 0);
-    $self->pack_start($infobox,       1, 1, 0);
+    $self->pack_start($lastfmbox, 0, 0, 0);
+    $self->pack_start($infobox,   1, 1, 0);
 
     $self->signal_connect(destroy => \&destroy_event_cb);
     return $self;
@@ -389,7 +412,7 @@ sub destroy_event_cb {
 
 sub cancel {
     my $self = shift;
-    delete $::ToDo{'8_artistinfo' . $self};
+    delete $::ToDo{'8_lastfm' . $self};
     $self->{waiting}->abort if $self->{waiting};
 }
 
@@ -408,41 +431,42 @@ sub prefbox {
     my $autosave = ::NewPrefCheckButton(
         OPT . 'AutoSave' => _ "Auto-save positive finds",
         tip => _ "only works when the artist-info tab is displayed",
-        cb  => sub { ::HasChanged('plugin_artistinfo_option_save'); }
+        cb  => sub { ::HasChanged('plugin_lastfm_option_save'); }
     );
     my $picsize = ::NewPrefSpinButton(
         OPT . 'ArtistPicSize', 50, 500,
         step => 5,
         page => 10,
         text => _("Artist picture size : %d"),
-        cb   => sub { ::HasChanged('plugin_artistinfo_option_pic'); }
+        cb   => sub { ::HasChanged('plugin_lastfm_option_pic'); }
     );
     my $picshow = ::NewPrefCheckButton(
         OPT . 'ArtistPicShow' => _ "Show artist picture",
         widget                => ::Vpack($picsize),
-        cb => sub { ::HasChanged('plugin_artistinfo_option_pic'); }
+        cb => sub { ::HasChanged('plugin_lastfm_option_pic'); }
     );
-    my $eventformat = ::NewPrefEntry(
-        OPT . 'Eventformat' => _ "Enter custom event string :",
-        expand              => 1,
-        tip                 => _
-          "Use tags from last.fm's XML event pages with a leading % (e.g. %headliner), furthermore linebreaks '<br>' and any text you'd like to have in between. E.g. '%title taking place at %startDate<br>in %city, %country<br><br>'",
-        history => OPT . 'Eventformat_history'
-    );
-    my $eventformat_reset = Gtk2::Button->new(_ "reset format");
-    $eventformat_reset->{format_combo} = $eventformat;
-    $eventformat_reset->signal_connect(
-        clicked => sub {
-            my $self      = shift;
-            my $prefentry = $self->{format_combo};
-            my ($combo)   = grep $_->isa("Gtk2::ComboBoxEntry"),
-              $prefentry->get_children;
-            $combo->child->set_text(
-                '%title at %name<br>%startDate<br>%city (%country)<br><br>');
-            $::Options{OPT . 'Eventformat'} =
-              '%title at %name<br>%startDate<br>%city (%country)<br><br>';
-        }
-    );
+
+#my $eventformat = ::NewPrefEntry(
+#    OPT . 'Eventformat' => _ "Enter custom event string :",
+#    expand              => 1,
+#    tip                 => _
+#      "Use tags from last.fm's XML event pages with a leading % (e.g. %headliner), furthermore linebreaks '<br>' and any text you'd like to have in between. E.g. '%title taking place at %startDate<br>in %city, %country<br><br>'",
+#    history => OPT . 'Eventformat_history'
+#);
+#my $eventformat_reset = Gtk2::Button->new(_ "reset format");
+#$eventformat_reset->{format_combo} = $eventformat;
+#$eventformat_reset->signal_connect(
+#    clicked => sub {
+#        my $self      = shift;
+#my $prefentry = $self->{format_combo};
+#my ($combo)   = grep $_->isa("Gtk2::ComboBoxEntry"),
+#  $prefentry->get_children;
+#$combo->child->set_text(
+#    '%title at %name<br>%startDate<br>%city (%country)<br><br>');
+#$::Options{OPT . 'Eventformat'} =
+#  '%title at %name<br>%startDate<br>%city (%country)<br><br>';
+#}
+#);
     my $similar_limit = ::NewPrefSpinButton(
         OPT . 'SimilarLimit', 0, 500,
         step  => 1,
@@ -455,7 +479,12 @@ sub prefbox {
         step  => 1,
         text1 => _ "Limit similar artists to a rate of similarity : ",
         tip   => _
-          "last.fm's similarity categories:\n>90 super\n>70 very high\n>50 high\n>30 medium\n>10 lower"
+          "last.fm's similarity categories:\n".
+          ">90 super\n".
+          ">70 very high\n".
+          ">50 high\n".
+          ">30 medium\n".
+          ">10 lower"
     );
     my $similar_local = ::NewPrefCheckButton(
         OPT
@@ -465,20 +494,21 @@ sub prefbox {
     my $similar_exclude_seed = ::NewPrefCheckButton(
         OPT . 'SimilarExcludeSeed' => _ "Exclude 'seed'-artist from queue",
         tip                        => _
-          "The artists similar to the 'seed'-artist will be used to populate the queue, but you can decide to exclude the 'seed'-artist him/herself."
+          "The artists similar to the 'seed'-artist will be used to populate ".
+          "the queue, but you can decide to exclude the 'seed'-artist him/herself."
     );
-    my $lastfm = ::NewIconButton(
-        'plugin-artistinfo-lastfm',                            undef,
-        sub { ::main::openurl("http://www.last.fm/music/"); }, 'none',
-        _ "Open last.fm website in your browser"
-    );
+    my $lastfm =
+      ::NewIconButton('plugin-lastfm', undef,
+        sub { ::main::openurl("http://www.last.fm/music/"); },
+        'none', _ "Open last.fm website in your browser");
     my $titlebox = Gtk2::HBox->new(0, 0);
     $titlebox->pack_start($picshow, 1, 1, 0);
     $titlebox->pack_start($lastfm,  0, 0, 5);
     my $frame_bio = Gtk2::Frame->new(_ "Biography");
     $frame_bio->add(::Vpack($entry, $preview, $autosave));
-    my $frame_events = Gtk2::Frame->new(_ "Events");
-    $frame_events->add(::Hpack('_', $eventformat, $eventformat_reset));
+    my $frame_albums = Gtk2::Frame->new(_ "Albums");
+
+    #$frame_albums->add(::Hpack('_', $albumsformat, $albumsformat_reset));
     my $frame_similar = Gtk2::Frame->new(_ "Similar Artists");
     $frame_similar->add(
         ::Vpack(
@@ -487,7 +517,7 @@ sub prefbox {
         )
     );
     $vbox->pack_start($_, ::FALSE, ::FALSE, 5)
-      for $titlebox, $frame_bio, $frame_events, $frame_similar;
+      for $titlebox, $frame_bio, $frame_albums, $frame_similar;
     return $vbox;
 }
 
@@ -567,12 +597,12 @@ sub CreateSearchMenu {
     for my $item (@External) {
         my ($key, $url, $text) = @$item;
         if ($key eq "lastfm" && $lastfm_url) {
-            $url = 'http://' . $lastfm_url;
+            $url = $lastfm_url;
         }
         else { $url =~ s/%a/$artist/; }
         my $menuitem = Gtk2::ImageMenuItem->new($key);
         $menuitem->set_image(
-            Gtk2::Image->new_from_stock('plugin-artistinfo-' . $key, 'menu'));
+            Gtk2::Image->new_from_stock('plugin-lastfm-' . $key, 'menu'));
         $menuitem->signal_connect(
             activate => sub { ::main::openurl($url) if $url; return 0; });
         $menu->append($menuitem);
@@ -708,7 +738,7 @@ sub ArtistChanged {
                     $::Options{OPT . 'PathFile'},
                     undef, 1);
                 if ($file && -r $file) {
-                    ::IdleDo('8_artistinfo' . $self,
+                    ::IdleDo('8_lastfm' . $self,
                         1000, \&load_file, $self, $file);
                     $self->{sw2}->hide;
                     $self->{sw1}->show;
@@ -716,7 +746,7 @@ sub ArtistChanged {
                 }
             }
         }
-        ::IdleDo('8_artistinfo' . $self, 1000, \&load_url, $self, $url);
+        ::IdleDo('8_lastfm' . $self, 1000, \&load_url, $self, $url);
     }
 }
 
@@ -804,7 +834,6 @@ sub loaded {
     my $infoheader;
 
     if ($self->{site} eq "biography") {
-        $infoheader = _ "Artist Biography";
         (my ($lfm_artist, $url, $listeners, $playcount), $data) =
           $data
           =~ m|^.*?<name>([^<]*)</name>.*?<url>([^<]*)</url>.*?<listeners>([^<]*)</listeners>.*?<playcount>([^<]*)</playcount>.*?<content>(.*?)\n[^\n]*</content>|s
@@ -835,7 +864,6 @@ sub loaded {
               if $lfm_artist ne $local_artist;
             $buffer->insert_with_tags($iter, $warning, $tag_warning)
               if $warning;
-            $buffer->insert_with_tags($iter, $infoheader . "\n", $tag_header);
             $buffer->insert($iter, $data);
             $buffer->insert_with_tags($iter,
                 "\n\n" . _ "Edit in the last.fm wiki", $href);
@@ -856,8 +884,69 @@ sub loaded {
         }
     }
 
-    elsif ($self->{site} eq "events") {
+    elsif ($self->{site} eq "albums") {
+        use Data::Dumper;
 
+        my $aID         = Songs::Get_gid($::SongID, 'album');
+        my $local_album = Songs::Gid_to_Get("album", $aID);
+
+        my $json = JSON::PP->new->ascii->pretty->allow_nonref;
+        my $text = $json->decode($data);
+
+        if (!defined $data) {
+            $infoheader = "\n" . _ "No results found";
+            $tag_header = $tag_noresults;
+            $buffer->insert_with_tags($iter, $infoheader . "\n", $tag_header);
+        }    # fallback text if album-info not found
+        else {
+            #$infoheader = "Artist Albums";
+            #$buffer->insert_with_tags($iter, $infoheader . "\n", $tag_header);
+            $tag_header = $buffer->create_tag(
+                undef,
+                justification => 'left',
+                foreground    => "#4ba3d2",
+            );
+            for my $album ($text->{topalbums}) {
+                for my $name (@{$album->{album}}) {
+                    my $album_name = ::decode_html($name->{name});
+
+                    $tag_header = $buffer->create_tag(
+                        undef,
+                        justification => 'left',
+                        #foreground    => "#4ba3d2",
+                    );
+                    $tag_header->{url} = $name->{url};
+                    $tag_header->{tip} = $name->{url};
+
+                    if ($album_name eq $local_album) {
+                        my $img = $name->{image}[0]->{"#text"};
+                        print $img;
+
+                        $buffer->insert_with_tags(
+                            $iter,
+                            "✔ $album_name\n",
+                            $tag_header
+                        );
+                    } else {
+                        $tag_header = $buffer->create_tag(
+                            undef,
+                            justification => 'left',
+                            foreground_gdk => $self->style->text_aa("normal"),
+                        );
+                        $tag_header->{url} = $name->{url};
+                        $tag_header->{tip} = $name->{url};
+
+                        $buffer->insert_with_tags(
+                            $iter,
+                            "✖ $album_name\n",
+                            $tag_header
+                        );
+                    }
+                }
+            }
+        }
+
+=pod
         if ($data =~ m#total=\"(.*?)\">#g) {
             if ($1 == 0) { $self->set_buffer(_ "No results found"); return; }
             else {
@@ -894,6 +983,7 @@ sub loaded {
             $buffer->insert_with_tags($iter, "\n" . $rest, $tag_extra)
               if $rest;
         }
+=cut
 
     }
     elsif ($self->{site} eq "similar") {
@@ -1085,3 +1175,6 @@ sub PopulateQueue {
 }
 
 1
+
+# vim:sw=4:ts=4:sts=4:et:cc=80
+# End of file

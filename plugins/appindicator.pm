@@ -1,8 +1,9 @@
-
-# Copyright (C) 2014 Quentin Sculo <squentin@free.fr>
+# Copyright (c) Quentin Sculo  <squentin@free.fr>
+# Copyright (c) Alexandr Savca <drop@chinarulezzz.fun>
 #
-# This file is part of Gmusicbrowser.
-# Gmusicbrowser is free software; you can redistribute it and/or modify
+# This file is part of jukebox.
+#
+# jukebox is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 
@@ -31,7 +32,7 @@ my %mactions
 my ($indicator, $iconpath);
 
 sub Start {
-    $indicator ||= Gtk2::AppIndicator->new(::PROGRAM_NAME, 'gmusicbrowser',
+    $indicator ||= Gtk2::AppIndicator->new(::PROGRAM_NAME, 'jukebox',
         'application-status');
 
     # events that requires updating the traymenu :
@@ -102,3 +103,6 @@ sub set_secondary_activate_target {
 
 
 1;
+
+# vim:sw=4:ts=4:sts=4:et:cc=80
+# End of file

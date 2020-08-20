@@ -1839,12 +1839,17 @@ our %Options = (
 #	gst_sink	=> 'alsa',
     use_equalizer => 0,
     equalizer     => '0:0:0:0:0:0:0:0:0:0',
-    equalizer_presets =>       #taken from gstreamer equalizer plugin
-      { ballad                 => '4:3.75:2.5:0:-4:-6:-3:0:2.5:9',
+    equalizer_presets =>       #most of presets are taken from gstreamer equalizer plugin
+      {
+        ballad                 => '4:3.75:2.5:0:-4:-6:-3:0:2.5:9',
         classic                => '0:0:0:0:0:0:-6:-7:-7:-9.5',
         club                   => '0:0:8:6:5.5:5:3:0:0:0',
         dance                  => '9.6:7:2.5:0:0:-5.6:-7:-7:0:0',
+        minimal                => '0:7:4.24615384615385:2.52307692307692:2.27692307692308:1.66153846153846:-2.64615384615385:3.75384615384615:7:7',
+        "minimal v2"           => '6.24:2.784:4.24615384615385:6.816:0:2.016:-1.248:0:0.864000000000001:6.24',
         party                  => '7:7:0:0:0:0:0:0:7:7',
+        "party v2"             => '7:7:0:0:1.92:0:4.16580310880829:0:4.66321243523316:7.52331606217616',
+        "party v3"             => '7:4.09580838323353:0:0:0:0:0:0:7:7',
         pop                    => '-1.6:4.5:7:8:5.6:0:-2.5:-2:-1.6:-1.5',
         reggae                 => '0:0:0:-5.5:0:6.5:6.5:0:0:0',
         rock                   => '8:5:-5.5:-8:-3:4:8:11:11:11.5',
@@ -13697,3 +13702,6 @@ sub Abort      # GMB::DropURI object must not be used after that
     $self->{cb_end}() if $self->{cb_end};
     %$self = (); # content is emptied to prevent reference cycles (memory leak)
 }
+
+# vim:sw=4:ts=4:sts=4:et:cc=80
+# End of file

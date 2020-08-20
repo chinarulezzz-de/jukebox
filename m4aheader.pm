@@ -1,7 +1,9 @@
-# Copyright (C) 2009 Quentin Sculo <squentin@free.fr>
+# Copyright (c) Quentin Sculo  <squentin@free.fr>
+# Copyright (c) Alexandr Savca <drop@chinarulezzz.fun>
 #
-# This file is part of Gmusicbrowser.
-# Gmusicbrowser is free software; you can redistribute it and/or modify
+# This file is part of jukebox.
+#
+# jukebox is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 
@@ -16,7 +18,7 @@
 #my $tag=Tag::M4A->new($file);
 #if ($tag)
 #{	$tag->add(name => 'value');
-#	$tag->insert('org.gmusicbrowser----mytag' => 'mytagvalue');
+#	$tag->insert('org.jukebox----mytag' => 'mytagvalue');
 #	$tag->remove_all('disk');
 #	$tag->write_file;
 #}
@@ -586,3 +588,6 @@ sub _UpdateStco {
 }
 
 1;
+
+# vim:sw=4:ts=4:sts=4:et:cc=80
+# End of file

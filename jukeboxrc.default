@@ -8,6 +8,7 @@
 # activate some plugins, use "PLUGIN_" followed by the PID
 # of the plugin found at the top of the plugin file :
 PLUGIN_LYRICS: 1
+PLUGIN_LASTFM: 1
 PLUGIN_FETCHCOVER: 1
 PLUGIN_AUTOSAVE: 1
 PLUGIN_MPRIS2: 1
@@ -16,5 +17,10 @@ PLUGIN_MPRIS2: 1
 #Layout: Small player
 # default browser layout
 #LayoutB: Browser with SongTree
+
+CustomKeyBindings:
+  c-Cyrillic_ka: RunPerlCode(IdleCheck(); IdleScan();)
+  c-e: RunPerlCode(OpenSpecialWindow('Equalizer');)
+  c-r: RunPerlCode(IdleCheck(); IdleScan();)
 
 # for more possible values, look at the [Options] section of ~/.gmusicbrowser/gmbrc

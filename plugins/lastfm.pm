@@ -1,11 +1,11 @@
-# Copyright (C) 2010-2011 Quentin Sculo    <squentin@free.fr>
-# Copyright (C) 2010-2011 Simon Steinbeiß  <simon.steinbeiss@shimmerproject.org>
-# Copyright (C)           Pasi Lallinaho   <pasi@shimmerproject.org>
-# Copyright (C)           Alexandr Savca   <drop@chinarulezzz.fun>
+# Copyright (C) Quentin Sculo    <squentin@free.fr>
+# Copyright (C) Simon Steinbeiß  <simon.steinbeiss@shimmerproject.org>
+# Copyright (C) Pasi Lallinaho   <pasi@shimmerproject.org>
+# Copyright (C) Alexandr Savca   <drop@chinarulezzz.fun>
 #
-# This file is part of Gmusicbrowser.
+# This file is part of jukebox.
 #
-# Gmusicbrowser is free software; you can redistribute it and/or modify
+# jukebox is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 
@@ -127,7 +127,7 @@ my @similarity= (
 =cut
 
 ::SetDefaultOptions(OPT,
-    PathFile           => "~/.config/gmusicbrowser/bio/%a",
+    PathFile           => "~/.config/jukebox/bio/%a",
     ArtistPicSize      => 70,
     ArtistPicShow      => 1,
     SimilarLimit       => 15,
@@ -1174,7 +1174,7 @@ sub PopulateQueue {
     $::Queue->Push(\@IDs);
 }
 
-1
+1;
 
 # vim:sw=4:ts=4:sts=4:et:cc=80
 # End of file

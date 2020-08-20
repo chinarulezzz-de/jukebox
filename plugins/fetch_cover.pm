@@ -1,7 +1,9 @@
-# Copyright (C) 2005-2014 Quentin Sculo <squentin@free.fr>
+# Copyright (c) Quentin Sculo  <squentin@free.fr>
+# Copyright (c) Alexandr Savca <drop@chinarulezzz.fun>
 #
-# This file is part of Gmusicbrowser.
-# Gmusicbrowser is free software; you can redistribute it and/or modify
+# This file is part of jukebox.
+#
+# jukebox is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 
@@ -12,10 +14,14 @@ desc	Adds a menu entry to artist/album context menu, allowing to search the pict
 =cut
 
 package GMB::Plugin::FETCHCOVER;
+
 use strict;
 use warnings;
+
 require $::HTTP_module;
+
 use base 'Gtk2::Window';
+
 use constant {
     OPT               => 'PLUGIN_FETCHCOVER_',
     RES_LINES         => 4,
@@ -755,5 +761,7 @@ sub set_cover {
     AAPicture::SetPicture($field, $gid, $file);
 }
 
-1
+1;
 
+# vim:sw=4:ts=4:sts=4:et:cc=80
+# End of file

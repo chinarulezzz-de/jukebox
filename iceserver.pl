@@ -1,5 +1,6 @@
 #!/usr/bin/perl
-# Copyright (C) 2005-2006 Quentin Sculo <squentin@free.fr>
+# Copyright (c) Quentin Sculo  <squentin@free.fr>
+# Copyright (c) Alexandr Savca <drop@chinarulezzz.fun>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3, as
@@ -7,8 +8,11 @@
 
 use strict;
 use warnings;
+
 use Socket;
+
 use constant {EOL => "\015\012"};
+
 my ($file, $sec, $title);
 my $port = 8000;
 while (my $arg = shift) {

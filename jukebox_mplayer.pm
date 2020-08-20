@@ -1,7 +1,9 @@
-# Copyright (C) 2005-2013 Quentin Sculo <squentin@free.fr>
+# Copyright (c) Quentin Sculo  <squentin@free.fr>
+# Copyright (c) Alexandr Savca <drop@chinarulezzz.fun>
 #
-# This file is part of Gmusicbrowser.
-# Gmusicbrowser is free software; you can redistribute it and/or modify
+# This file is part of jukebox.
+#
+# jukebox is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 
@@ -85,7 +87,7 @@ sub launch_mplayer {
     $ChildPID = fork;
 
     if (!defined $ChildPID) {
-        warn "gmusicbrowser_mplayer : fork failed : $!\n";
+        warn "jukebox : fork failed : $!\n";
         ::ErrorPlay("Fork failed : $!");
         return;
     }

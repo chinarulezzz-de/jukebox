@@ -1,13 +1,15 @@
 #!/usr/bin/perl
 
-# Copyright (C) 2005-2015 Quentin Sculo <squentin@free.fr>
+# Copyright (c) Quentin Sculo  <squentin@free.fr>
+# Copyright (c) Alexandr Savca <drop@chinarulezzz.fun>
 #
-# This file is part of Gmusicbrowser.
-# Gmusicbrowser is free software; you can redistribute it and/or modify
+# This file is part of jukebox.
+#
+# jukebox is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 #
-# Gmusicbrowser is distributed in the hope that it will be useful,
+# jukebox is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -18,10 +20,12 @@
 use strict;
 use warnings;
 use utf8;
+
 binmode STDERR, ':utf8';
 binmode STDOUT, ':utf8';
 
 package main;
+
 use Gtk2 '-init';
 use Glib qw/filename_from_unicode filename_to_unicode/;
 use Gtk2::Pango;    #for PANGO_WEIGHT_BOLD, PANGO_WEIGHT_NORMAL
@@ -125,10 +129,10 @@ our $DATADIR;
 BEGIN {
     my @dirs = (
         $FindBin::RealBin,
-        join(SLASH, $FindBin::RealBin, '..', 'share', 'gmusicbrowser'
-        ) #FIXME remove, all perl files will be in $FindBin::RealBin, gmusicbrowser.pl symlinked to /usr/bin/gmusibrowser
+        join(SLASH, $FindBin::RealBin, '..', 'share', 'jukebox'
+        ) #FIXME remove, all perl files will be in $FindBin::RealBin, jukebox.pl symlinked to /usr/bin/jukebox
     );
-    ($DATADIR) = grep -e $_ . SLASH . 'gmusicbrowser_layout.pm', @dirs;
+    ($DATADIR) = grep -e $_ . SLASH . 'jukebox_layout.pm', @dirs;
     die "Can't find folder containing data files, looked in @dirs\n"
       unless $DATADIR;
 }
@@ -140,7 +144,7 @@ use constant {
     VERSION       => '1.101502',
     VERSIONSTRING => '1.1.15.2',
     PIXPATH       => $DATADIR . SLASH . 'pix' . SLASH,
-    PROGRAM_NAME  => 'gmusicbrowser',
+    PROGRAM_NAME  => 'jukebox',
 
     DRAG_STRING  => 0,
     DRAG_USTRING => 1,
@@ -177,7 +181,7 @@ BEGIN {
     $localedir = $FindBin::RealBin . SLASH . '..' . SLASH . 'share'
       unless -d $localedir . SLASH . 'locale';
     $localedir .= SLASH . 'locale';
-    my $domain = 'gmusicbrowser';
+    my $domain = 'jukebox';
     eval { require Locale::Messages; };
     if ($@) {
         eval { require Locale::gettext };
@@ -348,7 +352,7 @@ our %Alias_ext
   ;    #define alternate file extensions (ie: .ogg files treated as .oga files)
 INIT {
     %Alias_ext = (mp2 => 'mp3', ogg => 'oga', m4b => 'm4a');
-} #needs to be in a INIT block because used in a INIT block in gmusicbrowser_tags.pm
+} #needs to be in a INIT block because used in a INIT block in jukebox_tags.pm
 our @ScanExt = qw/mp3 mp2 ogg oga flac mpc ape wv m4a m4b/;
 
 our ($Verbose, $debug);
@@ -365,12 +369,12 @@ my $gmbrc_ext_re = qr/\.gz$|\.xz$/;
 # Parse command line
 BEGIN # in a BEGIN block so that commands for a running instance are sent sooner/faster
 {
-    $DBus_id     = 'org.gmusicbrowser';
+    $DBus_id     = 'org.jukebox';
     $DBus_suffix = '';
 
-    my $default_home = Glib::get_user_config_dir . SLASH . 'gmusicbrowser';
+    my $default_home = Glib::get_user_config_dir . SLASH . 'jukebox';
     if (  !-d $default_home
-        && -d (my $old = Glib::get_home_dir . SLASH . '.gmusicbrowser'))
+        && -d (my $old = Glib::get_home_dir . SLASH . '.jukebox'))
     {
         warn
           "Using folder $old for configuration, you could move it to $default_home to conform to the XDG Base Directory Specification\n";
@@ -396,10 +400,10 @@ options :
 -debug	: print lots of mostly useless informations, implies -verbose
 -backtrace : print a backtrace for every warning
 -nodbus	: do not provide DBus services
--dbus-id KEY : append .KEY to the DBus service id used by gmusicbrowser (org.gmusicbrowser)
+-dbus-id KEY : append .KEY to the DBus service id used by jukebox (org.jukebox)
 -nofifo : do not create/use named pipe
--F FIFO, -fifo FILE	: use FIFO as named pipe to receive commands (instead of 'gmusicbrowser.fifo' in default folder)
--C FILE, -cfg FILE	: use FILE as configuration file (instead of 'gmbrc' in default folder),
+-F FIFO, -fifo FILE	: use FIFO as named pipe to receive commands (instead of 'jukebox.fifo' in default folder)
+-C FILE, -cfg FILE	: use FILE as configuration file (instead of 'jukeboxrc' in default folder),
 			  if FILE is a folder, sets the default folder to FILE.
 -l NAME, -layout NAME	: Use layout NAME for player window
 +plugin NAME		: Enable plugin NAME
@@ -408,21 +412,21 @@ options :
 -searchpath FOLDER	: Additional FOLDER to look for plugins and layouts
 -use-gnome-session 	: Use gnome libraries to save tags/settings on session logout
 -workspace N		: move initial window to workspace N (requires Gnome2::Wnck)
--gzip			: force not compressing gmbrc
-+gzip			: force compressing gmbrc with gzip
-+xz			: force compressing gmbrc with xz
+-gzip			: force not compressing jukeboxrc
++gzip			: force compressing jukeboxrc with gzip
++xz			: force compressing jukeboxrc with xz
 
 -cmd CMD		: add CMD to the list of commands to execute
--ifnotrunning MODE	: change behavior when no running gmusicbrowser instance is found
+-ifnotrunning MODE	: change behavior when no running jukebox instance is found
 	MODE can be one of :
 	* normal (default)	: launch a new instance and execute commands
 	* nocmd			: launch a new instance but discard commands
 	* abort			: do nothing
 -nolaunch		: same as : -ifnotrunning abort
-Running instances of gmusicbrowser are detected via the fifo or via DBus.
+Running instances of jukebox are detected via the fifo or via DBus.
 To run more than one instance, use a unique fifo and a unique DBus-id, or deactivate them.
 
-Options to change what is done with files/folders passed as arguments (done in running gmusicbrowser if there is one) :
+Options to change what is done with files/folders passed as arguments (done in running jukebox if there is one) :
 -playlist		: Set them as playlist (default)
 -enqueue		: Enqueue them
 -addplaylist		: Add them to the playlist
@@ -562,14 +566,14 @@ Options to change what is done with files/folders passed as arguments (done in r
 
 # auto import from old v1.0 tags file if using default savefile, it doesn't exist and old tags file exists
     if (   !$SaveFile
-        && !find_gmbrc_file($HomeDir . 'gmbrc')
+        && !find_gmbrc_file($HomeDir . 'jukeboxrc')
         && -e $HomeDir . 'tags')
     {
         $ImportFile ||= $HomeDir . 'tags';
     }
 
-    $SaveFile ||= $HomeDir . 'gmbrc';
-    $FIFOFile = $HomeDir . 'gmusicbrowser.fifo'
+    $SaveFile ||= $HomeDir . 'jukeboxrc';
+    $FIFOFile = $HomeDir . 'jukebox.fifo'
       if !defined $FIFOFile && $^O ne 'MSWin32';
 
     unless ($ignore) {    # filenames given in the command line
@@ -602,11 +606,11 @@ Options to change what is done with files/folders passed as arguments (done in r
             }
         }
         if (!$running && !$CmdLine{noDBus}) {
-            eval { require 'gmusicbrowser_dbus.pm' }
+            eval { require 'jukebox_dbus.pm' }
               || warn
-              "Error loading gmusicbrowser_dbus.pm :\n$@ => controlling gmusicbrowser through DBus won't be possible.\n\n";
+              "Error loading jukebox_dbus.pm :\n$@ => controlling jukebox through DBus won't be possible.\n\n";
             my $object = GMB::DBus::simple_call(
-                "$DBus_id org.gmusicbrowser/org/gmusicbrowser");
+                "$DBus_id org.jukebox/org/jukebox");
             if ($object) {
                 $object->RunCommand($_) for @cmd;
                 $running = "using DBus id=$DBus_id";
@@ -631,10 +635,10 @@ our ($Play_package, %PlayPacks);
 my ($PlayNext_package, $Vol_package);
 
 BEGIN {
-    require 'gmusicbrowser_songs.pm';
-    require 'gmusicbrowser_tags.pm';
-    require 'gmusicbrowser_layout.pm';
-    require 'gmusicbrowser_list.pm';
+    require 'jukebox_songs.pm';
+    require 'jukebox_tags.pm';
+    require 'jukebox_layout.pm';
+    require 'jukebox_list.pm';
     $HTTP_module =
       -e $DATADIR . SLASH . 'simple_http_wget.pm'
       && (grep -x $_ . SLASH . 'wget', split /:/, $ENV{PATH})
@@ -649,8 +653,8 @@ BEGIN {
 
     # load gstreamer backend module
     if (!$CmdLine{nogst}) {
-        my @gst = ('gmusicbrowser_gstreamer-1.x.pm',
-            'gmusicbrowser_gstreamer-0.10.pm');
+        my @gst = ('jukebox_gstreamer-1.x.pm',
+            'jukebox_gstreamer-0.10.pm');
         my $error;
         @gst = reverse @gst if $CmdLine{gst0};
         {
@@ -677,7 +681,7 @@ BEGIN {
 
     # load non-gstreamer backend modules
     for my $file (
-        qw/gmusicbrowser_123.pm gmusicbrowser_mplayer.pm gmusicbrowser_mpv.pm gmusicbrowser_server.pm/
+        qw/jukebox_123.pm jukebox_mplayer.pm jukebox_mpv.pm jukebox_server.pm/
       )
     {
         eval { require $file }
@@ -1494,7 +1498,7 @@ sub ReplaceExpr {
 }    #FIXME
 sub ReplaceExprUsedFields { }    #FIXME
 
-our %ReplaceFields;    #used in gmusicbrowser_tags for auto-fill FIXME PHASE1
+our %ReplaceFields;    #used in jukebox_tags for auto-fill FIXME PHASE1
 
 #o => 'basefilename', maybe should be usage specific (=>only for renaming)
 
@@ -1777,7 +1781,7 @@ our $PlayTime;
 our ($StartTime, $StartedAt, $PlayingID, @Played_segments);
 our $CurrentDir = $ENV{PWD};
 $ENV{'PULSE_PROP_media.role'} = 'music';    # role hint for pulseaudio
-$ENV{'PULSE_PROP_application.icon_name'} = 'gmusicbrowser'
+$ENV{'PULSE_PROP_application.icon_name'} = 'jukebox'
   ; # icon hint for pulseaudio, could also use Gtk2::Window->set_default_icon_name
 
 our (%ToDo, %TimeOut, %Delayed);
@@ -2086,14 +2090,14 @@ sub LoadIcons {
         closedir $dh;
     }
 
-    $icons{gmusicbrowser} ||= PIXPATH . 'gmusicbrowser.svg'
-      unless Gtk2::IconTheme->get_default->get_icon_sizes('gmusicbrowser')
-      ;    #fallback if no icon named 'gmusicbrowser' is installed
-    if (my $file = delete $icons{gmusicbrowser}) {
+    $icons{jukebox} ||= PIXPATH . 'jukebox.svg'
+      unless Gtk2::IconTheme->get_default->get_icon_sizes('jukebox')
+      ;    #fallback if no icon named 'jukebox' is installed
+    if (my $file = delete $icons{jukebox}) {
         eval { Gtk2::Window->set_default_icon_from_file($file); };
         warn $@ if $@;
     }
-    else { Gtk2::Window->set_default_icon_name('gmusicbrowser'); }
+    else { Gtk2::Window->set_default_icon_name('jukebox'); }
 
     #trayicons
     {
@@ -3287,11 +3291,11 @@ sub FirstTime {    #Default filters
     };
     $_ = Filter->new($_) for values %{$Options{SavedFilters}};
 
-    my @dirs = reverse map $_ . SLASH . 'gmusicbrowser',
+    my @dirs = reverse map $_ . SLASH . 'jukebox',
       Glib::get_system_config_dirs;
     for my $dir ($DATADIR, @dirs) {
-        next unless -r $dir . SLASH . 'gmbrc.default';
-        open my ($fh), '<:utf8', $dir . SLASH . 'gmbrc.default';
+        next unless -r $dir . SLASH . 'jukeboxrc.default';
+        open my ($fh), '<:utf8', $dir . SLASH . 'jukeboxrc.default';
         my @lines = <$fh>;
         close $fh;
         chomp @lines;
@@ -3552,10 +3556,10 @@ sub ReadSavedTags    #load tags _and_ settings
     my $firstline = <$fh>;
     unless (defined $firstline) { die "Can't read '$loadfile', aborting...\n" }
     my $oldversion;
-    if ($firstline =~ m/^#?\s*gmbrc version=(\d+\.\d+)/) { $oldversion = $1 }
+    if ($firstline =~ m/^#?\s*jukeboxrc version=(\d+\.\d+)/) { $oldversion = $1 }
     elsif ($ext) {
-        die "Can't find gmbrc header in '$loadfile', aborting...\n";
-    } # compressed gmbrc not supported with old versions, because can't seek backward in compressed fh
+        die "Can't find jukeboxrc header in '$loadfile', aborting...\n";
+    } # compressed jukeboxrc not supported with old versions, because can't seek backward in compressed fh
     elsif ($firstline =~ m/^\w/) {
         seek $fh, 0, SEEK_SET;
         ReadOldSavedTags($fh);
@@ -3606,7 +3610,7 @@ sub ReadSavedTags    #load tags _and_ settings
         }
         unless ($lines{Options}) {
             warn
-              "Can't find Options section in '$loadfile', it's probably not a gmusicbrowser save file -> aborting\n";
+              "Can't find Options section in '$loadfile', it's probably not a jukebox save file -> aborting\n";
             exit 1;
         }
         SongArray::start_init()
@@ -3616,7 +3620,7 @@ sub ReadSavedTags    #load tags _and_ settings
           ||= delete $Options{version} || VERSION;    # for version <=1.1.7
         if ($oldversion > VERSION) {
             warn
-              "Loading a gmbrc saved with a more recent version of gmusicbrowser, try upgrading gmusicbrowser if there are problems\n";
+              "Loading a jukeboxrc saved with a more recent version of jukebox, try upgrading jukebox if there are problems\n";
         }
         if ($oldversion < 1.10091) {
             delete $Options{$_}
@@ -3942,7 +3946,7 @@ sub SaveTags    #save tags _and_ settings
     unless ($fh) { warn "Save aborted\n"; POSIX::_exit(0) if $fork; return; }
     warn "Writing tags in $SaveFile$ext ...\n" if $Verbose || !$fork;
 
-    print $fh "# gmbrc version=" . VERSION . " time=" . time . "\n"
+    print $fh "# jukeboxrc version=" . VERSION . " time=" . time . "\n"
       or $error ||= $!;
 
     my $optionslines = SaveRefToLines(\%Options);
@@ -8456,13 +8460,13 @@ sub AboutDialog {
     my $dialog = Gtk2::AboutDialog->new;
     $dialog->set_version(VERSIONSTRING);
     $dialog->set_copyright("Copyright © 2005-2015 Quentin Sculo");
-    $dialog->set_logo_icon_name('gmusicbrowser');
+    $dialog->set_logo_icon_name('jukebox');
 
     #$dialog->set_comments();
     $dialog->set_license(
         "Released under the GNU General Public Licence version 3\n(http://www.gnu.org/copyleft/gpl.html)"
     );
-    $dialog->set_website('http://gmusicbrowser.org');
+    $dialog->set_website('http://jukebox.org');
     $dialog->set_authors('Quentin Sculo <squentin@free.fr>');
     $dialog->set_artists(
         join "\n",

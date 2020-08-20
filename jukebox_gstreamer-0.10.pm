@@ -1,7 +1,9 @@
-# Copyright (C) 2005-2015 Quentin Sculo <squentin@free.fr>
+# Copyright (c) Quentin Sculo  <squentin@free.fr>
+# Copyright (c) Alexandr Savca <drop@chinarulezzz.fun>
 #
-# This file is part of Gmusicbrowser.
-# Gmusicbrowser is free software; you can redistribute it and/or modify
+# This file is part of jukebox.
+#
+# jukebox is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 
@@ -632,7 +634,7 @@ sub AdvancedOptions {
           . _("(unstable)"),
         cb  => $modif_cb,
         tip => _
-          "Makes gmusicbrowser monitor its pulseaudio volume, so that external changes to its volume are known."
+          "Makes jukebox monitor its pulseaudio volume, so that external changes to its volume are known."
     );
     $monitor_volume->set_sensitive(0) unless $Glib::VERSION >= 1.251;
     $vbox->pack_start($monitor_volume, ::FALSE, ::FALSE, 2);
@@ -1084,7 +1086,7 @@ sub Connection {
       . EOL
       . "Content-Type: audio/mpeg"
       . EOL
-      . "x-audiocast-name: gmusicbrowser stream"
+      . "x-audiocast-name: jukebox stream"
       . EOL
       . 'x-audiocast-public: 0'
       . EOL;

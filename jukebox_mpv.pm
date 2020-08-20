@@ -1,7 +1,9 @@
-# Copyright (C) 2005-2015 Quentin Sculo <squentin@free.fr>
+# Copyright (c) Quentin Sculo  <squentin@free.fr>
+# Copyright (c) Alexandr Savca <drop@chinarulezzz.fun>
 #
-# This file is part of Gmusicbrowser.
-# Gmusicbrowser is free software; you can redistribute it and/or modify
+# This file is part of jukebox.
+#
+# jukebox is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 
@@ -136,7 +138,7 @@ sub launch_mpv {
     warn "@cmd_and_args\n" if $::debug;
     $ChildPID = fork;
     if (!defined $ChildPID) {
-        warn "gmusicbrowser_mpv : fork failed : $!\n";
+        warn "jukebox_mpv : fork failed : $!\n";
         ::ErrorPlay("Fork failed : $!");
         return;
     }
@@ -151,7 +153,7 @@ sub launch_mpv {
     for (0 .. 200) {
         $sockfh = IO::Socket::UNIX->new(Peer => $SOCK, Type => SOCK_STREAM);
         last if $sockfh || (waitpid($ChildPID, WNOHANG) != 0);
-        warn "gmusicbrowser_mpv: could not connect to socket; retrying\n"
+        warn "jukebox_mpv: could not connect to socket; retrying\n"
           if $::debug;
         sleep 0.01;
     }

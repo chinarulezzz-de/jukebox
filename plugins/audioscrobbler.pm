@@ -1,7 +1,9 @@
-# Copyright (C) 2005-2009 Quentin Sculo <squentin@free.fr>
+# Copyright (c) Quentin Sculo  <squentin@free.fr>
+# Copyright (c) Alexandr Savca <drop@chinarulezzz.fun>
 #
-# This file is part of Gmusicbrowser.
-# Gmusicbrowser is free software; you can redistribute it and/or modify
+# This file is part of jukebox.
+#
+# jukebox is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 
@@ -13,15 +15,19 @@ desc	Submit played songs to last.fm
 
 
 package GMB::Plugin::AUDIOSCROBBLER;
+
 use strict;
 use warnings;
+
 use constant {
     CLIENTID => 'gmb',
     VERSION  => '0.1',
     OPT => 'PLUGIN_AUDIOSCROBBLER_',    #used to identify the plugin's options
     SAVEFILE => 'audioscrobbler.queue', #file used to save unsent data
 };
+
 use Digest::MD5 'md5_hex';
+
 require $::HTTP_module;
 
 our $ignore_current_song;
@@ -200,7 +206,7 @@ sub response_cb {
         $Stop  = 'BadAuth';
     }
     elsif ($response eq 'BANNED') {
-        $error = _("Client banned, contact gmusicbrowser's developer");
+        $error = _("Client banned, contact jukebox' developer");
         $Stop  = 'Banned';
     }
     elsif ($response eq 'BADTIME') {
@@ -388,3 +394,6 @@ sub Save    #save unsent data to a file
 }
 
 1;
+
+# vim:sw=4:ts=4:sts=4:et:cc=80
+# End of file

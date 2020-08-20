@@ -1,7 +1,9 @@
-# Copyright (C) 2015 Quentin Sculo <squentin@free.fr>
+# Copyright (c) Quentin Sculo  <squentin@free.fr>
+# Copyright (c) Alexandr Savca <drop@chinarulezzz.fun>
 #
-# This file is part of Gmusicbrowser.
-# Gmusicbrowser is free software; you can redistribute it and/or modify
+# This file is part of jukebox.
+#
+# jukebox is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 
@@ -663,7 +665,7 @@ sub AdvancedOptions {
           . _("(unstable)"),
         cb  => $modif_cb,
         tip => _
-          "Makes gmusicbrowser monitor its pulseaudio volume, so that external changes to its volume are known."
+          "Makes jukebox monitor its pulseaudio volume, so that external changes to its volume are known."
     );
     $vbox->pack_start($monitor_volume, ::FALSE, ::FALSE, 2);
 
@@ -671,7 +673,7 @@ sub AdvancedOptions {
         gst_sync_EQpresets => _ "Synchronize equalizer presets",
         cb                 => sub { EQ_Import_Presets(); $modif_cb->() },
         tip                => _
-          "Imports gstreamer presets, and synchronize modifications made with gmusicbrowser"
+          "Imports gstreamer presets, and synchronize modifications made with jukebox"
     );
     $vbox->pack_start($sync_EQpresets, ::FALSE, ::FALSE, 2);
 
@@ -1267,7 +1269,7 @@ sub Connection {
       . "Content-Type: "
       . $Encodings{$self->{encoding}}{mime}
       . EOL
-      . "x-audiocast-name: gmusicbrowser stream"
+      . "x-audiocast-name: jukebox stream"
       . EOL
       . 'x-audiocast-public: 0'
       . EOL;

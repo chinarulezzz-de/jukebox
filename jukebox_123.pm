@@ -1,7 +1,9 @@
-# Copyright (C) 2005-2013 Quentin Sculo <squentin@free.fr>
+# Copyright (c) Quentin Sculo  <squentin@free.fr>
+# Copyright (c) Alexandr Savca <drop@chinarulezzz.fun>
 #
-# This file is part of Gmusicbrowser.
-# Gmusicbrowser is free software; you can redistribute it and/or modify
+# This file is part of jukebox.
+#
+# jukebox is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 
@@ -210,7 +212,7 @@ sub Play {
     pipe my ($rfh), $CMDfh;
     $ChildPID = fork;
     if (!defined $ChildPID) {
-        warn "gmusicbrowser_123 : fork failed : $!\n";
+        warn "jukebox_123 : fork failed : $!\n";
         ::ErrorPlay("Fork failed : $!");
         return;
     }
@@ -538,3 +540,6 @@ sub get_amixer_SMC_list {
 }
 
 1;
+
+# vim:sw=4:ts=4:sts=4:et:cc=80
+# End of file

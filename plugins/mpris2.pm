@@ -1,14 +1,16 @@
-# Copyright (C) 2011 Quentin Sculo <squentin@free.fr>
+# Copyright (c) Quentin Sculo  <squentin@free.fr>
+# Copyright (c) Alexandr Savca <drop@chinarulezzz.fun>
 #
-# This file is part of Gmusicbrowser.
-# Gmusicbrowser is free software; you can redistribute it and/or modify
+# This file is part of jukebox.
+#
+# jukebox is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 
 =for gmbplugin MPRIS2
 name	MPRIS v2
 title	MPRIS v2 support
-desc	Allows controlling gmusicbrowser via DBus using the MPRIS v2.0 standard
+desc	Allows controlling jukebox via DBus using the MPRIS v2.0 standard
 req	perl(Net::DBus, libnet-dbus-perl perl-Net-DBus)
 =cut
 
@@ -22,12 +24,12 @@ my $TEMPCOVERFILE = $::HomeDir . 'temp_mpris2_cover' . $::DBus_suffix . '.jpg';
 my $bus           = $GMB::DBus::bus;
 die "Requires DBus support to be active\n"
   unless $bus
-  ; #only requires this to use the hack in gmusicbrowser_dbus.pm so that Net::DBus::GLib is not required, else could do just : use Net::DBus::GLib; $bus=Net::DBus::GLib->session;
+  ; #only requires this to use the hack in jukebox_dbus.pm so that Net::DBus::GLib is not required, else could do just : use Net::DBus::GLib; $bus=Net::DBus::GLib->session;
 
 my @Objects;
 
 sub Start {
-    my $service = $bus->export_service('org.mpris.MediaPlayer2.gmusicbrowser');
+    my $service = $bus->export_service('org.mpris.MediaPlayer2.jukebox');
     push @Objects, GMB::DBus::MPRIS2->new($service);
     unlink $TEMPCOVERFILE;
 }
@@ -43,7 +45,7 @@ sub prefbox {
     my $vbox = Gtk2::VBox->new(0, 2);
     my $desc =
       Gtk2::Label->new(_
-          "This plugin is needed for gmusicbrowser to appear in unity's sound menu."
+          "This plugin is needed for jukebox to appear in unity's sound menu."
       );
     $vbox->pack_start($desc, 0, 0, 0);
     return $vbox;
@@ -155,9 +157,9 @@ sub CanRaise { dbus_boolean(1) }
 dbus_property('HasTrackList', 'bool', 'read');
 sub HasTrackList { dbus_boolean(0) }
 dbus_property('Identity', 'string', 'read');
-sub Identity {'gmusicbrowser'}
+sub Identity {'jukebox'}
 dbus_property('DesktopEntry', 'string', 'read');
-sub DesktopEntry {'gmusicbrowser'}
+sub DesktopEntry {'jukebox'}
 dbus_property('SupportedUriSchemes', ['array', 'string'], 'read');
 sub SupportedUriSchemes { return ['file']; }
 dbus_property('SupportedMimeTypes', ['array', 'string'], 'read');
@@ -509,3 +511,5 @@ sub Net::DBus::Object::_dispatch_all_prop_read {
 
 1;
 
+# vim:sw=4:ts=4:sts=4:et:cc=80
+# End of file

@@ -12,13 +12,18 @@ desc	Search and display lyrics
 =cut
 
 package GMB::Plugin::LYRICS;
+
 use strict;
 use warnings;
 use utf8;
+
 require $::HTTP_module;
+
 our @ISA;
 BEGIN { push @ISA, 'GMB::Context'; }
+
 use base 'Gtk2::VBox';
+
 use constant {
     OPT => 'PLUGIN_LYRICS_'
     ,    # MUST begin by PLUGIN_ followed by the plugin ID / package name
@@ -119,19 +124,6 @@ my %Sites
               if $_[0] =~ m!&#91;&#46;&#46;&#46;&#93;(?:<br ?/>)*<i>!
               ; # truncated lyrics : "[...]" followed by italic explanation => not auto-saved
             return !!$1;
-        }
-    ],
-    musixmatch => [
-        musixmatch => 'https://www.musixmatch.com/lyrics/%a/%t',
-        undef,
-        sub {
-            if ($_[0] =~ /<span id="lyrics-html"/) {
-                $_[0] =~ s/.*<span id="lyrics-html".+?>(.+?)<\/span>.*/$1/s;
-                $_[0] =~ s/[\r\n]/<br>/g;
-            }
-            else {
-                $_[0] = $notfound;
-            }
         }
     ],
 
@@ -458,7 +450,7 @@ sub load_from_web {
         delete $self->{trynext};
         if ($site eq 'AUTO') {
             ($site, @{$self->{trynext}}) =
-              qw/lyricssongs lyricwiki musixmatch/; #FIXME make it configurable
+              qw/lyricssongs lyricwiki/;    #FIXME make it configurable
         }
     }
     return unless $site;
@@ -816,8 +808,7 @@ sub key_pressed_cb {
     my ($self, $event) = @_;
     my $key   = Gtk2::Gdk->keyval_name($event->keyval);
     my $state = $event->get_state;
-    my $ctrl =
-      $state * ['control-mask']
+    my $ctrl  = $state * ['control-mask']
       && !($state * [qw/mod1-mask mod4-mask super-mask/])
       ;    #ctrl and not alt/super
     return 0 unless $ctrl;    #only ctrl- shortcuts so far
@@ -1002,3 +993,6 @@ sub Save_text {
 }
 
 1
+
+# vim:sw=4:ts=4:sts=4:et:cc=80
+# End of file

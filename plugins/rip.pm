@@ -1,7 +1,9 @@
-# Copyright (C) 2005-2007 Quentin Sculo <squentin@free.fr>
+# Copyright (c) Quentin Sculo  <squentin@free.fr>
+# Copyright (c) Alexandr Savca <drop@chinarulezzz.fun>
 #
-# This file is part of Gmusicbrowser.
-# Gmusicbrowser is free software; you can redistribute it and/or modify
+# This file is part of jukebox.
+#
+# jukebox is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation
 
@@ -12,8 +14,10 @@ desc	Add a button to rip a CD
 =cut
 
 package GMB::Plugin::RIP;
+
 use strict;
 use warnings;
+
 use constant {
     OPT => 'PLUGIN_RIP_',    #used to identify the plugin and its options
 };
@@ -79,3 +83,6 @@ sub Launch {
 }
 
 1;
+
+# vim:sw=4:ts=4:sts=4:et:cc=80
+# End of file

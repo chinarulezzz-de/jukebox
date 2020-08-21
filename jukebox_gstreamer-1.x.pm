@@ -304,10 +304,7 @@ sub init_sink {
     my $sink = $self->{sink};
     unless ($sink) {
         ::ErrorPlay(
-            ::__x(
-                "Can't create sink '{sink}'", sink => $::Options{gst_sink}
-            )
-        );
+            ::__x("Can't create sink '{sink}'", sink => $::Options{gst_sink}));
         return;
     }
 
@@ -662,10 +659,9 @@ sub AdvancedOptions {
     $vbox->pack_start($gapless, ::FALSE, ::FALSE, 2);
 
     my $monitor_volume = ::NewPrefCheckButton(
-        gst_monitor_pa_volume => _("Monitor the pulseaudio volume") . ' '
-          . _("(unstable)"),
-        cb  => $modif_cb,
-        tip => _
+        gst_monitor_pa_volume => "Monitor the pulseaudio volume (unstable)",
+        cb                    => $modif_cb,
+        tip =>
           "Makes jukebox monitor its pulseaudio volume, so that external changes to its volume are known."
     );
     $vbox->pack_start($monitor_volume, ::FALSE, ::FALSE, 2);
@@ -673,7 +669,8 @@ sub AdvancedOptions {
     my $sync_EQpresets = ::NewPrefCheckButton(
         gst_sync_EQpresets => "Synchronize equalizer presets",
         cb                 => sub { EQ_Import_Presets(); $modif_cb->() },
-        tip                => "Imports gstreamer presets, and synchronize modifications made with jukebox"
+        tip =>
+          "Imports gstreamer presets, and synchronize modifications made with jukebox"
     );
     $vbox->pack_start($sync_EQpresets, ::FALSE, ::FALSE, 2);
 

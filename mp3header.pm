@@ -20,10 +20,10 @@
 #http://www.matroska.org/technical/specs/tagging/othertagsystems/comparetable.html
 #http://hobba.hobba.nl/audio/tag_frame_reference.html
 
+package Tag::MP3;
+
 use strict;
 use warnings;
-
-package Tag::MP3;
 
 my (@bitrates, @freq, @versions, @encodings, $regex_t);
 our @Genres;
@@ -512,6 +512,7 @@ sub _FindFirstFrame {
     my %info;
     read $fh, my $buf, 100;
   SEARCH1ST:
+
     while ($pos < 60000)    #only look in the first 60000 bytes (after tag)
     {
         while ($buf =~ m/\xff(...)/sg)
@@ -1925,8 +1926,8 @@ sub _genreid #to convert TCON from id3v2.3 (and from id3v2.2) to id3v2.4, and re
     }
 }
 
-
 1;
+
 __END__
 
 AAAAAAAA AAABBCCD EEEEFFGH IIJJKLMM

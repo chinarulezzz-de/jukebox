@@ -13,6 +13,7 @@ use strict;
 use warnings;
 
 use AnyEvent::HTTP;
+
 my $UseCache = *GMB::Cache::add{CODE};
 
 my $gzip_ok;

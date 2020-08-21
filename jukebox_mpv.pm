@@ -8,12 +8,13 @@
 # published by the Free Software Foundation
 
 package Play_mpv;
+
 use strict;
 use warnings;
+
 use IO::Socket::UNIX;
 use JSON::PP;
 use Time::HiRes 'sleep';
-
 use POSIX ':sys_wait_h';    #for WNOHANG in waitpid
 
 #$SIG{CHLD} = 'IGNORE';  # to make sure there are no zombies #cause crash after displaying a file dialog and then runnning an external command with mandriva's gtk2
@@ -247,7 +248,7 @@ sub _remotemsg {
 
 sub handle_eof {
     if ($::PlayTime < Songs::Get($::SongID, 'length') - 5) {
-        handle_error(_ "Playback ended unexpectedly.");
+        handle_error("Playback ended unexpectedly.");
     }
     else { $Called_from_eof = 1; ::end_of_file(); $Called_from_eof = 0; }
 }
@@ -255,16 +256,16 @@ sub handle_eof {
 sub handle_error {
     my $error = shift;
     Stop();
-    my $details = _("File") . ":\n$gmb_file\n\n";
-    $details .= _("Last messages:") . "\n$Last_messages\n" if $Last_messages;
-    $details .= _("Command used:") . "\n@cmd_and_args";
+    my $details = "File:\n$gmb_file\n\n";
+    $details .= "Last messages:\n$Last_messages\n" if $Last_messages;
+    $details .= "Command used:\n@cmd_and_args";
     ::ErrorPlay($error, $details);
 }
 
 sub _eos_cb {
     my $error;
     if ($ChildPID && $ChildPID == waitpid($ChildPID, WNOHANG)) {
-        $error = _ "Check your audio settings" if $?;
+        $error = "Check your audio settings" if $?;
     }
     while (waitpid(-1, WNOHANG) > 0) { }    #reap dead children
     handle_error($error or "mpv process closed unexpectedly.");
@@ -335,7 +336,7 @@ sub _Kill_timeout    #make sure old children are dead
 sub AdvancedOptions {
     my $vbox = Gtk2::VBox->new(::FALSE, 2);
     my $sg1  = Gtk2::SizeGroup->new('horizontal');
-    my $opt  = ::NewPrefEntry('mpvoptions', _ "mpv options :", sizeg1 => $sg1);
+    my $opt  = ::NewPrefEntry('mpvoptions', "mpv options :", sizeg1 => $sg1);
     $vbox->pack_start($_, ::FALSE, ::FALSE, 2), for $opt;
     return $vbox;
 }

@@ -8,8 +8,10 @@
 # published by the Free Software Foundation
 
 package Simple_http;
+
 use strict;
 use warnings;
+
 use POSIX ':sys_wait_h';    #for WNOHANG in waitpid
 use IO::Handle;
 

@@ -7,44 +7,45 @@
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation.
 
+package Browser;
+
 use strict;
 use warnings;
 
-package Browser;
 use constant {TRUE => 1, FALSE => 0,};
 
 our @MenuPlaying = (
-    {   label => _ "Follow playing song",
+    {   label => "Follow playing song",
         code =>
           sub { $_[0]{songlist}->FollowSong if $_[0]{songlist}->{follow}; },
         toggleoption => 'songlist/follow'
     },
-    {   label => _ "Filter on playing Album",
+    {   label => "Filter on playing Album",
         code  => sub {
             ::SetFilter($_[0]{songlist},
                 Songs::MakeFilterFromID('album', $::SongID))
               if defined $::SongID;
         }
     },
-    {   label => _ "Filter on playing Artist",
+    {   label => "Filter on playing Artist",
         code  => sub {
             ::SetFilter($_[0]{songlist},
                 Songs::MakeFilterFromID('artists', $::SongID))
               if defined $::SongID;
         }
     },
-    {   label => _ "Filter on playing Song",
+    {   label => "Filter on playing Song",
         code  => sub {
             ::SetFilter($_[0]{songlist},
                 Songs::MakeFilterFromID('title', $::SongID))
               if defined $::SongID;
         }
     },
-    {   label => _ "Use the playing filter",
+    {   label => "Use the playing filter",
         code  => sub { ::SetFilter($_[0]{songlist}, $::PlayFilter); },
         test  => sub { ::GetSonglist($_[0]{songlist})->{mode} ne 'playlist' }
     },    #FIXME	if queue use queue, if $ListMode use list
-    {   label   => _ "Recent albums",
+    {   label   => "Recent albums",
         submenu => sub {
             my $sl  = $_[0]{songlist};
             my @gid = ::uniq(Songs::Map_to_gid('album', $::Recent));
@@ -60,7 +61,7 @@ our @MenuPlaying = (
             return $m;
         }
     },
-    {   label   => _ "Recent artists",
+    {   label   => "Recent artists",
         submenu => sub {
             my $sl  = $_[0]{songlist};
             my @gid = ::uniq(Songs::Map_to_gid('artist', $::Recent));
@@ -76,7 +77,7 @@ our @MenuPlaying = (
             return $m;
         }
     },
-    {   label                => _ "Recent songs",
+    {   label                => "Recent songs",
         submenu_use_markup   => 1,
         submenu_ordered_hash => 1,
         submenu_reverse      => 1,
@@ -89,7 +90,7 @@ our @MenuPlaying = (
                       ::ReplaceFieldsAndEsc(
                         $_,
                         ::__x(
-                            _ "{song} by {artist}",
+                            "{song} by {artist}",
                             song   => "<b>%S</b>%V",
                             artist => "%a"
                         )
@@ -110,7 +111,7 @@ sub makeFilterBox {
         sub { my $filt = shift; ::SetFilter($box, $filt); },
         undef,
         'title:si:',
-        _ "Edit filter..." => sub {
+        "Edit filter..." => sub {
             ::EditFilter($box, ::GetFilter($box), undef,
                 sub { ::SetFilter($box, $_[0]) if defined $_[0] });
         }
@@ -118,7 +119,7 @@ sub makeFilterBox {
     my $okbutton =
       ::NewIconButton('gtk-apply', undef, sub { $FilterWdgt->activate },
         'none');
-    $okbutton->set_tooltip_text(_ "apply filter");
+    $okbutton->set_tooltip_text("apply filter");
     $box->pack_start($FilterWdgt, FALSE, FALSE, 0);
     $box->pack_start($okbutton,   FALSE, FALSE, 0);
     return $box;
@@ -161,10 +162,11 @@ sub makeLockToggle {
             $self->{busy} = 1;
             $self->set_active(!$empty);
             $self->{busy} = 0;
-            my $desc =
-              ($empty
+            my $desc = (
+                $empty
                 ? _("No locked filter")
-                : _("Locked on :\n") . $filter->explain);
+                : _("Locked on :\n") . $filter->explain
+            );
             $self->set_tooltip_text($desc);
         }
     );
@@ -188,7 +190,7 @@ sub make_sort_menu {
         $item->signal_connect(activate => $menusub, $sort);
         $menu->append($item);
     }
-    my $itemEditSort = Gtk2::ImageMenuItem->new(_ "Custom...");
+    my $itemEditSort = Gtk2::ImageMenuItem->new("Custom...");
     $itemEditSort->set_image(
         Gtk2::Image->new_from_stock('gtk-preferences', 'menu'));
     $itemEditSort->signal_connect(
@@ -222,29 +224,30 @@ sub fill_history_menu {
 }
 
 package LabelTotal;
+
 use base 'Gtk2::Bin';
 
 our %Modes = (
     list => {
-        label  => _ "Listed songs",
+        label  => "Listed songs",
         setup  => \&list_Set,
         update => \&list_Update,
         delay  => 1000,
     },
     filter => {
-        label  => _ "Filter",
+        label  => "Filter",
         setup  => \&filter_Set,
         update => \&filter_Update,
         delay  => 1500,
     },
     library => {
-        label  => _ "Library",
+        label  => "Library",
         setup  => \&library_Set,
         update => \&library_Update,
         delay  => 4000,
     },
     selected => {
-        label  => _ "Selected songs",
+        label  => "Selected songs",
         setup  => \&selected_Set,
         update => \&selected_Update,
         delay  => 500,
@@ -326,7 +329,7 @@ sub Update {
     delete $::ToDo{'9_Total' . $self};
     my ($text, $array, $tip) = $Modes{$self->{mode}}{update}->($self);
     $text = '' if $self->{noheader};
-    if (!$array) { $tip = $text = _ "error"; }
+    if (!$array) { $tip = $text = "error"; }
     else         { $text .= ::CalcListLength($array, $self->{format}); }
     my $format =
       $self->{size} ? '<span size="' . $self->{size} . '">%s</span>' : '%s';
@@ -421,7 +424,9 @@ sub library_Update {
 
 
 package EditListButtons;
+
 use Glib qw(TRUE FALSE);
+
 use base 'Gtk2::Box';
 
 sub new {
@@ -435,17 +440,17 @@ sub new {
     $self->{group}    = $opt->{group};
     $self->{bshuffle} = ::NewIconButton(
         'gmb-shuffle',
-        ($opt->{small} ? '' : _ "Shuffle"),
+        ($opt->{small} ? '' : "Shuffle"),
         sub { ::GetSongArray($self)->Shuffle }
     );
     $self->{brm} = ::NewIconButton(
         'gtk-remove',
-        ($opt->{small} ? '' : _ "Remove"),
+        ($opt->{small} ? '' : "Remove"),
         sub { ::GetSonglist($self)->RemoveSelected }
     );
     $self->{bclear} = ::NewIconButton(
         'gtk-clear',
-        ($opt->{small} ? '' : _ "Clear"),
+        ($opt->{small} ? '' : "Clear"),
         sub { ::GetSonglist($self)->Empty }
     );
     $self->{bup} = ::NewIconButton('gtk-go-up', undef,
@@ -457,8 +462,8 @@ sub new {
     $self->{bbot} = ::NewIconButton('gtk-goto-bottom', undef,
         sub { ::GetSonglist($self)->MoveUpDown(0, 1) });
 
-    $self->{brm}->set_tooltip_text(_ "Remove selected songs");
-    $self->{bclear}->set_tooltip_text(_ "Remove all songs");
+    $self->{brm}->set_tooltip_text("Remove selected songs");
+    $self->{bclear}->set_tooltip_text("Remove all songs");
 
     if (my $r = $opt->{relief}) {
         $self->{$_}->set_relief($r)
@@ -508,7 +513,9 @@ sub SelectionChanged {
 }
 
 package QueueActions;
+
 use Glib qw(TRUE FALSE);
+
 use base 'Gtk2::Box';
 
 sub new {
@@ -586,6 +593,7 @@ sub Update {
 }
 
 package SongList::Common;    #common functions for SongList and SongTree
+
 our %Register;
 our $EditList
   ; #list that will be used in 'editlist' mode, used only for editing a list in a separate window
@@ -597,11 +605,11 @@ our @DefaultOptions = (
     autoupdate => 1,
 );
 our %Markup_Empty = (
-    Q => _ "Queue empty",
-    L => _ "List empty",
-    A => _ "Playlist empty",
-    B => _ "No songs found",
-    S => _ "No songs found",
+    Q => "Queue empty",
+    L => "List empty",
+    A => "Playlist empty",
+    B => "No songs found",
+    S => "No songs found",
 );
 
 sub new {
@@ -639,7 +647,7 @@ sub CommonInit {
     $self->{markup_empty} = $Markup_Empty{$type}
       unless defined $self->{markup_empty};
     $self->{markup_library_empty} =
-      _ "Library empty.\n\nUse the settings dialog to add music."
+      "Library empty.\n\nUse the settings dialog to add music."
       unless defined $self->{markup_library_empty} or $type =~ m/[QL]/;
 
     ::WatchFilter($self, $self->{group}, \&SetFilter) if $type !~ m/[QL]/;
@@ -968,7 +976,7 @@ sub EditRowTip {
     my $self = shift;
     if ($self->{rowtip_edit}) { $self->{rowtip_edit}->force_present; return; }
     my $dialog = Gtk2::Dialog->new(
-        _ "Edit row tip", $self->get_toplevel,
+        "Edit row tip", $self->get_toplevel,
         [qw/destroy-with-parent/],
         'gtk-apply'  => 'apply',
         'gtk-ok'     => 'ok',
@@ -1020,8 +1028,11 @@ sub EditRowTip {
 }
 
 package SongList;
+
 use Glib qw(TRUE FALSE);
+
 use Gtk2::Pango;    #for PANGO_WEIGHT_BOLD, PANGO_WEIGHT_NORMAL
+
 use base 'Gtk2::ScrolledWindow';
 
 our @ISA;
@@ -1198,7 +1209,7 @@ INIT {
         },
     );
     %{$SLC_Prop{albumpicinfo}} = %{$SLC_Prop{albumpic}};
-    $SLC_Prop{albumpicinfo}{title} = _ "Album picture & info";
+    $SLC_Prop{albumpicinfo}{title} = "Album picture & info";
     $SLC_Prop{albumpicinfo}{init}  = {
         aa     => 'album',
         markup => "<b>%a</b>%Y\n<small>%s <small>%l</small></small>"
@@ -1206,10 +1217,10 @@ INIT {
 }
 
 our @ColumnMenu = (
-    {   label   => _ "_Sort by",
+    {   label   => "_Sort by",
         submenu => sub { Browser::make_sort_menu($_[0]{self}) },
     },
-    {   label   => _ "_Insert column",
+    {   label   => "_Insert column",
         submenu => sub {
             my %names = map {
                 my $l = $SLC_Prop{$_}{menu} || $SLC_Prop{$_}{title};
@@ -1233,17 +1244,17 @@ our @ColumnMenu = (
     {   label => _("Edit row tip") . '...',
         code  => sub { $_[0]{self}->EditRowTip; },
     },
-    {   label => _ "Keep list filtered and sorted",
+    {   label => "Keep list filtered and sorted",
         code =>
           sub { $_[0]{self}{array}->SetAutoUpdate($_[0]{self}{autoupdate}); },
         toggleoption => 'self/autoupdate',
         mode         => 'B',
     },
-    {   label => _ "Follow playing song",
+    {   label => "Follow playing song",
         code  => sub { $_[0]{self}->FollowSong if $_[0]{self}{follow}; },
         toggleoption => 'self/follow',
     },
-    {   label => _ "Go to playing song",
+    {   label => "Go to playing song",
         code  => sub { $_[0]{self}->FollowSong; },
     },
 );
@@ -2095,11 +2106,11 @@ use base 'Gtk2::Box';
 use constant {TRUE => 1, FALSE => 0,};
 
 our %Pages = (
-    filter    => [SavedTree  => 'F',    'i', _ "Filter"],
-    list      => [SavedTree  => 'L',    'i', _ "List"],
-    savedtree => [SavedTree  => 'FL',   'i', _ "Saved"],
-    folder    => [FolderList => 'path', 'n', _ "Folder"],
-    filesys   => [Filesystem => '',     '',  _ "Filesystem"],
+    filter    => [SavedTree  => 'F',    'i', "Filter"],
+    list      => [SavedTree  => 'L',    'i', "List"],
+    savedtree => [SavedTree  => 'FL',   'i', "Saved"],
+    folder    => [FolderList => 'path', 'n', "Folder"],
+    filesys   => [Filesystem => '',     '',  "Filesystem"],
 );
 
 our @MenuMarkupOptions = (
@@ -2139,7 +2150,7 @@ my @cloudstats_menu = (
 my %sort_menu_album  = (%sort_menu, artist => _("artist"));
 my @sort_menu_append = (
     {separator => 1},
-    {   label => _ "reverse order",
+    {   label => "reverse order",
         check => sub { $_[0]{self}{'sort'}[$_[0]{depth}] =~ m/^-/ },
         code  => sub {
             my $self = $_[0]{self};
@@ -2154,7 +2165,7 @@ my @MenuSubGroup = (
     {   label   => sub { _("Set subgroup") . ' ' . $_[0]{depth} },
         submenu => sub {
             return {
-                0 => _ "None",
+                0 => "None",
                 map { $_ => Songs::FieldName($_) } Songs::FilterListFields()
             };
         },
@@ -2170,7 +2181,7 @@ my @MenuSubGroup = (
 );
 
 @MenuPageOptions = (
-    {   label => _ "show pictures",
+    {   label => "show pictures",
         code  => sub {
             my $self = $_[0]{self};
             $self->{lpicsize}[$_[0]{depth}] = $_[1];
@@ -2182,7 +2193,7 @@ my @MenuSubGroup = (
         check                => sub { $_[0]{self}{lpicsize}[$_[0]{depth}] },
         test => sub { Songs::FilterListProp($_[0]{subfield}, 'picture'); },
     },
-    {   label => _ "text format",
+    {   label => "text format",
         code  => sub {
             my $self = $_[0]{self};
             $self->{lmarkup}[$_[0]{depth}] = $_[1];
@@ -2208,16 +2219,15 @@ my @MenuSubGroup = (
         istrue               => 'aa',
         mode                 => 'LS',
     },
-    {   label => _ "text mode",
-        code  => sub { $_[0]{self}->SetOption(mmarkup => $_[1]); },
-        submenu =>
-          [0 => _ "None", below => _ "Below", right => _ "Right side",],
+    {   label   => "text mode",
+        code    => sub { $_[0]{self}->SetOption(mmarkup => $_[1]); },
+        submenu => [0 => "None", below => "Below", right => "Right side",],
         submenu_ordered_hash => 1,
         submenu_reverse      => 1,
         check                => 'self/mmarkup',
         mode                 => 'M',
     },
-    {   label   => _ "picture size",
+    {   label   => "picture size",
         code    => sub { $_[0]{self}->SetOption(mpicsize => $_[1]); },
         mode    => 'M',
         submenu => \@mpicsize_menu,
@@ -2226,27 +2236,27 @@ my @MenuSubGroup = (
         istrue               => 'aa'
     },
 
-    {   label   => _ "font size depends on",
+    {   label   => "font size depends on",
         code    => sub { $_[0]{self}->SetOption(cloud_stat => $_[1]); },
         mode    => 'C',
         submenu => \@cloudstats_menu,
         submenu_ordered_hash => 1,
         check                => 'self/cloud_stat',
     },
-    {   label   => _ "minimum font size",
+    {   label   => "minimum font size",
         code    => sub { $_[0]{self}->SetOption(cloud_min => $_[1]); },
         mode    => 'C',
         submenu => sub { [2 .. ::min(20, $_[0]{self}{cloud_max} - 1)] },
         check   => 'self/cloud_min',
     },
-    {   label   => _ "maximum font size",
+    {   label   => "maximum font size",
         code    => sub { $_[0]{self}->SetOption(cloud_max => $_[1]); },
         mode    => 'C',
         submenu => sub { [::max(10, $_[0]{self}{cloud_min} + 1) .. 40] },
         check   => 'self/cloud_max',
     },
 
-    {   label => _ "sort by",
+    {   label => "sort by",
         code  => sub {
             my $self = $_[0]{self};
             $self->{'sort'}[$_[0]{depth}] = $_[1];
@@ -2258,7 +2268,7 @@ my @MenuSubGroup = (
         submenu_reverse => 1,
         append          => \@sort_menu_append,
     },
-    {   label => _ "group by",
+    {   label => "group by",
         code  => sub {
             my $self = $_[0]{self};
             my $d    = $_[0]{depth};
@@ -2287,7 +2297,7 @@ my @MenuSubGroup = (
         },
         mode => 'L',
     },
-    {   label => _ "cloud mode",
+    {   label => "cloud mode",
         code  => sub {
             my $self = $_[0]{self};
             $self->set_mode(($self->{mode} eq 'cloud' ? 'list' : 'cloud'), 1);
@@ -2295,7 +2305,7 @@ my @MenuSubGroup = (
         check   => sub { $_[0]{mode} eq 'C' },
         notmode => 'S',
     },
-    {   label => _ "mosaic mode",
+    {   label => "mosaic mode",
         code  => sub {
             my $self = $_[0]{self};
             $self->set_mode(($self->{mode} eq 'mosaic' ? 'list' : 'mosaic'),
@@ -2305,17 +2315,17 @@ my @MenuSubGroup = (
         notmode => 'S',
         test    => sub { Songs::FilterListProp($_[0]{field}, 'picture') },
     },
-    {   label        => _ "show the 'All' row",
+    {   label        => "show the 'All' row",
         code         => sub { $_[0]{self}->SetOption; },
         toggleoption => '!self/noall',
         mode         => 'L',
     },
-    {   label        => _ "show histogram background",
+    {   label        => "show histogram background",
         code         => sub { $_[0]{self}->SetOption; },
         toggleoption => 'self/histogram',
         mode         => 'L',
     },
-    {   label        => _ "ignore the 'none' row for histogram",
+    {   label        => "ignore the 'none' row for histogram",
         code         => sub { $_[0]{self}->SetOption; },
         toggleoption => 'self/histogram_ignore_none',
         mode         => 'L',
@@ -2325,7 +2335,7 @@ my @MenuSubGroup = (
 );
 
 our @cMenu = (
-    {   label => _ "Play",
+    {   label => "Play",
         code  => sub {
             ::Select(filter => $_[0]{filter}, song => 'first', play => 1);
         },
@@ -2333,19 +2343,19 @@ our @cMenu = (
         stockicon => 'gtk-media-play',
         id        => 'play'
     },
-    {   label => _ "Append to playlist",
+    {   label => "Append to playlist",
         code  => sub { ::DoActionForList('addplay', $_[0]{filter}->filter); },
         isdefined => 'filter',
         stockicon => 'gtk-add',
         id        => 'addplay',
     },
-    {   label     => _ "Enqueue",
+    {   label     => "Enqueue",
         code      => sub { ::EnqueueFilter($_[0]{filter}); },
         isdefined => 'filter',
         stockicon => 'gmb-queue',
         id        => 'enqueue',
     },
-    {   label => _ "Set as primary filter",
+    {   label => "Set as primary filter",
         code  => sub {
             my $fp = $_[0]{filterpane};
             ::SetFilter($_[0]{self}, $_[0]{filter}, 1, $fp->{group});
@@ -2365,28 +2375,28 @@ our @cMenu = (
         },
         isdefined => 'filter',
     },
-    {   label   => _ "Rename folder",
+    {   label   => "Rename folder",
         code    => sub { ::AskRenameFolder($_[0]{rawpathlist}[0]); },
         onlyone => 'rawpathlist',
         test    => sub { !$::CmdLine{ro} },
     },
-    {   label   => _ "Open folder",
+    {   label   => "Open folder",
         code    => sub { ::openfolder($_[0]{rawpathlist}[0]); },
         onlyone => 'rawpathlist',
     },
 
 #{ label=> _"move folder", code => sub { ::MoveFolder($_[0]{pathlist}[0]); }, onlyone => 'pathlist',	test => sub {!$::CmdLine{ro}}, },
-    {   label    => _ "Scan for new songs",
+    {   label    => "Scan for new songs",
         code     => sub { ::IdleScan(@{$_[0]{rawpathlist}}); },
         notempty => 'rawpathlist'
     },
-    {   label     => _ "Check for updated/removed songs",
+    {   label     => "Check for updated/removed songs",
         code      => sub { ::IdleCheck(@{$_[0]{filter}->filter}); },
         isdefined => 'filter',
         stockicon => 'gtk-refresh',
         istrue    => 'pathlist'
     }, #doesn't really need pathlist, but makes less sense for non-folder pages
-    {   label     => _ "Set Picture",
+    {   label     => "Set Picture",
         stockicon => 'gmb-picture',
         code      => sub {
             my $gid = $_[0]{gidlist}[0];
@@ -2398,14 +2408,14 @@ our @cMenu = (
               && $_[0]{gidlist}[0] > 0;
         },
     },
-    {   label => _ "Auto-select Pictures",
+    {   label => "Auto-select Pictures",
         code  => sub { ::AutoSelPictures($_[0]{field}, @{$_[0]{gidlist}}); },
         onlymany => 'gidlist',
         test     => sub { $_[0]{field} eq 'album' }
         ,    #test => sub { Songs::FilterListProp($_[0]{field},'picture'); },
         stockicon => 'gmb-picture',
     },
-    {   label     => _ "Set icon",
+    {   label     => "Set icon",
         stockicon => 'gmb-picture',
         code      => sub {
             my $gid = $_[0]{gidlist}[0];
@@ -2417,7 +2427,7 @@ our @cMenu = (
               && $_[0]{gidlist}[0] > 0;
         },
     },
-    {   label     => _ "Remove label",
+    {   label     => "Remove label",
         stockicon => 'gtk-remove',
         code      => sub {
             my $gid = $_[0]{gidlist}[0];
@@ -2427,7 +2437,7 @@ our @cMenu = (
         test    => sub { $_[0]{field} eq 'label' && $_[0]{gidlist}[0] != 0 }
         , #FIXME make it generic rather than specific to field label ? #FIXME find a better way to check if gid is special than comparing it to 0
     },
-    {   label => _ "Rename label",
+    {   label => "Rename label",
         code  => sub {
             my $gid = $_[0]{gidlist}[0];
             ::RenameLabel($_[0]{field}, $gid);
@@ -2439,31 +2449,31 @@ our @cMenu = (
 
 #	{ separator=>1 },
     # only 1 option for folderview so don't put it in option menu
-    {   label   => _ "Simplify tree",
+    {   label   => "Simplify tree",
         code    => sub { $_[0]{self}->SetOption(simplify => $_[1]); },
         submenu => [
-            never  => _ "Never",
-            smart  => _ "Only whole levels",
-            always => _ "Always"
+            never  => "Never",
+            smart  => "Only whole levels",
+            always => "Always"
         ],
         submenu_ordered_hash => 1,
         submenu_reverse      => 1,
         check                => 'self/simplify',
         istrue               => 'folderview',
     },
-    {   label     => _ "Options",
+    {   label     => "Options",
         submenu   => \@MenuPageOptions,
         stock     => 'gtk-preferences',
         isdefined => 'field'
     },
-    {   label        => _ "Show buttons",
+    {   label        => "Show buttons",
         toggleoption => '!filterpane/hidebb',
         code         => sub {
             my $fp = $_[0]{filterpane};
             $fp->{bottom_buttons}->set_visible(!$fp->{hidebb});
         },
     },
-    {   label        => _ "Show tabs",
+    {   label        => "Show tabs",
         toggleoption => '!filterpane/hidetabs',
         code         => sub {
             my $fp = $_[0]{filterpane};
@@ -2523,16 +2533,15 @@ sub new {
     $hbox->pack_start($_, FALSE, FALSE, 0)
       for $spin, $ResetB, $InvertB, $InterB, $optB;
     $ResetB->set_tooltip_text(
-        (     $nb == 1 ? _ "reset primary filter"
-            : $nb == 2 ? _ "reset secondary filter"
-            :            ::__x(_ "reset filter {nb}", nb => $nb)
+        (     $nb == 1 ? "reset primary filter"
+            : $nb == 2 ? "reset secondary filter"
+            :            ::__x("reset filter {nb}", nb => $nb)
         )
     );
-    $InterB->set_tooltip_text(_ "toggle Intersection mode");
-    $InvertB->set_tooltip_text(_ "toggle Invert mode");
-    $spin->set_tooltip_text(_ "only show entries with at least n songs")
-      ;    #FIXME
-    $optB->set_tooltip_text(_ "options");
+    $InterB->set_tooltip_text("toggle Intersection mode");
+    $InvertB->set_tooltip_text("toggle Invert mode");
+    $spin->set_tooltip_text("only show entries with at least n songs");  #FIXME
+    $optB->set_tooltip_text("options");
 
     my $notebook = Gtk2::Notebook->new;
     $notebook->set_scrollable(TRUE);
@@ -2725,7 +2734,7 @@ sub button_press_event_cb {
     $menu->append(Gtk2::SeparatorMenuItem->new);
 
     if (keys %pages) {
-        my $new = Gtk2::ImageMenuItem->new(_ "Add tab");
+        my $new = Gtk2::ImageMenuItem->new("Add tab");
         $new->set_image(Gtk2::Image->new_from_stock('gtk-add', 'menu'));
         my $submenu = Gtk2::Menu->new;
         for my $pid (sort { $pages{$a} cmp $pages{$b} } keys %pages) {
@@ -2744,7 +2753,7 @@ sub button_press_event_cb {
         $new->set_submenu($submenu);
     }
     if ($nb->get_n_pages > 1) {
-        my $item = Gtk2::ImageMenuItem->new(_ "Remove this tab");
+        my $item = Gtk2::ImageMenuItem->new("Remove this tab");
         $item->set_image(Gtk2::Image->new_from_stock('gtk-remove', 'menu'));
         $item->signal_connect(activate => \&RemovePage_cb, $self);
         $menu->append($item);
@@ -2999,8 +3008,8 @@ sub SetField {
     $self->{lpicsize}[$depth] ||= 0;
     $self->{lmarkup}[$depth]  ||= 0;
     $self->{'sort'}[$depth]   ||= 'default';
-    $self->{icons}[$depth]
-      ||= Songs::FilterListProp($field, 'icon')
+    $self->{icons}[$depth] ||=
+      Songs::FilterListProp($field, 'icon')
       ? (Gtk2::IconSize->lookup('menu'))[0]
       : 0;
 
@@ -3505,8 +3514,7 @@ sub key_press_cb {
     my $unicode =
       Gtk2::Gdk->keyval_to_unicode($event->keyval);    # 0 if not a character
     my $state = $event->get_state;
-    my $ctrl =
-      $state * ['control-mask']
+    my $ctrl  = $state * ['control-mask']
       && !($state * [qw/mod1-mask mod4-mask super-mask/])
       ;                                                #ctrl and not alt/super
     my $mod = $state * [qw/control-mask mod1-mask mod4-mask super-mask/]
@@ -4097,28 +4105,28 @@ our @cMenu;
 our %Modes;
 INIT {
     @cMenu = (
-        {   label     => _ "New filter",
+        {   label     => "New filter",
             code      => sub { ::EditFilter($_[0]{self}, undef, ''); },
             stockicon => 'gtk-add'
         },
-        {   label => _ "Edit filter",
+        {   label => "Edit filter",
             code => sub { ::EditFilter($_[0]{self}, undef, $_[0]{names}[0]); },
             mode => 'F',
             onlyone => 'names'
         },
-        {   label     => _ "Remove filter",
+        {   label     => "Remove filter",
             code      => sub { ::SaveFilter($_[0]{names}[0], undef); },
             mode      => 'F',
             onlyone   => 'names',
             stockicon => 'gtk-remove'
         },
-        {   label => _ "Save current filter as",
+        {   label => "Save current filter as",
             code  => sub { ::EditFilter($_[0]{self}, $_[0]{curfilter}, ''); },
             stockicon => 'gtk-save',
             isdefined => 'curfilter',
             test      => sub { !$_[0]{curfilter}->is_empty; }
         },
-        {   label => _ "Save current list as",
+        {   label => "Save current list as",
             code  => sub {
                 $_[0]{self}->CreateNewFL('L', [@{$_[0]{songlist}{array}}]);
             },
@@ -4130,13 +4138,13 @@ INIT {
             mode    => 'L',
             onlyone => 'names'
         },
-        {   label     => _ "Remove list",
+        {   label     => "Remove list",
             code      => sub { ::SaveList($_[0]{names}[0], undef); },
             stockicon => 'gtk-remove',
             mode      => 'L',
             onlyone   => 'names',
         },
-        {   label => _ "Rename",
+        {   label => "Rename",
             code  => sub {
                 my $tv = $_[0]{self}{treeview};
                 $tv->set_cursor($_[0]{treepaths}[0], $tv->get_column(0), TRUE);
@@ -4152,22 +4160,19 @@ INIT {
 
     %Modes = (
         F => [
-            _ "Saved filters", 'sfilter',
-            'SavedFilters',    \&UpdateSavedFilters,
-            'gmb-filter',      \&::SaveFilter,
+            "Saved filters", 'sfilter',
+            'SavedFilters',  \&UpdateSavedFilters,
+            'gmb-filter',    \&::SaveFilter,
             'filter000'
         ],
         L => [
-            _ "Saved lists", 'slist',
-            'SavedLists',    \&UpdateSavedLists,
-            'gmb-list',      \&::SaveList,
+            "Saved lists", 'slist',
+            'SavedLists',  \&UpdateSavedLists,
+            'gmb-list',    \&::SaveList,
             'list000'
         ],
-        P => [
-            _ "Playing", 'play',
-            undef,       \&UpdatePlayingFilters,
-            'gtk-media-play'
-        ],
+        P =>
+          ["Playing", 'play', undef, \&UpdatePlayingFilters, 'gtk-media-play'],
     );
 }
 
@@ -4264,10 +4269,10 @@ sub UpdatePlayingFilters {
         $iter = $store->get_iter_from_string($self->{play});
     }
     my @list = (
-        playfilter  => _ "Playing Filter",
-        'f=artists' => _ "Playing Artist",
-        'f=album'   => _ "Playing Album",
-        'f=title'   => _ "Playing Title",
+        playfilter  => "Playing Filter",
+        'f=artists' => "Playing Artist",
+        'f=album'   => "Playing Album",
+        'f=title'   => "Playing Title",
     );
     while (@list) {
         my $id   = shift @list;
@@ -4559,12 +4564,11 @@ sub new {
         }
     );
     $Bfilter->set_tooltip_text(
-        ($aa eq 'album' ? _ "Filter on this album" : _ "Filter on this artist")
-    );
+        ($aa eq 'album' ? "Filter on this album" : "Filter on this artist"));
     $Bplay->set_tooltip_text(
         (   $aa eq 'album'
-            ? _ "Play all songs from this album"
-            : _ "Play all songs from this artist"
+            ? "Play all songs from this album"
+            : "Play all songs from this artist"
         )
     );
     $buttonbox->pack_start($_, ::FALSE, ::FALSE, 0) for $Bfilter, $Bplay;
@@ -4579,7 +4583,7 @@ sub new {
         my $BAlblist = ::NewIconButton('gmb-playlist', undef, undef, 'none');
         $BAlblist->signal_connect(
             button_press_event => \&AlbumListButton_press_cb);
-        $BAlblist->set_tooltip_text(_ "Choose Album From this Artist");
+        $BAlblist->set_tooltip_text("Choose Album From this Artist");
         $buttonbox->pack_start($BAlblist, ::FALSE, ::FALSE, 0);
     }
 
@@ -4782,29 +4786,29 @@ package SimpleSearch;
 use base 'Gtk2::Entry';
 
 our @SelectorMenu =    #the first one is the default
-  ( [_ "Search Title, Artist and Album", 'title|artist|album'],
-    [   _ "Search Title, Artist, Album, Comment, Label and Genre",
+  ( ["Search Title, Artist and Album", 'title|artist|album'],
+    [   "Search Title, Artist, Album, Comment, Label and Genre",
         'title|artist|album|comment|label|genre'
     ],
-    [   _ "Search Title, Artist, Album, Comment, Label, Genre and Filename",
+    [   "Search Title, Artist, Album, Comment, Label, Genre and Filename",
         'title|artist|album|comment|label|genre|file'
     ],
-    [_ "Search Title",   'title'],
-    [_ "Search Artist",  'artist'],
-    [_ "Search Album",   'album'],
-    [_ "Search Comment", 'comment'],
-    [_ "Search Label",   'label'],
-    [_ "Search Genre",   'genre'],
+    ["Search Title",   'title'],
+    ["Search Artist",  'artist'],
+    ["Search Album",   'album'],
+    ["Search Comment", 'comment'],
+    ["Search Label",   'label'],
+    ["Search Genre",   'genre'],
   );
 
 our %Options = (
-    casesens => _ "Case sensitive",
-    literal  => _ "Literal search",
-    regexp   => _ "Regular expression",
+    casesens => "Case sensitive",
+    literal  => "Literal search",
+    regexp   => "Regular expression",
 );
 our %Options2 = (
-    autofilter => _ "Auto filter",
-    suggest    => _ "Show suggestions",
+    autofilter => "Auto filter",
+    suggest    => "Show suggestions",
 );
 our @DefaultOptions = (
     nb         => 1,
@@ -4839,8 +4843,8 @@ sub new {
             $self->set_icon_from_stock('primary',   'gtk-find');
             $self->set_icon_from_stock('secondary', 'gtk-clear');
             $self->set_icon_activatable($_, 1) for qw/primary secondary/;
-            $self->set_icon_tooltip_text('primary',   _ "Search options");
-            $self->set_icon_tooltip_text('secondary', _ "Reset filter");
+            $self->set_icon_tooltip_text('primary',   "Search options");
+            $self->set_icon_tooltip_text('secondary', "Reset filter");
             $self->set_icon_sensitive('secondary', 0);
             $self->signal_connect(changed => \&UpdateClearButton);
             $self->signal_connect(
@@ -4922,7 +4926,7 @@ sub PopupSelectorMenu {
         $item->signal_connect(activate => $cb, $fields);
         $menu->append($item);
     }
-    my $item1 = Gtk2::MenuItem->new(_ "Select search fields");
+    my $item1 = Gtk2::MenuItem->new("Select search fields");
     $item1->set_submenu(
         ::BuildChoiceMenu(
             {   map { $_ => Songs::FieldName($_) } Songs::StringFields(),
@@ -4959,7 +4963,7 @@ sub PopupSelectorMenu {
         );
         $menu->append($item);
     }
-    my $item2 = Gtk2::MenuItem->new(_ "Advanced Search ...");
+    my $item2 = Gtk2::MenuItem->new("Advanced Search ...");
     $item2->signal_connect(
         activate => sub {
             ::EditFilter($self, ::GetFilter($self), undef,
@@ -5438,10 +5442,10 @@ sub new {
 
     for my $aref (
         [   'gtk-find' => sub { $_[0]->parent->PopupSelectorMenu },
-            0, _ "Search options"
+            0, "Search options"
         ],
         [   'gtk-clear' => sub { $_[0]->parent->ClearFilter },
-            1, _ "Reset filter"
+            1, "Reset filter"
         ]
       )
     {
@@ -5545,18 +5549,18 @@ sub new {
     my $entry = Gtk2::Entry->new;
     $entry->signal_connect(changed  => \&EntryChanged_cb, 0);
     $entry->signal_connect(activate => \&EntryChanged_cb, 1);
-    $hbox1->pack_start(Gtk2::Label->new(_ "Search : "), ::FALSE, ::FALSE, 2);
-    $hbox1->pack_start($entry,                          ::TRUE,  ::TRUE,  2);
+    $hbox1->pack_start(Gtk2::Label->new("Search : "), ::FALSE, ::FALSE, 2);
+    $hbox1->pack_start($entry,                        ::TRUE,  ::TRUE,  2);
     $self->pack_start($hbox1, ::FALSE, ::FALSE, 2);
     $self->add($songlist);
 
     if ($opt->{buttons}) {
         my $hbox2  = Gtk2::HBox->new;
-        my $Bqueue = ::NewIconButton('gmb-queue', _ "Enqueue",
+        my $Bqueue = ::NewIconButton('gmb-queue', "Enqueue",
             sub { $songlist->EnqueueSelected; });
-        my $Bplay = ::NewIconButton('gtk-media-play', _ "Play",
+        my $Bplay = ::NewIconButton('gtk-media-play', "Play",
             sub { $songlist->PlaySelected; });
-        my $Bclose = ::NewIconButton('gtk-close', _ "Close",
+        my $Bclose = ::NewIconButton('gtk-close', "Close",
             sub { $self->get_toplevel->close_window });
         $hbox2->pack_end($_, ::FALSE, ::FALSE, 4) for $Bclose, $Bplay, $Bqueue;
         $self->pack_end($hbox2, ::FALSE, ::FALSE, 0);
@@ -5625,16 +5629,16 @@ sub new {
     my $entry = Gtk2::Entry->new;
     $entry->signal_connect(changed  => \&EntryChanged_cb, 0);
     $entry->signal_connect(activate => \&EntryChanged_cb, 1);
-    $hbox1->pack_start(Gtk2::Label->new(_ "Search : "), ::FALSE, ::FALSE, 2);
-    $hbox1->pack_start($entry,                          ::TRUE,  ::TRUE,  2);
+    $hbox1->pack_start(Gtk2::Label->new("Search : "), ::FALSE, ::FALSE, 2);
+    $hbox1->pack_start($entry,                        ::TRUE,  ::TRUE,  2);
     $self->pack_start($hbox1, ::FALSE, ::FALSE, 2);
     $self->add($sw);
 
     if ($opt->{buttons}) {
         my $hbox2  = Gtk2::HBox->new;
-        my $Bqueue = ::NewIconButton('gmb-queue', _ "Enqueue", \&Enqueue);
-        my $Bplay  = ::NewIconButton('gtk-media-play', _ "Play", \&Play);
-        my $Bclose = ::NewIconButton('gtk-close', _ "Close",
+        my $Bqueue = ::NewIconButton('gmb-queue', "Enqueue", \&Enqueue);
+        my $Bplay  = ::NewIconButton('gtk-media-play', "Play", \&Play);
+        my $Bclose = ::NewIconButton('gtk-close', "Close",
             sub { $self->get_toplevel->close_window });
         $hbox2->pack_end($_, ::FALSE, ::FALSE, 4) for $Bclose, $Bplay, $Bqueue;
         $self->pack_end($hbox2, ::FALSE, ::FALSE, 0);
@@ -6504,8 +6508,7 @@ sub key_press_cb {
     my ($self, $event) = @_;
     my $key   = Gtk2::Gdk->keyval_name($event->keyval);
     my $state = $event->get_state;
-    my $ctrl =
-      $state * ['control-mask']
+    my $ctrl  = $state * ['control-mask']
       && !($state * [qw/mod1-mask mod4-mask super-mask/])
       ;    #ctrl and not alt/super
     my $mod = $state * [qw/control-mask mod1-mask mod4-mask super-mask/]
@@ -7055,8 +7058,7 @@ sub key_press_cb {
     my ($self, $event) = @_;
     my $key   = Gtk2::Gdk->keyval_name($event->keyval);
     my $state = $event->get_state;
-    my $ctrl =
-      $state * ['control-mask']
+    my $ctrl  = $state * ['control-mask']
       && !($state * [qw/mod1-mask mod4-mask super-mask/])
       ;    #ctrl and not alt/super
     my $mod = $state * [qw/control-mask mod1-mask mod4-mask super-mask/]
@@ -7140,19 +7142,19 @@ our %OptCodes = (
     hidenomatch => 'h',
 );
 our @OptionsMenu = (
-    {   label        => _ "Case-sensitive",
+    {   label        => "Case-sensitive",
         toggleoption => 'self/casesens',
         code         => sub { $_[0]{self}->changed; },
     },
-    {   label        => _ "Begin with",
+    {   label        => "Begin with",
         toggleoption => 'self/onlybegin',
         code => sub { $_[0]{self}{onlyword} = 0; $_[0]{self}->changed; },
     },
-    {   label        => _ "Words that begin with",
+    {   label        => "Words that begin with",
         toggleoption => 'self/onlyword',
         code => sub { $_[0]{self}{onlybegin} = 0; $_[0]{self}->changed; },
     },
-    {   label        => _ "Hide non-matching",
+    {   label        => "Hide non-matching",
         toggleoption => 'self/hidenomatch',
         code         => sub {
             $_[0]{self}{close_button}->set_visible($_[0]{self}{hidenomatch});
@@ -7160,7 +7162,7 @@ our @OptionsMenu = (
         },
         test => sub { $_[0]{self}{type} }
     },
-    {   label   => _ "Fields",
+    {   label   => "Fields",
         submenu => sub {
             return {map { $_ => Songs::FieldName($_) } Songs::StringFields};
         },
@@ -7197,21 +7199,21 @@ sub new ##currently the returned widget must be put in ->{isearchbox} of a paren
     $self->{entry} = my $entry = Gtk2::Entry->new;
     $entry->signal_connect(changed         => \&changed);
     $entry->signal_connect(key_press_event => \&key_press_event_cb);
-    my $select = ::NewIconButton('gtk-index', undef, \&select, 'none',
-        _ "Select matches");
-    my $next = ::NewIconButton('gtk-go-down', ($nolabel ? undef : _ "Next"),
+    my $select =
+      ::NewIconButton('gtk-index', undef, \&select, 'none', "Select matches");
+    my $next = ::NewIconButton('gtk-go-down', ($nolabel ? undef : "Next"),
         \&button_cb, 'none');
-    my $prev = ::NewIconButton('gtk-go-up', ($nolabel ? undef : _ "Previous"),
+    my $prev = ::NewIconButton('gtk-go-up', ($nolabel ? undef : "Previous"),
         \&button_cb, 'none');
     $prev->{is_previous} = 1;
     my $close = $self->{close_button} =
       ::NewIconButton('gtk-close', undef, \&close, 'none');
-    my $label   = Gtk2::Label->new(_ "Find :");
+    my $label   = Gtk2::Label->new("Find :");
     my $options = Gtk2::Button->new;
     $options->add(Gtk2::Image->new_from_stock('gtk-preferences', 'menu'));
     $options->signal_connect(button_press_event => \&PopupOpt);
     $options->set_relief('none');
-    $options->set_tooltip_text(_ "options");
+    $options->set_tooltip_text("options");
 
     $self->pack_start($close, 0, 0, 0);
     $self->pack_start($label, 0, 0, 2) unless $nolabel;
@@ -8108,8 +8110,7 @@ sub key_press_cb {
     my $unicode =
       Gtk2::Gdk->keyval_to_unicode($event->keyval);    # 0 if not a character
     my $state = $event->get_state;
-    my $ctrl =
-      $state * ['control-mask']
+    my $ctrl  = $state * ['control-mask']
       && !($state * [qw/mod1-mask mod4-mask super-mask/])
       ;                                                #ctrl and not alt/super
     my $mod = $state * [qw/control-mask mod1-mask mod4-mask super-mask/]
@@ -8967,22 +8968,22 @@ use base 'Gtk2::Viewport';
 use constant TREE_VIEW_DRAG_WIDTH => 6;
 
 our @ColumnMenu = (
-    {   label   => _ "_Sort by",
+    {   label   => "_Sort by",
         submenu => sub { Browser::make_sort_menu($_[0]{songtree}); }
     },
-    {   label   => _ "Set grouping",
+    {   label   => "Set grouping",
         submenu => sub { $::Options{SavedSTGroupings} },
         check   => 'songtree/grouping',
         code    => sub { $_[0]{songtree}->set_head_columns($_[1]); },
     },
-    {   label => _ "Edit grouping ...",
+    {   label => "Edit grouping ...",
         code  => sub {
             my $songtree = $_[0]{songtree};
             ::EditSTGroupings($songtree, $songtree->{grouping}, undef,
                 sub { $songtree->set_head_columns($_[0]) if defined $_[0]; });
         },
     },
-    {   label   => _ "_Insert column",
+    {   label   => "_Insert column",
         submenu => sub {
             my %names;
             $names{$_} =
@@ -9009,19 +9010,19 @@ our @ColumnMenu = (
     {   label => _("Edit row tip") . '...',
         code  => sub { $_[0]{songtree}->EditRowTip; },
     },
-    {   label => _ "Keep list filtered and sorted",
+    {   label => "Keep list filtered and sorted",
         code  => sub {
             $_[0]{songtree}{array}->SetAutoUpdate($_[0]{songtree}{autoupdate});
         },
         toggleoption => 'songtree/autoupdate',
         mode         => 'B',
     },
-    {   label => _ "Follow playing song",
+    {   label => "Follow playing song",
         code =>
           sub { $_[0]{songtree}->FollowSong if $_[0]{songtree}{follow}; },
         toggleoption => 'songtree/follow',
     },
-    {   label => _ "Go to playing song",
+    {   label => "Go to playing song",
         code  => sub { $_[0]{songtree}->FollowSong; },
     },
 );
@@ -9377,8 +9378,11 @@ sub new_songcol {
 sub init_songs {
     my ($widget, $cells, $xpad, $ypad) = @_;
     my $initcontext = {widget => $widget, init => 1,};
-    my $constant    = {xpad => $xpad, ypad => $ypad, playmarkup =>
-          'weight="bold"'};    #FIXME should be quoted : q('weight="bold"')
+    my $constant    = {
+        xpad       => $xpad,
+        ypad       => $ypad,
+        playmarkup => 'weight="bold"'
+    };    #FIXME should be quoted : q('weight="bold"')
     my @blh;
     my @y_refs;
     my @Deps;
@@ -9989,11 +9993,8 @@ sub new {
     $sw->set_policy('never', 'automatic');
     $sw->add_with_viewport($vbox);
     $self->{vbox} = $vbox;
-    my $badd = ::NewIconButton(
-        'gtk-add',
-        _ "Add a group",
-        sub { $_[0]->parent->AddRow('album|default'); }
-    );
+    my $badd = ::NewIconButton('gtk-add', "Add a group",
+        sub { $_[0]->parent->AddRow('album|default'); });
     $self->add($sw);
     $self->pack_start($badd, 0, 0, 2);
     $self->Set($init);
@@ -10039,8 +10040,8 @@ sub AddRow {
     my $hbox = Gtk2::HBox->new;
     $hbox->pack_start($_, 0, 0, 2)
       for $button,
-      Gtk2::Label->new(_ "Group by :"),   $typelist,
-      Gtk2::Label->new(_ "using skin :"), $skinlist;
+      Gtk2::Label->new("Group by :"),   $typelist,
+      Gtk2::Label->new("using skin :"), $skinlist;
     my $optbox = Gtk2::HBox->new;
     my $filler = Gtk2::HBox->new;
     my $sg     = Gtk2::SizeGroup->new('horizontal');
@@ -10064,7 +10065,7 @@ sub skin_changed_cb {
     my $fopt = $hbox->{fopt};
     $fopt->remove($fopt->child) if $fopt->child;
     delete $fopt->{entry};
-    $fopt->set_label(_ "skin options");
+    $fopt->set_label("skin options");
     my $table = Gtk2::Table->new(2, 1, 0);
     my $row   = 0;
     my $ref0  = $SongTree::GroupSkin{$skin}{options};
@@ -10401,7 +10402,7 @@ sub MakeMake {
     if ($@) {
         warn "\n";
         my $c = 1;
-        for (split "\n", $sub) { warn "$c $_\n"; $c++ };
+        for (split "\n", $sub) { warn "$c $_\n"; $c++ }
         warn "$sub\n** error : $@\n";
         $coderef = sub { };
     }
@@ -10466,7 +10467,7 @@ sub Make {
     if ($@) {
         warn "\n";
         my $c = 1;
-        for (split "\n", $sub) { warn "$c $_\n"; $c++ };
+        for (split "\n", $sub) { warn "$c $_\n"; $c++ }
         warn "** error : $@\n";
         $coderef = sub { };
     }
@@ -10586,7 +10587,7 @@ sub groupdiscname {
 
 # if discname field not enabled or no discname, try to make a discname using the disc number
     my $d = groupdisc($songs);
-    return $d ? ::__x(_ "disc {disc}", disc => $d) : '';
+    return $d ? ::__x("disc {disc}", disc => $d) : '';
 }
 
 sub error {
@@ -10705,3 +10706,6 @@ sub Refresh
 =cut
 
 1;
+
+# vim:sw=4:ts=4:sts=4:et:cc=80
+# End of file

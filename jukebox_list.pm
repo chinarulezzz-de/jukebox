@@ -164,8 +164,8 @@ sub makeLockToggle {
             $self->{busy} = 0;
             my $desc = (
                 $empty
-                ? _("No locked filter")
-                : _("Locked on :\n") . $filter->explain
+                ? "No locked filter"
+                : "Locked on :\n" . $filter->explain
             );
             $self->set_tooltip_text($desc);
         }
@@ -365,7 +365,7 @@ sub filter_Update {
     my $self   = shift;
     my $filter = ::GetFilter($self);
     my $array  = $filter->filter;
-    return _("Filter : "), $array, $filter->explain;
+    return "Filter : ", $array, $filter->explain;
 }
 
 ### list functions
@@ -386,7 +386,7 @@ sub list_SongArray_changed {
 sub list_Update {
     my $self  = shift;
     my $array = ::GetSongArray($self) || return;
-    return _("Listed : "), $array,
+    return "Listed : ", $array,
       ::__n('%d song', '%d songs', scalar @$array);
 }
 
@@ -401,7 +401,7 @@ sub selected_Update {
     my $songlist = ::GetSonglist($self);
     return unless $songlist;
     my @list = $songlist->GetSelectedIDs;
-    return _('Selected : '), \@list,
+    return 'Selected : ', \@list,
       ::__n('%d song selected', '%d songs selected', scalar @list);
 }
 
@@ -419,7 +419,7 @@ sub library_Update {
         '%d songs in the library',
         scalar @$::Library
     );
-    return _('Library : '), $::Library, $tip;
+    return 'Library : ', $::Library, $tip;
 }
 
 
@@ -987,11 +987,11 @@ sub EditRowTip {
     $dialog->set_default_response('ok');
     my $combo = Gtk2::ComboBoxEntry->new_text;
     my $hist  = $::Options{RowTip_history} ||= [
-        _("Play count")
+        "Play count"
           . ' : $playcount\\n'
-          . _("Last played")
+          . "Last played"
           . ' : $lastplay',
-        '<b>$title</b>\\n' . _('<i>by</i> %a\\n<i>from</i> %l'),
+        '<b>$title</b>\\n' . '<i>by</i> %a\\n<i>from</i> %l',
         '$title\\n$album\\n$artist\\n<small>$comment</small>',
         '$comment',
     ];
@@ -1004,7 +1004,7 @@ sub EditRowTip {
         wrap     => 1,
         entry    => $entry,
         noescape => 1,
-        format   => '<small><i>' . _("example :") . "\n\n</i></small>%s",
+        format   => '<small><i>' . "example :" . "\n\n</i></small>%s",
         preview  => sub {
             defined $::SongID
               ? ::ReplaceFieldsAndEsc($::SongID, $_[0])
@@ -1072,8 +1072,8 @@ INIT {
         },
 
         right_aligned_folder => {
-            menu   => _("Folder (right-aligned)"),
-            title  => _("Folder"),
+            menu   => "Folder (right-aligned)",
+            title  => "Folder",
             value  => sub { Songs::Display($_[2], 'path'); },
             attrib => 'text',
             type   => 'Glib::String',
@@ -1083,8 +1083,8 @@ INIT {
             init   => {ellipsize => 'start',},
         },
         titleaa => {
-            menu  => _('Title - Artist - Album'),
-            title => _('Song'),
+            menu  => 'Title - Artist - Album',
+            title => 'Song',
             value => sub {
                 ::ReplaceFieldsAndEsc($_[2],
                     "<b>%t</b>%V\n<small><i>%a</i> - %l</small>");
@@ -1097,7 +1097,7 @@ INIT {
             width   => 200,
         },
         playandqueue => {
-            menu  => _('Playing and queue icons'),
+            menu  => 'Playing and queue icons',
             title => '',
             width => 20,
             value => sub {
@@ -1118,7 +1118,7 @@ INIT {
             event   => 'Playing Queue CurSong',
         },
         playandqueueandtrack => {
-            menu  => _('Play, queue or track'),
+            menu  => 'Play, queue or track',
             title => '#',
             width => 20,
             value => sub {
@@ -1143,7 +1143,7 @@ INIT {
             depend => 'track',
         },
         icolabel => {
-            menu    => _("Labels' icons"),
+            menu    => "Labels' icons",
             title   => '',
             value   => sub { $_[2] },
             class   => 'CellRendererIconList',
@@ -1157,7 +1157,7 @@ INIT {
             init    => {field => 'label'},
         },
         albumpic => {
-            title => _("Album picture"),
+            title => "Album picture",
             width => 100,
             value => sub {
                 CellRendererSongsAA::get_value('album', $_[0]{array}, $_[1]);
@@ -1172,7 +1172,7 @@ INIT {
             event   => 'Picture_album',
         },
         artistpic => {
-            title => _("Artist picture"),
+            title => "Artist picture",
             value => sub {
                 CellRendererSongsAA::get_value('first_artist', $_[0]{array},
                     $_[1]);
@@ -1187,8 +1187,8 @@ INIT {
             event   => 'Picture_artist',
         },
         stars => {
-            title => _("Rating"),
-            menu  => _("Rating (picture)"),
+            title => "Rating",
+            menu  => "Rating (picture)",
             value =>
               sub { Songs::Stars(Songs::Get($_[2], 'rating'), 'rating'); },
             class   => 'Gtk2::CellRendererPixbuf',
@@ -1199,7 +1199,7 @@ INIT {
             sort    => 'rating',
         },
         rownumber => {
-            menu   => _("Row number"),
+            menu   => "Row number",
             title  => '#',
             width  => 50,
             value  => sub { $_[1] + 1 },
@@ -1234,14 +1234,14 @@ our @ColumnMenu = (
         stockicon => 'gtk-add'
     },
     {   label => sub {
-            _('_Remove this column') . ' ('
+            '_Remove this column' . ' ('
               . ($SLC_Prop{$_[0]{pos}}{menu} || $SLC_Prop{$_[0]{pos}}{title})
               . ')';
         },
         code => sub { $_[0]{self}->ToggleColumn($_[0]{pos}, $_[0]{pos}); },
         stockicon => 'gtk-remove'
     },
-    {   label => _("Edit row tip") . '...',
+    {   label => "Edit row tip...",
         code  => sub { $_[0]{self}->EditRowTip; },
     },
     {   label => "Keep list filtered and sorted",
@@ -2121,33 +2121,33 @@ our @MenuMarkupOptions = (
     "<b>%y %a</b>",
 );
 my @picsize_menu = (
-    _("no pictures")    => 0,
-    _("automatic size") => -1,
-    _("small size")     => 16,
-    _("medium size")    => 32,
-    _("big size")       => 64,
+    "no pictures"    => 0,
+    "automatic size" => -1,
+    "small size"     => 16,
+    "medium size"    => 32,
+    "big size"       => 64,
 );
 my @mpicsize_menu = (
-    _("small size")  => 32,
-    _("medium size") => 64,
-    _("big size")    => 96,
-    _("huge size")   => 128,
+    "small size"  => 32,
+    "medium size" => 64,
+    "big size"    => 96,
+    "huge size"   => 128,
 );
 my @cloudstats_menu = (
-    _("number of songs")    => 'count',
-    _("rating average")     => 'rating:average',
-    _("play count average") => 'playcount:average',
-    _("skip count average") => 'skipcount:average',
+    "number of songs"    => 'count',
+    "rating average"     => 'rating:average',
+    "play count average" => 'playcount:average',
+    "skip count average" => 'skipcount:average',
   ),
 
   my %sort_menu = (
-    year     => _("year"),
-    year2    => _("year (highest)"),
-    alpha    => _("alphabetical"),
-    songs    => _("number of songs in filter"),
-    'length' => _("length of songs"),
+    year     => "year",
+    year2    => "year (highest)",
+    alpha    => "alphabetical",
+    songs    => "number of songs in filter",
+    'length' => "length of songs",
   );
-my %sort_menu_album  = (%sort_menu, artist => _("artist"));
+my %sort_menu_album  = (%sort_menu, artist => "artist");
 my @sort_menu_append = (
     {separator => 1},
     {   label => "reverse order",
@@ -2162,7 +2162,7 @@ my @sort_menu_append = (
 
 our @MenuPageOptions;
 my @MenuSubGroup = (
-    {   label   => sub { _("Set subgroup") . ' ' . $_[0]{depth} },
+    {   label   => sub { "Set subgroup" . ' ' . $_[0]{depth} },
         submenu => sub {
             return {
                 0 => "None",
@@ -2174,7 +2174,7 @@ my @MenuSubGroup = (
         code            => sub { $_[0]{self}->SetField($_[1], $_[0]{depth}) },
         check           => sub { $_[0]{self}{field}[$_[0]{depth}] || 0 },
     },
-    {   label   => sub { _("Options for subgroup") . ' ' . $_[0]{depth} },
+    {   label   => sub { "Options for subgroup" . ' ' . $_[0]{depth} },
         submenu => \@MenuPageOptions,
         test    => sub { $_[0]{depth} <= $_[0]{self}{depth} },
     },
@@ -4133,7 +4133,7 @@ INIT {
             stockicon => 'gtk-save',
             isdefined => 'songlist'
         },
-        {   label   => _("Edit list") . '...',
+        {   label   => "Edit list...",
             code    => sub { ::WEditList($_[0]{names}[0]); },
             mode    => 'L',
             onlyone => 'names'
@@ -4152,7 +4152,7 @@ INIT {
             notempty => 'names',
             onlyone  => 'treepaths'
         },
-        {   label => _("Import list") . '...',
+        {   label => "Import list...",
             code  => sub { ::Choose_and_import_playlist_files($_[0]{self}); },
             mode  => 'L',
         },
@@ -8998,7 +8998,7 @@ our @ColumnMenu = (
         stockicon => 'gtk-add',
     },
     {   label => sub {
-            _('_Remove this column') . ' ('
+            '_Remove this column' . ' ('
               . (    $SongTree::STC{$_[0]{colid}}{menutitle}
                   || $SongTree::STC{$_[0]{colid}}{title})
               . ')';
@@ -9007,7 +9007,7 @@ our @ColumnMenu = (
         stockicon => 'gtk-remove',
         isdefined => 'colid',
     },
-    {   label => _("Edit row tip") . '...',
+    {   label => "Edit row tip...",
         code  => sub { $_[0]{songtree}->EditRowTip; },
     },
     {   label => "Keep list filtered and sorted",
@@ -10536,7 +10536,7 @@ sub groupalbum {
         $album = '' unless defined $album;
         return $album;
     }
-    return ::__("%d album", "%d albums", scalar @$l);
+    return ("%d album", "%d albums", scalar @$l);
 }
 
 sub groupartist    #FIXME optimize PHASE1
@@ -10555,7 +10555,7 @@ sub groupartist    #FIXME optimize PHASE1
     }
     return @common
       ? join ' & ', @common
-      : ::__("%d artist", "%d artists", scalar(keys %h2));
+      : ("%d artist", "%d artists", scalar(keys %h2));
 }
 
 sub groupgenres {

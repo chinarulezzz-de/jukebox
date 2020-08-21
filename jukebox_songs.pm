@@ -7,11 +7,11 @@
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation.
 
+package Songs;
+
 use strict;
 use warnings;
 use utf8;
-
-package Songs;
 
 #our %Songs;
 our ($IDFromFile, $MissingHash);
@@ -20,25 +20,26 @@ our ($Artists_split_re, $Artists_title_re, $Articles_re);
 my @MissingKeyFields;
 our (%Def, %Types, %Categories, %FieldTemplates, @Fields, %HSort, %Aliases);
 my %FuncCache;
+
 INIT {
     our $nan = unpack 'F',
       pack('F', sin(9**9**9))
       ; # sin 9**9**9 is slighly more portable than $nan="nan", use unpack pack because the nan will be stored that way
     our %timespan_menu = (
-        year  => _("year"),
-        month => _("month"),
-        day   => _("day"),
+        year  => "year",
+        month => "month",
+        day   => "day",
     );
     @MissingKeyFields = qw/size title album artist track/;
     %Categories       = (
-        file       => [_ "File properties",  10],
-        audio      => [_ "Audio properties", 30],
-        basic      => [_ "Basic fields",     20],
-        extra      => [_ "Extra fields",     50],
-        stats      => [_ "Statistics",       40],
-        unknown    => [_ "Other",            80],    #fallback category
-        custom     => [_ "Custom",           70],
-        replaygain => [_ "Replaygain",       60],
+        file       => ["File properties",  10],
+        audio      => ["Audio properties", 30],
+        basic      => ["Basic fields",     20],
+        extra      => ["Extra fields",     50],
+        stats      => ["Statistics",       40],
+        unknown    => ["Other",            80],    #fallback category
+        custom     => ["Custom",           70],
+        replaygain => ["Replaygain",       60],
     );
     %Types = (
         generic => {
@@ -84,26 +85,26 @@ INIT {
                 default_value => 65,
             ],
             'filterdesc:fuzzy' =>
-              [_ "%s fuzzy match with %s", _ "fuzzy match", 'fuzzy string',],
-            'filterdesc:-fuzzy' => _ "no %s fuzzy match with %s",
+              ["%s fuzzy match with %s", "fuzzy match", 'fuzzy string',],
+            'filterdesc:-fuzzy' => "no %s fuzzy match with %s",
             'filterdesc:mi'     => [
-                _ "matches regexp %s",
-                _ "matches regexp",
+                "matches regexp %s",
+                "matches regexp",
                 'regexp',
                 icase => 1,
             ],
             'filterdesc:si' =>
-              [_ "contains %s", _ "contains", 'substring', icase => 1,],
+              ["contains %s", "contains", 'substring', icase => 1,],
             'filterdesc:e' => [
-                _ "is equal to %s", _ "is equal to", 'string', completion => 1,
+                "is equal to %s", "is equal to", 'string', completion => 1,
             ],
-            'filterdesc:m'   => [_ "matches regexp %s (case sensitive)", 'mi'],
-            'filterdesc:s'   => [_ "contains %s (case sensitive)",       'si'],
-            'filterdesc:-m'  => _ "doesn't match regexp %s (case sensitive)",
-            'filterdesc:-mi' => _ "doesn't match regexp %s",
-            'filterdesc:-s'  => _ "doesn't contain %s (case sensitive)",
-            'filterdesc:-si' => _ "doesn't contain %s",
-            'filterdesc:-e'  => _ "isn't equal to %s",
+            'filterdesc:m'   => ["matches regexp %s (case sensitive)", 'mi'],
+            'filterdesc:s'   => ["contains %s (case sensitive)",       'si'],
+            'filterdesc:-m'  => "doesn't match regexp %s (case sensitive)",
+            'filterdesc:-mi' => "doesn't match regexp %s",
+            'filterdesc:-s'  => "doesn't contain %s (case sensitive)",
+            'filterdesc:-si' => "doesn't contain %s",
+            'filterdesc:-e'  => "isn't equal to %s",
             'smartfilter:=empty' => 'e:',
             'smartfilter:='      => 'e',
             'smartfilter:#'      => \&Filter::smartstring_fuzzy,
@@ -124,7 +125,7 @@ INIT {
               '___name[0]="#none#"; ___iname[0]=::superlc(___name[0]); #sgid_to_gid(VAL=$_)# for #init_namearray#',
             init_namearray =>
               '@{ $::Options{Fields_options}{#field#}{persistent_values} ||= $Def{#field#}{default_persistent_values} || [] }',
-            none    => quotemeta _ "None",
+            none    => quotemeta "None",
             default => '""',
             check =>
               '#VAL#= do {my $v=#VAL#; my @l; if (ref $v) {@l= @$v} else {@l= split /\x00/,$v} for (@l) { tr/\x00-\x1F//d; s/\s+$//; }; @l=sort @l; \@l }',
@@ -214,27 +215,27 @@ INIT {
             'editwidget:single' => sub { GMB::TagEdit::FlagList->new(@_) },
             'editwidget:per_id' => sub { GMB::TagEdit::FlagList->new(@_) },
             autofill_re         => '.+',
-            'filterdesc:~'  => [_ "includes %s", _ "includes", 'combostring',],
-            'filterdesc:-~' => _ "doesn't include %s",
-            'filterdesc:ecount:0'  => _ "has none",
-            'filterdesc:-ecount:0' => _ "has at least one",
+            'filterdesc:~'  => ["includes %s", "includes", 'combostring',],
+            'filterdesc:-~' => "doesn't include %s",
+            'filterdesc:ecount:0'  => "has none",
+            'filterdesc:-ecount:0' => "has at least one",
             'filterdesc:mi'        => [
-                _ "matches regexp %s",
-                _ "matches regexp",
+                "matches regexp %s",
+                "matches regexp",
                 'regexp',
                 icase => 1,
             ],
             'filterdesc:si' =>
-              [_ "contains %s", _ "contains", 'substring', icase => 1,],
-            'filterdesc:m'   => [_ "matches regexp %s (case sensitive)", 'mi'],
-            'filterdesc:s'   => [_ "contains %s (case sensitive)",       'si'],
-            'filterdesc:-m'  => _ "doesn't match regexp %s (case sensitive)",
-            'filterdesc:-mi' => _ "doesn't match regexp %s",
-            'filterdesc:-s'  => _ "doesn't contain %s (case sensitive)",
-            'filterdesc:-si' => _ "doesn't contain %s",
+              ["contains %s", "contains", 'substring', icase => 1,],
+            'filterdesc:m'   => ["matches regexp %s (case sensitive)", 'mi'],
+            'filterdesc:s'   => ["contains %s (case sensitive)",       'si'],
+            'filterdesc:-m'  => "doesn't match regexp %s (case sensitive)",
+            'filterdesc:-mi' => "doesn't match regexp %s",
+            'filterdesc:-s'  => "doesn't contain %s (case sensitive)",
+            'filterdesc:-si' => "doesn't contain %s",
             'filterdesc:fuzzy' =>
-              [_ "%s fuzzy match with %s", _ "fuzzy match", 'fuzzy string',],
-            'filterdesc:-fuzzy'  => _ "no %s fuzzy match with %s",
+              ["%s fuzzy match with %s", "fuzzy match", 'fuzzy string',],
+            'filterdesc:-fuzzy'  => "no %s fuzzy match with %s",
             'smartfilter:=empty' => 'ecount:0',
             'smartfilter:='      => '~',
             'smartfilter::'      => 'si s',
@@ -322,25 +323,25 @@ INIT {
             hashm   => 'do {my $v=#_#; ref $v ? @$v : $v}',
             listall => '##mainfield#->listall#',
             'filterdesc:~' =>
-              [_ "includes artist %s", _ "includes artist", 'menustring',],
-            'filterdesc:-~' => _ "doesn't include artist %s",
+              ["includes artist %s", "includes artist", 'menustring',],
+            'filterdesc:-~' => "doesn't include artist %s",
             'filterdesc:mi' => [
-                _ "matches regexp %s",
-                _ "matches regexp",
+                "matches regexp %s",
+                "matches regexp",
                 'regexp',
                 icase => 1,
             ],
             'filterdesc:si' =>
-              [_ "contains %s", _ "contains", 'substring', icase => 1,],
-            'filterdesc:m'   => [_ "matches regexp %s (case sensitive)", 'mi'],
-            'filterdesc:s'   => [_ "contains %s (case sensitive)",       'si'],
-            'filterdesc:-m'  => _ "doesn't match regexp %s (case sensitive)",
-            'filterdesc:-mi' => _ "doesn't match regexp %s",
-            'filterdesc:-s'  => _ "doesn't contain %s (case sensitive)",
-            'filterdesc:-si' => _ "doesn't contain %s",
+              ["contains %s", "contains", 'substring', icase => 1,],
+            'filterdesc:m'   => ["matches regexp %s (case sensitive)", 'mi'],
+            'filterdesc:s'   => ["contains %s (case sensitive)",       'si'],
+            'filterdesc:-m'  => "doesn't match regexp %s (case sensitive)",
+            'filterdesc:-mi' => "doesn't match regexp %s",
+            'filterdesc:-s'  => "doesn't contain %s (case sensitive)",
+            'filterdesc:-si' => "doesn't contain %s",
             'filterdesc:fuzzy' =>
-              [_ "%s fuzzy match with %s", _ "fuzzy match", 'fuzzy string',],
-            'filterdesc:-fuzzy' => _ "no %s fuzzy match with %s",
+              ["%s fuzzy match with %s", "fuzzy match", 'fuzzy string',],
+            'filterdesc:-fuzzy' => "no %s fuzzy match with %s",
             'smartfilter:='     => '~',
             'smartfilter::'     => 'si s',
             'smartfilter:~'     => 'mi m',
@@ -366,7 +367,7 @@ INIT {
             parent    => 'fewstring',
             mainfield => 'artist',
             init =>
-              '____=""; __#mainfield#_gid{""}=1; #_iname#[1]=::superlc( #_name#[1]=_("<Unknown>") );',
+              '____=""; __#mainfield#_gid{""}=1; #_iname#[1]=::superlc( #_name#[1]="<Unknown>" );',
             get         => 'do {my $v=#_#; $v!=1 ? #_name#[$v] : "";}',
             gid_to_get  => '(#GID#!=1 ? #_name#[#GID#] : "")',
             gid_to_sgid => '(#GID#!=1 ? #_name#[#GID#] : "")',
@@ -384,16 +385,16 @@ INIT {
 
             #plugin		=> 'picture',
             'filter:pic'        => '.!!. __#mainfield#_picture[#_#]',
-            'filterdesc:pic:1'  => _ "has a picture",
-            'filterdesc:-pic:1' => _ "doesn't have a picture",
+            'filterdesc:pic:1'  => "has a picture",
+            'filterdesc:-pic:1' => "doesn't have a picture",
           },
         album => {
             parent    => 'fewstring',
             mainfield => 'album',
             _empty    => 'vec(__#mainfield#_empty,#_#,1)',
-            unknown   => '_("<Unknown>")." "',
+            unknown   => '"<Unknown> "',
             init =>
-              '____=""; __#mainfield#_gid{"\\x00"}=1; __#mainfield#_empty=""; vec(__#mainfield#_empty,1,1)=1; __#mainfield#_sgid[1]="\\x00"; #_iname#[1]=::superlc( #_name#[1]=_("<Unknown>") );',
+              '____=""; __#mainfield#_gid{"\\x00"}=1; __#mainfield#_empty=""; vec(__#mainfield#_empty,1,1)=1; __#mainfield#_sgid[1]="\\x00"; #_iname#[1]=::superlc( #_name#[1]="<Unknown>" );',
             findgid =>
               'do{	my $name=#VAL#; my $sgid= $name ."\\x00". ($name eq "" ?	"artist=".#artist->get# :	do {my $a=#album_artist_raw->get#; $a ne "" ?	"album_artist=$a" :	#compilation->get# ?	"compilation=1" : ""}	);
 					__#mainfield#_gid{$sgid}||= do {my $n=@#_name#; if ($name eq "") {vec(__#mainfield#_empty,$n,1)=1; $name=#unknown#.#artist->get#; } push @#_name#,$name; push @__#mainfield#_sgid,$sgid; #newval#; $n; };
@@ -427,8 +428,8 @@ INIT {
             save_extra =>
               'my %h; while ( my ($sgid,$gid)=each %__#mainfield#_gid ) { $h{$sgid}= [#SUBFIELDS#] } delete $h{""}; return \%h;',
             'filter:pic'        => '.!!. __#mainfield#_picture[#_#]',
-            'filterdesc:pic:1'  => _ "has a picture",
-            'filterdesc:-pic:1' => _ "doesn't have a picture",
+            'filterdesc:pic:1'  => "has a picture",
+            'filterdesc:-pic:1' => "doesn't have a picture",
             'filterpat:menustring' =>
               [display => sub { my $s = shift; $s =~ s/\x00.*//; $s; }]
             ,    # could display $album by $album_artist instead
@@ -568,8 +569,8 @@ INIT {
             edit_listall    => 1,
             parent          => 'generic',
             maxgid          => '@#_name#-1',
-            'filterdesc:~'  => [_ "is %s", _ "is", 'menustring',],
-            'filterdesc:-~' => _ "isn't %s",
+            'filterdesc:~'  => ["is %s", "is", 'menustring',],
+            'filterdesc:-~' => "isn't %s",
 
 #gsummary	=> 'my $gids=Songs::UniqList(#field#,#IDs#); @$gids==1 ? #gid_to_display(GID=$gids->[0])# : #names(count=scalar @$gids)#;',
           },
@@ -610,16 +611,16 @@ INIT {
             'filterdesc:-<' => ["≥ %s", "≥", 'value', noinv => 1],
             'filterdesc:->' => ["≤ %s", "≤", 'value', noinv => 1],
             'filterdesc:b' =>
-              [_ "between %s and %s", _ "between", 'value value'],
-            'filterdesc:-b' => _ "not between %s and %s",
+              ["between %s and %s", "between", 'value value'],
+            'filterdesc:-b' => "not between %s and %s",
             'filterdesc:-e' => "≠ %s",
-            'filterdesc:h'  => [_ "in the top %s", _ "in the top", 'number',]
+            'filterdesc:h'  => ["in the top %s", "in the top", 'number',]
             ,    # "the %s most"  "the most",  ?
             'filterdesc:t' =>
-              [_ "in the bottom %s", _ "in the bottom", 'number',]
+              ["in the bottom %s", "in the bottom", 'number',]
             ,    # "the %s least" "the least", ?
-            'filterdesc:-h'       => _ "not in the top %s",
-            'filterdesc:-t'       => _ "not in the bottom %s",
+            'filterdesc:-h'       => "not in the top %s",
+            'filterdesc:-t'       => "not in the bottom %s",
             'filterpat:substring' => [icase => 0],
             'filterpat:regexp'    => [icase => 0],
             'smartfilter:>'       => \&Filter::_smartstring_number_moreless,
@@ -722,8 +723,8 @@ INIT {
             'filterpat:value' => [digits => 2, signed => 1, round => "%.2f",],
             n_sort            => 'do {my $v=#_#; #v_is_nan# ? "-inf" : $v}',
             'filter:defined'  => 'do {my $v=#_#; .!. (#v_is_nan#)}',
-            'filterdesc:defined:1'  => _ "is defined",
-            'filterdesc:-defined:1' => _ "is not defined",
+            'filterdesc:defined:1'  => "is defined",
+            'filterdesc:-defined:1' => "is not defined",
             'smartfilter:=empty'    => '-defined:1',
             'stats:same' =>
               'do {my $v1=#HVAL#; my $v2=#_#; if (defined $v1) { #HVAL#=#nan# if $v1!=$v2; } else { #HVAL#= $v2 } }'
@@ -769,7 +770,7 @@ INIT {
             display => '( ::format_number( #_#/'
               . ::MB()
               . ',"%.1f").q( '
-              . _ "MB" . ') )',
+              . "MB" . ') )',
             'filter_prep:e' => \&::ConvertSize,
             'filter_prep:>' => \&::ConvertSize,
             'filter_prep:<' => \&::ConvertSize,
@@ -787,7 +788,7 @@ INIT {
                 gid_to_display => '( ::format_number( #GID# * #ARG0#/'
               . ::MB()
               . ',"%d").q( '
-              . _ "MB" . ') )',
+              . "MB" . ') )',
         },
         rating => {
             parent   => 'integer',
@@ -814,8 +815,8 @@ INIT {
             'filter:<' => '#_default# .<. #VAL#',
             'filter:b' =>
               '#_default# .>=. #VAL1#  .&&. #_default# .<=. #VAL2#',
-            'filterdesc:~'  => [_ "set to %s", _ "set to", 'value'],
-            'filterdesc:-~' => _ "not set to %s",
+            'filterdesc:~'  => ["set to %s", "set to", 'value'],
+            'filterdesc:-~' => "not set to %s",
             ,
             'filterdesc:~:255'   => 'set to default',
             'filterdesc:-~:255'  => 'not set to default',
@@ -849,34 +850,34 @@ INIT {
 
             #'filterdesc:e'		=> [_"is equal to %s", _"is equal to", 'date' ],
             filter_exclude => 'e',    # do not show these filters
-            'filterdesc:>ago' => [_ "more than %s ago", _ "more than", 'ago',],
-            'filterdesc:<ago' => [_ "less than %s ago", _ "less than", 'ago',],
-            'filterdesc:>' => [_ "after %s",  _ "after",  'date',],
-            'filterdesc:<' => [_ "before %s", _ "before", 'date',],
+            'filterdesc:>ago' => ["more than %s ago", "more than", 'ago',],
+            'filterdesc:<ago' => ["less than %s ago", "less than", 'ago',],
+            'filterdesc:>' => ["after %s",  "after",  'date',],
+            'filterdesc:<' => ["before %s", "before", 'date',],
             'filterdesc:b' => [
-                _ "between %s and %s",
-                _ "between (absolute dates)",
+                "between %s and %s",
+                "between (absolute dates)",
                 'date date'
             ],
             'filterdesc:bago' => [
-                _ "between %s ago and %s ago",
-                _ "between (relative dates)",
+                "between %s ago and %s ago",
+                "between (relative dates)",
                 'ago ago'
             ],
-            'filterdesc:->ago' => _ "less than %s ago",
-            'filterdesc:-<ago' => _ "more than %s ago",
-            'filterdesc:->'    => _ "before %s",
-            'filterdesc:-<'    => _ "after %s",
-            'filterdesc:-b'    => _ "not between %s and %s",
-            'filterdesc:-bago' => _ "not between %s ago and %s ago",
+            'filterdesc:->ago' => "less than %s ago",
+            'filterdesc:-<ago' => "more than %s ago",
+            'filterdesc:->'    => "before %s",
+            'filterdesc:-<'    => "after %s",
+            'filterdesc:-b'    => "not between %s and %s",
+            'filterdesc:-bago' => "not between %s ago and %s ago",
             'filterdesc:h' =>
-              [_ "the %s most recent", _ "the most recent", 'number']
+              ["the %s most recent", "the most recent", 'number']
             ,    #"the %s latest" "the latest" ?
             'filterdesc:t' =>
-              [_ "the %s least recent", _ "the least recent", 'number']
+              ["the %s least recent", "the least recent", 'number']
             ,    #"the %s earliest" "the earliest" ?
-            'filterdesc:-h'  => _ "not the %s most recent",
-            'filterdesc:-t'  => _ "not the %s least recent",
+            'filterdesc:-h'  => "not the %s most recent",
+            'filterdesc:-t'  => "not the %s least recent",
             'filterpat:ago'  => [unit => \%::DATEUNITS, default_unit => 'd',],
             'filterpat:date' => [
                 display => sub {
@@ -1019,34 +1020,34 @@ INIT {
               '.!!. do{ grep($_ >= #VAL1# && $_ <= #VAL2#, #get_list#) }',
 
             #copy of filterdesc:* smartfilter:* from date type
-            'filterdesc:>ago' => [_ "more than %s ago", _ "more than", 'ago',],
-            'filterdesc:<ago' => [_ "less than %s ago", _ "less than", 'ago',],
-            'filterdesc:>' => [_ "after %s",  _ "after",  'date',],
-            'filterdesc:<' => [_ "before %s", _ "before", 'date',],
+            'filterdesc:>ago' => ["more than %s ago", "more than", 'ago',],
+            'filterdesc:<ago' => ["less than %s ago", "less than", 'ago',],
+            'filterdesc:>' => ["after %s",  "after",  'date',],
+            'filterdesc:<' => ["before %s", "before", 'date',],
             'filterdesc:b' => [
-                _ "between %s and %s",
-                _ "between (absolute dates)",
+                "between %s and %s",
+                "between (absolute dates)",
                 'date date'
             ],
             'filterdesc:bago' => [
-                _ "between %s ago and %s ago",
-                _ "between (relative dates)",
+                "between %s ago and %s ago",
+                "between (relative dates)",
                 'ago ago'
             ],
-            'filterdesc:->ago' => _ "not more than %s ago",
-            'filterdesc:-<ago' => _ "not less than %s ago",
-            'filterdesc:->'    => _ "not after %s",
-            'filterdesc:-<'    => _ "not before %s",
-            'filterdesc:-b'    => _ "not between %s and %s",
-            'filterdesc:-bago' => _ "not between %s ago and %s ago",
+            'filterdesc:->ago' => "not more than %s ago",
+            'filterdesc:-<ago' => "not less than %s ago",
+            'filterdesc:->'    => "not after %s",
+            'filterdesc:-<'    => "not before %s",
+            'filterdesc:-b'    => "not between %s and %s",
+            'filterdesc:-bago' => "not between %s ago and %s ago",
             'filterdesc:h' =>
-              [_ "the %s most recent", _ "the most recent", 'number']
+              ["the %s most recent", "the most recent", 'number']
             ,    #"the %s latest" "the latest" ?
             'filterdesc:t' =>
-              [_ "the %s least recent", _ "the least recent", 'number']
+              ["the %s least recent", "the least recent", 'number']
             ,    #"the %s earliest" "the earliest" ?
-            'filterdesc:-h'  => _ "not the %s most recent",
-            'filterdesc:-t'  => _ "not the %s least recent",
+            'filterdesc:-h'  => "not the %s most recent",
+            'filterdesc:-t'  => "not the %s least recent",
             'filterpat:ago'  => [unit => \%::DATEUNITS, default_unit => 'd',],
             'filterpat:date' => [
                 display => sub {
@@ -1106,14 +1107,14 @@ INIT {
             bits    => 1,
             check   => '#VAL#= #VAL# ? 1 : 0;',
             display => "(#_# ? #yes# : #no#)",
-            yes     => '_("Yes")',
+            yes     => '"Yes"',
             no      => 'q()',
             'editwidget:all' =>
               sub { my $field = $_[0]; GMB::TagEdit::EntryBoolean->new(@_); },
-            'filterdesc:e:0'  => [_ "is false", _ "is false", '', noinv => 1],
-            'filterdesc:e:1'  => [_ "is true",  _ "is true",  '', noinv => 1],
-            'filterdesc:-e:0' => _ "is true",
-            'filterdesc:-e:1' => _ "is false",
+            'filterdesc:e:0'  => ["is false", "is false", '', noinv => 1],
+            'filterdesc:e:1'  => ["is true",  "is true",  '', noinv => 1],
+            'filterdesc:-e:0' => "is true",
+            'filterdesc:-e:1' => "is false",
             filter_exclude =>
               'ALL',    #do not show filters inherited from parents
             default_filter       => 'e:1',
@@ -1137,7 +1138,7 @@ INIT {
     %Def
       = #flags : Read Write Editable Sortable Column caseInsensitive sAve List Gettable Properties
       ( file => {
-            name             => _ "Filename",
+            name             => "Filename",
             width            => 400,
             flags            => 'fgascp_',
             type             => 'filename',
@@ -1154,14 +1155,14 @@ INIT {
             'stats:count' => '#HVAL#++',
         },
         path => {
-            name                 => _ "Folder",
+            name                 => "Folder",
             width                => 200,
             flags                => 'fgascp_',
             type                 => 'filename',
             'filter:i'           => '#_# .=~. m/^#VAL#(?:$::QSLASH|$)/o',
             'filter_prep:i'      => sub { quotemeta ::decode_url($_[0]); },
-            'filterdesc:i'       => [_ "is in %s", _ "is in", 'filename'],
-            'filterdesc:-i'      => _ "isn't in %s",
+            'filterdesc:i'       => ["is in %s", "is in", 'filename'],
+            'filterdesc:-i'      => "isn't in %s",
             'filterpat:filename' => [
                 display =>
                   sub { ::filename_to_utf8displayname(::decode_url($_[0])); },
@@ -1171,7 +1172,7 @@ INIT {
             alias     => 'folder',
         },
         modif => {
-            name       => _ "Modification",
+            name       => "Modification",
             width      => 160,
             flags      => 'fgarscp_',
             type       => 'date',
@@ -1181,7 +1182,7 @@ INIT {
             alias      => 'modified',
         },
         size => {
-            name       => _ "Size",
+            name       => "Size",
             width      => 80,
             flags      => 'fgarscp_',                   #32bits => 4G max
             type       => 'size',
@@ -1189,7 +1190,7 @@ INIT {
             category   => 'file',
         },
         title => {
-            name       => _ "Title",
+            name       => "Title",
             width      => 270,
             flags      => 'fgarwescpi',
             type       => 'istring',
@@ -1203,8 +1204,8 @@ INIT {
             'filter_prep:~'     => \&Filter::SmartTitleRegEx,
             'filter_simplify:~' => \&Filter::SmartTitleSimplify,
             'filterdesc:~' =>
-              [_ "is smart equal to %s", _ "is smart equal", 'substring'],
-            'filterdesc:-~'   => _ "Isn't smart equal to %s",
+              ["is smart equal to %s", "is smart equal", 'substring'],
+            'filterdesc:-~'   => "Isn't smart equal to %s",
             makefilter_fromID => '"title:~:" . #get#',
             edit_order        => 10,
             letter            => 't',
@@ -1214,7 +1215,7 @@ INIT {
             articles => 1,
         },
         artist => {
-            name          => _ "Artist",
+            name          => "Artist",
             width         => 200,
             flags         => 'fgarwescpi',
             type          => 'artist',
@@ -1225,7 +1226,7 @@ INIT {
             lyrics3v2     => 'EAR',
             ilst          => "\xA9ART",
             FilterList    => {search => 1, drag => ::DRAG_ARTIST},
-            all_count     => _ "All artists",
+            all_count     => "All artists",
             apic_id       => 8,
             picture_field => 'artist_picture',
             edit_order    => 20,
@@ -1244,7 +1245,7 @@ INIT {
             flags         => 'fig',
             type          => 'artist_first',
             depend        => 'artists',
-            name          => _ "Main artist",
+            name          => "Main artist",
             FilterList    => {search => 1, drag => ::DRAG_ARTIST},
             picture_field => 'artist_picture',
             sortgroup     => 'artist',
@@ -1255,14 +1256,14 @@ INIT {
             flags         => 'gfil',
             type          => 'artists',
             depend        => 'artist title',
-            name          => _ "Artists",
-            all_count     => _ "All artists",
+            name          => "Artists",
+            all_count     => "All artists",
             FilterList    => {search => 1, drag => ::DRAG_ARTIST},
             picture_field => 'artist_picture',
             articles      => 1,
         },
         album => {
-            name      => _ "Album",
+            name      => "Album",
             width     => 200,
             flags     => 'fgarwescpi',
             type      => 'album',
@@ -1274,7 +1275,7 @@ INIT {
             ilst      => "\xA9alb",
             depend    => 'artist album_artist_raw compilation'
             ,   #because albums with no names get the name : <Unknown> (artist)
-            all_count     => _ "All albums",
+            all_count     => "All albums",
             FilterList    => {search => 1, drag => ::DRAG_ALBUM},
             apic_id       => 3,
             picture_field => 'album_picture',
@@ -1299,7 +1300,7 @@ INIT {
 #	type		=> '_picture',
 # },
         album_picture => {
-            name        => _ "Album picture",
+            name        => "Album picture",
             flags       => 'g',
             depend      => 'album',
             property_of => 'album',
@@ -1308,7 +1309,7 @@ INIT {
             letter      => 'c',
         },
         artist_picture => {
-            name        => _ "Artist picture",
+            name        => "Artist picture",
             flags       => 'g',
             depend      => 'artist',
             property_of => 'artist',
@@ -1316,7 +1317,7 @@ INIT {
             type        => '_picture',
         },
         album_artist_raw => {
-            name   => _ "Album artist",
+            name   => "Album artist",
             width  => 200,
             flags  => 'fgarwescpi',
             type   => 'artist',
@@ -1334,7 +1335,7 @@ INIT {
             category => 'basic',
         },
         album_artist => {
-            name          => _ "Album artist or artist",
+            name          => "Album artist or artist",
             width         => 200,
             flags         => 'fgcsi',
             type          => 'artist',
@@ -1349,7 +1350,7 @@ INIT {
             articles  => 1,
         },
         album_has_picture => {
-            name      => _ "Album has picture",
+            name      => "Album has picture",
             width     => 20,
             flags     => 'fgcs',
             type      => 'boolean',
@@ -1357,7 +1358,7 @@ INIT {
             mainfield => 'album',
         },
         artist_has_picture => {
-            name      => _ "Artist has picture",
+            name      => "Artist has picture",
             width     => 20,
             flags     => 'fgcs',
             type      => 'boolean',
@@ -1365,7 +1366,7 @@ INIT {
             mainfield => 'artist',
         },
         has_picture => {
-            name     => _ "Embedded picture",
+            name     => "Embedded picture",
             width    => 20,
             flags    => 'fgarscp',
             type     => 'boolean',
@@ -1377,7 +1378,7 @@ INIT {
             options  => 'disable',
         },
         has_lyrics => {
-            name      => _ "Embedded lyrics",
+            name      => "Embedded lyrics",
             width     => 20,
             flags     => 'fgarscp',
             type      => 'boolean',
@@ -1391,7 +1392,7 @@ INIT {
             options   => 'disable',
         },
         compilation => {
-            name      => _ "Compilation",
+            name      => "Compilation",
             width     => 20,
             flags     => 'fgarwescp',
             type      => 'boolean',
@@ -1403,7 +1404,7 @@ INIT {
             category  => 'basic',
         },
         grouping => {
-            name       => _ "Grouping",
+            name       => "Grouping",
             width      => 100,
             flags      => 'fgarwescpi',
             type       => 'fewstring',
@@ -1419,7 +1420,7 @@ INIT {
             articles   => 1,
         },
         year => {
-            name      => _ "Year",
+            name      => "Year",
             width     => 40,
             flags     => 'fgarwescp',
             type      => 'integer',
@@ -1448,7 +1449,7 @@ INIT {
             category    => 'basic',
         },
         track => {
-            name          => _ "Track",
+            name          => "Track",
             width         => 40,
             flags         => 'fgarwescp',
             id3v1         => 5,
@@ -1468,7 +1469,7 @@ INIT {
             category      => 'basic',
         },
         disc => {
-            name       => _ "Disc",
+            name       => "Disc",
             width      => 40,
             flags      => 'fgarwescp',
             type       => 'integer',
@@ -1489,7 +1490,7 @@ INIT {
             alias      => 'disk',
         },
         discname => {
-            name      => _ "Disc name",
+            name      => "Disc name",
             width     => 100,
             flags     => 'fgarwescpi',
             type      => 'fewstring',
@@ -1504,7 +1505,7 @@ INIT {
             alias     => 'diskname',
         },
         genre => {
-            name  => _ "Genres",
+            name  => "Genres",
             width => 180,
             flags => 'fgarwescpil',
 
@@ -1516,8 +1517,8 @@ INIT {
             ilst       => "\xA9gen & ----genre",
             read_split => qr/\s*;\s*/,
             type => 'flags',  #default_persistent_values => \@Tag::MP3::Genres,
-            none        => quotemeta _ "No genre",
-            all_count   => _ "All genres",
+            none        => quotemeta "No genre",
+            all_count   => "All genres",
             FilterList  => {search => 1},
             edit_order  => 70,
             edit_many   => 1,
@@ -1529,7 +1530,7 @@ INIT {
 #	picture_field => 'genre_picture',
         },
         label => {
-            name  => _ "Labels",
+            name  => "Labels",
             width => 180,
             flags => 'fgaescpil',
 
@@ -1539,11 +1540,11 @@ INIT {
             icon       => sub { $Def{label}{iconprefix} . $_[0]; }
             ,    #FIXME use icon_for_gid
             icon_for_gid              => '"#iconprefix#".#gid_to_get#',
-            all_count                 => _ "All labels",
-            edit_string               => _ "Edit labels",
-            none                      => quotemeta _ "No label",
+            all_count                 => "All labels",
+            edit_string               => "Edit labels",
+            none                      => quotemeta "No label",
             FilterList                => {search => 1, icon => 1},
-            icon_edit_string          => _ "Choose icon for label {name}",
+            icon_edit_string          => "Choose icon for label {name}",
             edit_order                => 80,
             edit_many                 => 1,
             letter                    => 'L',
@@ -1551,13 +1552,13 @@ INIT {
             editsubmenu               => 1,
             options                   => 'persistent_values editsubmenu',
             default_persistent_values => [
-                _("favorite"), _("bootleg"),
-                _("broken"),   _("bonus tracks"),
-                _("interview"),
+                "favorite", "bootleg",
+                "broken",   "bonus tracks",
+                "interview",
             ],
         },
         mood => {
-            name        => _ "Moods",
+            name        => "Moods",
             width       => 180,
             flags       => 'fgarwescpil',
             id3v2       => 'TMOO',
@@ -1566,8 +1567,8 @@ INIT {
             ilst        => "----MOOD",
             read_split  => qr/\s*;\s*/,
             type        => 'flags',
-            none        => quotemeta _ "No moods",
-            all_count   => _ "All moods",
+            none        => quotemeta "No moods",
+            all_count   => "All moods",
             FilterList  => {search => 1},
             edit_order  => 71,
             edit_many   => 1,
@@ -1577,12 +1578,12 @@ INIT {
             category    => 'extra',
         },
         style => {
-            name        => _ "Styles",
+            name        => "Styles",
             width       => 180,
             flags       => 'fgaescpil',
             type        => 'flags',
-            all_count   => _ "All styles",
-            none        => quotemeta _ "No styles",
+            all_count   => "All styles",
+            none        => quotemeta "No styles",
             FilterList  => {search => 1,},
             edit_order  => 72,
             edit_many   => 1,
@@ -1592,12 +1593,12 @@ INIT {
             category    => 'extra',
         },
         theme => {
-            name        => _ "Themes",
+            name        => "Themes",
             width       => 180,
             flags       => 'fgaescpil',
             type        => 'flags',
-            all_count   => _ "All themes",
-            none        => quotemeta _ "No themes",
+            all_count   => "All themes",
+            none        => quotemeta "No themes",
             FilterList  => {search => 1,},
             edit_order  => 73,
             edit_many   => 1,
@@ -1607,7 +1608,7 @@ INIT {
             category    => 'extra',
         },
         comment => {
-            name       => _ "Comment",
+            name       => "Comment",
             width      => 200,
             flags      => 'fgarwescpi',
             type       => 'text',
@@ -1624,7 +1625,7 @@ INIT {
             category   => 'basic',
         },
         rating => {
-            name  => _ "Rating",
+            name  => "Rating",
             width => 80,
             flags => 'fgaescp',
             type  => 'rating',
@@ -1650,7 +1651,7 @@ INIT {
             starprefix  => 'stars',
             edit_order  => 90,
             edit_many   => 1,
-            edit_string => _ "Edit rating",
+            edit_string => "Edit rating",
             editsubmenu => 1,
             options     => 'rw_ userid editsubmenu stars',
             'filterpat:value' =>
@@ -1665,7 +1666,7 @@ INIT {
             get    => '#rating->_default#',
           },
         added => {
-            name       => _ "Added",
+            name       => "Added",
             width      => 100,
             flags      => 'fgascp_',
             type       => 'date',
@@ -1674,26 +1675,26 @@ INIT {
             category   => 'stats',
         },
         lastplay => {
-            name              => _ "Last played",
+            name              => "Last played",
             width             => 100,
             flags             => 'fgascp',
             type              => 'date',
             FilterList        => {type => 'month',},
             can_group         => 1,
             letter            => 'P',
-            'filterdesc:e:0'  => _ "never",
-            'filterdesc:-e:0' => _ "has been played", #FIXME better description
+            'filterdesc:e:0'  => "never",
+            'filterdesc:-e:0' => "has been played", #FIXME better description
             category          => 'stats',
 
             #alias	=> 'played',
         },
         playhistory => {
-            name                   => _ "Play history",
+            name                   => "Play history",
             flags                  => 'fgalp',
             type                   => 'dates_compact',
             FilterList             => {type => 'month',},
-            'filterdesc:ecount:0'  => _ "never",
-            'filterdesc:-ecount:0' => _
+            'filterdesc:ecount:0'  => "never",
+            'filterdesc:-ecount:0' => 
               "has been played",                      #FIXME better description
             alias    => 'played',
             category => 'stats',
@@ -1701,26 +1702,26 @@ INIT {
             options  => 'disable',
         },
         lastskip => {
-            name              => _ "Last skipped",
+            name              => "Last skipped",
             width             => 100,
             flags             => 'fgascp',
             type              => 'date',
             FilterList        => {type => 'month',},
             can_group         => 1,
             letter            => 'K',
-            'filterdesc:e:0'  => _ "never",
-            'filterdesc:-e:0' => _
+            'filterdesc:e:0'  => "never",
+            'filterdesc:-e:0' => 
               "has been skipped",    #FIXME better description
             category => 'stats',
             alias    => 'skipped',
         },
         skiphistory => {
-            name                   => _ "Skip history",
+            name                   => "Skip history",
             flags                  => 'fgalp',
             type                   => 'dates_compact',
             FilterList             => {type => 'month',},
-            'filterdesc:ecount:0'  => _ "never",
-            'filterdesc:-ecount:0' => _
+            'filterdesc:ecount:0'  => "never",
+            'filterdesc:-ecount:0' => 
               "has been skipped",    #FIXME better description
 
             #alias	=> 'skipped',
@@ -1729,7 +1730,7 @@ INIT {
             options  => 'disable',
         },
         playcount => {
-            name    => _ "Play count",
+            name    => "Play count",
             width   => 50,
             flags   => 'fgaescp',
             type    => 'integer',
@@ -1748,7 +1749,7 @@ INIT {
             options    => 'editable',
         },
         skipcount => {
-            name       => _ "Skip count",
+            name       => "Skip count",
             width      => 50,
             flags      => 'fgaescp',
             type       => 'integer',
@@ -1759,7 +1760,7 @@ INIT {
             options    => 'editable',
         },
         composer => {
-            name          => _ "Composer",
+            name          => "Composer",
             width         => 100,
             flags         => 'fgarwescpi',
             type          => 'artist',
@@ -1777,7 +1778,7 @@ INIT {
             articles      => 1,
         },
         lyricist => {
-            name          => _ "Lyricist",
+            name          => "Lyricist",
             width         => 100,
             flags         => 'fgarwescpi',
             type          => 'artist',
@@ -1795,7 +1796,7 @@ INIT {
             articles      => 1,
         },
         conductor => {
-            name          => _ "Conductor",
+            name          => "Conductor",
             width         => 100,
             flags         => 'fgarwescpi',
             type          => 'artist',
@@ -1813,7 +1814,7 @@ INIT {
             articles      => 1,
         },
         remixer => {
-            name          => _ "Remixer",
+            name          => "Remixer",
             width         => 100,
             flags         => 'fgarwescpi',
             type          => 'artist',
@@ -1830,7 +1831,7 @@ INIT {
             articles      => 1,
         },
         version =>    #subtitle ?
-          { name     => _ "Version",
+          { name     => "Version",
             width    => 150,
             flags    => 'fgarwescpi',
             type     => 'fewstring',
@@ -1841,7 +1842,7 @@ INIT {
             category => 'extra',
           },
         bpm => {
-            name       => _ "BPM",
+            name       => "BPM",
             width      => 60,
             flags      => 'fgarwescp',
             type       => 'integer',
@@ -1855,21 +1856,21 @@ INIT {
             category   => 'extra',
         },
         channel => {
-            name              => _ "Channels",
+            name              => "Channels",
             width             => 50,
             flags             => 'fgarscp',
             type              => 'integer',
             bits              => 4,
             audioinfo         => 'channels',
             default_filter    => 'e:2',
-            'filterdesc:e:1'  => _ "is mono",
-            'filterdesc:-e:1' => _ "isn't mono",
-            'filterdesc:e:2'  => _ "is stereo",
-            'filterdesc:-e:2' => _ "isn't stereo",
+            'filterdesc:e:1'  => "is mono",
+            'filterdesc:-e:1' => "isn't mono",
+            'filterdesc:e:2'  => "is stereo",
+            'filterdesc:-e:2' => "isn't stereo",
             category          => 'audio',
         },
         bitrate => {
-            name       => _ "Bitrate",
+            name       => "Bitrate",
             width      => 90,
             flags      => 'fgarscp_',
             type       => 'integer',
@@ -1883,7 +1884,7 @@ INIT {
             category => 'audio',
         },
         samprate => {
-            name                 => _ "Sampling Rate",
+            name                 => "Sampling Rate",
             width                => 90,
             flags                => 'fgarscp',
             type                 => 'fewnumber',
@@ -1891,7 +1892,7 @@ INIT {
             audioinfo            => 'rate',
             display              => '::replace_fnumber("%d Hz",#_#)',
             FilterList           => {},
-            'filterdesc:e:44100' => _ "is 44.1kHz",
+            'filterdesc:e:44100' => "is 44.1kHz",
             'filterpat:value'    => [
                 round         => "%d",
                 unit          => 'Hz',
@@ -1901,28 +1902,28 @@ INIT {
             category => 'audio',
         },
         filetype => {
-            name       => _ "File type",
+            name       => "File type",
             width      => 80,
             flags      => 'fgarscp',
             type       => 'fewstring',
             bits       => 8,               #could probably fit in 4bit
             FilterList => {},
-            'filterdesc:m:^mp3'                      => _ "is a mp3 file",
-            'filterdesc:m:^mp4 mp4a'                 => _ "is an aac file",
-            'filterdesc:m:^mp4 alac'                 => _ "is an alac file",
-            'filterdesc:m:^mp4'                      => _ "is an mp4/m4a file",
-            'filterdesc:m:^vorbis'                   => _ "is a vorbis file",
-            'filterdesc:m:^flac'                     => _ "is a flac file",
-            'filterdesc:m:^mpc'                      => _ "is a musepack file",
-            'filterdesc:m:^wv'                       => _ "is a wavepack file",
-            'filterdesc:m:^ape'                      => _ "is an ape file",
-            'filterdesc:m:^ape|^flac|^mp4 alac|^wv'  => _ "is a lossless file",
-            'filterdesc:-m:^ape|^flac|^mp4 alac|^wv' => _ "is a lossy file",
+            'filterdesc:m:^mp3'                      => "is a mp3 file",
+            'filterdesc:m:^mp4 mp4a'                 => "is an aac file",
+            'filterdesc:m:^mp4 alac'                 => "is an alac file",
+            'filterdesc:m:^mp4'                      => "is an mp4/m4a file",
+            'filterdesc:m:^vorbis'                   => "is a vorbis file",
+            'filterdesc:m:^flac'                     => "is a flac file",
+            'filterdesc:m:^mpc'                      => "is a musepack file",
+            'filterdesc:m:^wv'                       => "is a wavepack file",
+            'filterdesc:m:^ape'                      => "is an ape file",
+            'filterdesc:m:^ape|^flac|^mp4 alac|^wv'  => "is a lossless file",
+            'filterdesc:-m:^ape|^flac|^mp4 alac|^wv' => "is a lossy file",
             category                                 => 'audio',
             alias                                    => 'type',
         },
         'length' => {
-            name      => _ "Length",
+            name      => "Length",
             width     => 50,
             flags     => 'fgarscp_',
             type      => 'length',
@@ -1937,7 +1938,7 @@ INIT {
         },
 
         replaygain_track_gain => {
-            name  => _ "Track gain",
+            name  => "Track gain",
             width => 70,
             flags => 'fgrwscpa',
             type  => 'float',
@@ -1960,7 +1961,7 @@ INIT {
             FilterList => {type => 'range',},
         },
         replaygain_track_peak => {
-            name     => _ "Track peak",
+            name     => "Track peak",
             width    => 60,
             flags    => 'fgrwscpa',
             id3v2    => 'TXXX;replaygain_track_peak;%v',
@@ -1979,7 +1980,7 @@ INIT {
             FilterList => {type => 'range',},
         },
         replaygain_album_gain => {
-            name  => _ "Album gain",
+            name  => "Album gain",
             width => 70,
             flags => 'fgrwscpa',
             type  => 'float',
@@ -2003,7 +2004,7 @@ INIT {
             FilterList => {type => 'range',},
         },
         replaygain_album_peak => {
-            name     => _ "Album peak",
+            name     => "Album peak",
             width    => 60,
             flags    => 'fgrwscpa',
             id3v2    => 'TXXX;replaygain_album_peak;%v',
@@ -2047,7 +2048,7 @@ INIT {
             letter => 'V',
         },
         album_years => {
-            name   => _ "Album year(s)",
+            name   => "Album year(s)",
             get    => 'AA::Get("year:range","album",#album->get_gid#)',
             type   => 'virtual',
             depend => 'album year',
@@ -2061,7 +2062,7 @@ INIT {
             flags  => 'g',
         },
         fullfilename_raw => {
-            name   => _ "Raw filename with path",
+            name   => "Raw filename with path",
             flags  => 'g',
             letter => 'f',
             get    => '#fullfilename->get#',
@@ -2080,7 +2081,7 @@ INIT {
             'filter_prep:e'   => sub { FindID($_[0]); },
         },
         barefilename => {
-            name   => _ "Filename without extension",
+            name   => "Filename without extension",
             type   => 'filename',
             flags  => 'g',
             letter => 'o',
@@ -2088,7 +2089,7 @@ INIT {
             depend => 'file',
         },
         extension => {
-            name   => _ "Filename extension",
+            name   => "Filename extension",
             type   => 'filename',
             flags  => 'g',
             get    => 'do {my $s=#file->get#; $s=~s#^.*\.##; $s;}',
@@ -2100,7 +2101,7 @@ INIT {
             type     => 'virtual',
             flags    => 'gcs',
             width    => 270,
-            name     => _ "Title or filename",
+            name     => "Title or filename",
             depend   => 'file title',
             letter   => 'S',                     #why letter S ? :)
             options  => 'show_ext',
@@ -2117,9 +2118,9 @@ INIT {
             type   => 'virtual',
         },    #used to check if same song
 
-        shuffle => {name => _ "Shuffle", type => 'shuffle', flags => 's',},
+        shuffle => {name => "Shuffle", type => 'shuffle', flags => 's',},
         album_shuffle => {
-            name      => _ "Album shuffle",
+            name      => "Album shuffle",
             type      => 'gidshuffle',
             flags     => 's',
             mainfield => 'album'
@@ -2169,10 +2170,10 @@ INIT {
         list => {
             type  => 'special',
             flags => 'f',
-            name  => _ "Lists",
+            name  => "Lists",
             'filterdesc:~' =>
-              [_ "present in %s", _ "present in list", 'listname',],
-            'filterdesc:-~' => _ "not present in %s",
+              ["present in %s", "present in list", 'listname',],
+            'filterdesc:-~' => "not present in %s",
             'filter:~' =>
               '.!!. do {my $l=$::Options{SavedLists}{"#VAL#"}; $l ? $l->IsIn(#ID#) : undef}',
             default_filter => '~',
@@ -2187,7 +2188,7 @@ INIT {
     our %FieldTemplates = (
         string => {
             type      => 'string',
-            editname  => _ "string",
+            editname  => "string",
             flags     => 'fgaescp',
             width     => 200,
             edit_many => 1,
@@ -2196,7 +2197,7 @@ INIT {
         },
         text => {
             type      => 'text',
-            editname  => _ "multi-lines string",
+            editname  => "multi-lines string",
             flags     => 'fgaescp',
             width     => 200,
             edit_many => 1,
@@ -2204,16 +2205,16 @@ INIT {
         },
         float => {
             type      => 'float',
-            editname  => _ "float",
+            editname  => "float",
             flags     => 'fgaescp',
             width     => 100,
             edit_many => 1,
             options   => 'customfield',
-            desc      => _ "For decimal numbers",
+            desc      => "For decimal numbers",
         },
         boolean => {
             type      => 'boolean',
-            editname  => _ "boolean",
+            editname  => "boolean",
             flags     => 'fgaescp',
             width     => 20,
             edit_many => 1,
@@ -2221,19 +2222,19 @@ INIT {
         },
         flags => {
             type        => 'flags',
-            editname    => _ "flags",
+            editname    => "flags",
             flags       => 'fgaescpil',
             width       => 180,
             edit_many   => 1,
             can_group   => 1,
             options     => 'customfield persistent_values editsubmenu',
             FilterList  => {search => 1},
-            desc        => _ "Same type as labels",
+            desc        => "Same type as labels",
             editsubmenu => 1,
         },
         artist => {
             type          => 'artist',
-            editname      => _ "artist",
+            editname      => "artist",
             flags         => 'fgaescpi',
             width         => 200,
             edit_many     => 1,
@@ -2245,41 +2246,41 @@ INIT {
         },
         fewstring => {
             type       => 'fewstring',
-            editname   => _ "common string",
+            editname   => "common string",
             flags      => 'fgaescpi',
             width      => 200,
             edit_many  => 1,
             can_group  => 1,
             options    => 'customfield',
             FilterList => {search => 1},
-            desc       => _ "For when values are likely to be repeated",
+            desc       => "For when values are likely to be repeated",
             articles   => 1,
         },
         fewnumber => {
             type       => 'fewnumber',
-            editname   => _ "common number",
+            editname   => "common number",
             flags      => 'fgaescp',
             width      => 100,
             edit_many  => 1,
             can_group  => 1,
             options    => 'customfield',
             FilterList => {},
-            desc       => _ "For when values are likely to be repeated"
+            desc       => "For when values are likely to be repeated"
         },
         integer => {
             type       => 'integer',
-            editname   => _ "integer",
+            editname   => "integer",
             flags      => 'fgaescp',
             width      => 100,
             edit_many  => 1,
             can_group  => 1,
             options    => 'customfield',
             FilterList => {},
-            desc       => _ "For integer numbers",
+            desc       => "For integer numbers",
         },
         rating => {
             type      => 'rating',
-            editname  => _ "rating",
+            editname  => "rating",
             flags     => 'fgaescp_',
             width     => 80,
             edit_many => 1,
@@ -2294,7 +2295,7 @@ INIT {
             ilst        => '----FMPS_Rating_User::%i',
             starprefix  => 'stars',
             editsubmenu => 1,
-            desc        => _ "For alternate ratings",
+            desc        => "For alternate ratings",
         },
     );
     $FieldTemplates{$_}{category} ||= 'custom' for keys %FieldTemplates;
@@ -3036,13 +3037,13 @@ sub Write {
         end     => scalar(@$IDs),
         abortcb => sub { $abort = 1 },
         widget  => $opt{progress},
-        title   => _ "Writing tags"
+        title   => "Writing tags"
     );
     my $errorsub = sub {
         my ($syserr, $details) = FileTag::Error_Message(@_);
         my $abortmsg = $opt{abortmsg};
-        $abortmsg ||= _ "Abort mass-tagging" if @$IDs > 1;
-        my $errormsg = $opt{errormsg} || _ "Error while writing tag";
+        $abortmsg ||= "Abort mass-tagging" if @$IDs > 1;
+        my $errormsg = $opt{errormsg} || "Error while writing tag";
         $errormsg .= ' (' . ($i + 1) . '/' . @$IDs . ')' if @$IDs > 1;
         my $res = $skip_all;
         $res ||= ::Retry_Dialog(
@@ -3561,7 +3562,7 @@ sub DateString {
     my $time = shift;
     my ($fmt, @formats) = split /(\d+) +/, $::Options{DateFormat} || "%c";
     unless ($time) {
-        return _ "never";
+        return "never";
     }
     my $diff = time - $time;
     while (@formats) {
@@ -3593,7 +3594,7 @@ sub ChooseIcon    #FIXME add a way to create a colored square/circle/... icon
       ::ChoosePix($::CurrentDir . ::SLASH, $string, undef, 'LastFolder_Icon');
     return unless defined $file;
     my $dir = $::HomeDir . 'icons';
-    return if ::CreateDir($dir, undef, _ "Error saving icon") ne 'ok';
+    return if ::CreateDir($dir, undef, "Error saving icon") ne 'ok';
     my $destfile =
       $dir . ::SLASH . ::url_escape(Picture($gid, $field, 'icon'));
     unlink $destfile . '.svg', $destfile . '.png';
@@ -3660,21 +3661,21 @@ sub SortKeys {
 sub Field_All_string {
     my $f = $_[0];
     return $Def{$f}
-      && exists $Def{$f}{all_count} ? $Def{$f}{all_count} : _ "All";
+      && exists $Def{$f}{all_count} ? $Def{$f}{all_count} : "All";
 }
 
 sub Field_Edit_string {
     my $f = $_[0];
     return $Def{$f} && exists $Def{$f}{edit_string}
       ? $Def{$f}{edit_string}
-      : ucfirst(::__x(_ "Edit {field}", field => Songs::FieldName($f)));
+      : ucfirst(::__x("Edit {field}", field => Songs::FieldName($f)));
 }
 
 sub FieldName {
     my $f = $_[0];
     return $Def{$f} && exists $Def{$f}{name}
       ? $Def{$f}{name}
-      : ::__x(_ "Unknown field ({field})", field => $f);
+      : ::__x("Unknown field ({field})", field => $f);
 }
 
 sub MainField {
@@ -4198,7 +4199,7 @@ sub PrefFields    #preference dialog for fields
 
     my $newcst = ::NewIconButton(
         'gtk-add',
-        _ "New custom field",
+        "New custom field",
         sub {
             my $iter =
               $store->append($store->get_iter_from_string($custom_root));
@@ -4212,7 +4213,7 @@ sub PrefFields    #preference dialog for fields
     $warning->set_markup(
         '<b>'
           . ::PangoEsc(
-            _ "Settings on this page will only take effect after a restart"
+            "Settings on this page will only take effect after a restart"
           )
           . '</b>'
     );
@@ -4276,7 +4277,7 @@ our %Field_options = (    #bits	=>
     #},
     rw => {
         widget => 'check',
-        label  => _ "Read/write in file tag",
+        label  => "Read/write in file tag",
         'default' => sub    #extract rw (sorted) from default flags
         {
             my $default_flags = $_[0]{flags} || '';
@@ -4291,7 +4292,7 @@ our %Field_options = (    #bits	=>
     },
     editable => {
         widget => 'check',
-        label  => _ "Editable in song properties dialog",
+        label  => "Editable in song properties dialog",
         'default' =>
           sub { my $default = $_[0]{flags} || ''; return $default =~ m/e/ },
         apply => sub {
@@ -4302,7 +4303,7 @@ our %Field_options = (    #bits	=>
     },
     resetnotag => {
         widget => 'check',
-        label  => _ "Reset current value if no tag found in file",
+        label  => "Reset current value if no tag found in file",
         'default' =>
           sub { my $default = $_[0]{flags} || ''; return $default !~ m/_/ },
         apply => sub {
@@ -4314,11 +4315,11 @@ our %Field_options = (    #bits	=>
         ,    # set insensitive when tag not read/written
     },
     starprefix => {
-        label  => _ "Star images",
+        label  => "Star images",
         widget => 'combo',
         combo  => \&::Find_all_stars,
         tip    => ::__x(
-            _
+            
               "You can make custom stars by putting pictures in {folder}\nThey must be named 'stars', optionally followed by a '-' and a word, followed by a number from 0 to 5 or 10\nExample: stars-custom0.png",
             folder => $::HomeDir . 'icons'
         ),
@@ -4341,19 +4342,19 @@ our %Field_options = (    #bits	=>
     },
     editsubmenu => {
         widget => 'check',
-        label  => _ "Show edition submenu in song context menu",
+        label  => "Show edition submenu in song context menu",
     },
     disable => {
         widget => 'check',
-        label  => _ "Disabled",
+        label  => "Disabled",
     },
     remove => {
         widget => 'check',
-        label  => _ "Remove this field",
+        label  => "Remove this field",
     },
     convwarn => {
         widget => 'label',
-        label  => _
+        label  => 
           "Warning: converting existing data to this format may be lossy",
         update => sub    # show only when field to be disabled or removed
         {
@@ -4369,7 +4370,7 @@ our %Field_options = (    #bits	=>
     },
     datawarn => {
         widget => 'label',
-        label  => _ "Warning: all existing data for this field will be lost",
+        label  => "Warning: all existing data for this field will be lost",
         update => sub    # show only when field to be disabled or removed
         {
             my $arg = shift;
@@ -4383,7 +4384,7 @@ our %Field_options = (    #bits	=>
     },
     useridwarn => {
         widget => 'label',
-        label  => _ "Warning: an identifier is needed",
+        label  => "Warning: an identifier is needed",
         update => sub {
             my $arg  = shift;
             my $show = $arg->{opt}{rw}
@@ -4395,19 +4396,19 @@ our %Field_options = (    #bits	=>
     },
     userid => {
         widget => 'entry',
-        label  => _ "Identifier in file tag",
-        tip => _ "Used to associate the saved value with a user or a function",
+        label  => "Identifier in file tag",
+        tip => "Used to associate the saved value with a user or a function",
         update =>
           sub { $_[0]{widget}->parent->set_sensitive($_[0]{opt}{rw}); }
         ,    # set insensitive when tag not read/written
     },
     template => {
         widget => \&Field_Edit_template,
-        label  => _ "Field type",
+        label  => "Field type",
     },
     persistent_values => {
-        label => _("Persistent values") . ':',
-        tip   => _
+        label => "Persistent values:",
+        tip   => 
           "These values will always be in the list, even if they are not used",
         default => sub { $_[0]{default_persistent_values} },
         widget  => sub {
@@ -4427,7 +4428,7 @@ our %Field_options = (    #bits	=>
         },
     },
     show_ext => {
-        label  => _ "Show file name extension",
+        label  => "Show file name extension",
         widget => 'check',
     },
 );
@@ -4530,9 +4531,9 @@ sub Field_fill_option_box {
         my $varnames = join ', ', map '$' . $_, @idlist;
         $varnames .= ', %' . $def->{letter} if $def->{letter};
         my $label_var =
-          _("Can be used as a variable with :") . ' ' . $varnames;
+          "Can be used as a variable with :" . ' ' . $varnames;
         my $label_search =
-          _("Can be searched with :") . ' ' . join(', ', @idlist);
+          "Can be searched with :" . ' ' . join(', ', @idlist);
         $_ = Gtk2::Label->new($_) for $label_var, $label_search;
         $_->set_selectable(1), $_->set_alignment(0, .5), $_->set_line_wrap(1)
           for $label_var, $label_search;
@@ -4543,15 +4544,15 @@ sub Field_fill_option_box {
 
     {
         my $hbox     = Gtk2::HBox->new;
-        my $label1   = Gtk2::Label->new(_("Field identifier") . ':');
+        my $label1   = Gtk2::Label->new("Field identifier:");
         my $label_id = Gtk2::Label->new($field);
         $hbox->pack_start($_, 0, 0, 2) for $label1, $label_id;
         if ($template)    #custom fields can be renamed
         {
             my $entry   = Gtk2::Entry->new;
-            my $bedit   = Gtk2::Button->new(_ "Edit");
-            my $brename = Gtk2::Button->new(_ "Rename");
-            my $bcancel = Gtk2::Button->new(_ "Cancel");
+            my $bedit   = Gtk2::Button->new("Edit");
+            my $brename = Gtk2::Button->new("Rename");
+            my $bcancel = Gtk2::Button->new("Cancel");
             $hbox->pack_start($_, 0, 0, 2)
               for $entry, $bedit, $brename, $bcancel;
             my @edit = ($entry, $brename, $bcancel);
@@ -4603,8 +4604,8 @@ sub Field_fill_option_box {
 
     if (!$widgets{rw}) {
         my $text =
-            $flags =~ m/rw/   ? _ "Value written in file tag"
-          : $flags !~ m/[rw]/ ? _ "Value not written in file tag"
+            $flags =~ m/rw/   ? "Value written in file tag"
+          : $flags !~ m/[rw]/ ? "Value not written in file tag"
           :                     undef;
         $text = undef if $field eq 'path' || $field eq 'file';
         unshift @topack,
@@ -4767,7 +4768,7 @@ our %ReplaceFields = (
     l => sub {
         my $l = Get('length:sum', $_[0], $_[1]);
         $l = ::__x(
-            ($l >= 3600 ? _ "{hours}h{min}m{sec}s" : _ "{min}m{sec}s"),
+            ($l >= 3600 ? "{hours}h{min}m{sec}s" : "{min}m{sec}s"),
             hours => (int $l / 3600),
             min => ($l >= 3600 ? sprintf('%02d', $l / 60 % 60) : $l / 60 % 60),
             sec => sprintf('%02d', $l % 60)
@@ -6075,13 +6076,13 @@ sub newadd {
         if (!$string) {
             next if $and;    # all and ... = ...
             $self->{string} = '';              # all or  ... = all
-            $self->{desc}   = _ "All songs";
+            $self->{desc}   = "All songs";
             return $self;
         }
         elsif ($string eq 'null') {
             next if !$and;                     # null or ... = ...
             $self->{string} = 'null';          # null and  ... = null
-            $self->{desc}   = _ "No songs";
+            $self->{desc}   = "No songs";
             return $self;
         }
         if ($string =~ s/$re/$1/)              # a & (b & c) => a & b & c
@@ -6970,11 +6971,11 @@ sub is_empty {
 sub name {
     my $self = shift;
     my $h    = $::Options{SavedFilters};
-    return _ "All Songs" if $self->is_empty;
+    return "All Songs" if $self->is_empty;
     for my $name (sort keys %$h) {
         return $name if $self->are_equal($h->{$name});
     }
-    return _ "Unnamed filter";
+    return "Unnamed filter";
 }
 
 sub explain    # return a string describing the filter
@@ -6982,21 +6983,21 @@ sub explain    # return a string describing the filter
     my $self = shift;
     return $self->{desc} if $self->{desc};
     my $filter = $self->{string};
-    return _ "All" if $filter eq '';
+    return "All" if $filter eq '';
     my $text  = '';
     my $depth = 0;
     for my $f (split /\x1D/, $filter) {
         if ($f =~ m/^\(/)    # '(|' or '(&'
         {
             $text .= ' ' x $depth++;
-            $text .= ($f eq '(|') ? _ "Any of :" : _ "All of :";
+            $text .= ($f eq '(|') ? "Any of :" : "All of :";
             $text .= "\n";
         }
         elsif ($f eq ')') { $depth--; }
         else {
             next if $f eq '';
             $text .= '  ' x $depth;
-            $text .= _explain_element($f) || _("Unknown filter :") . " '$f'";
+            $text .= _explain_element($f) || "Unknown filter : '$f'";
             $text .= "\n";
         }
     }
@@ -7236,21 +7237,21 @@ our %ScoreTypes;
 INIT {
     %ScoreTypes = (
         f => {
-            desc    => _ "Label is set",    #depend	=> 'label',
+            desc    => "Label is set",    #depend	=> 'label',
             default => '.5f',
             filter  => 'label:~:',
             boolean => 1,
         },
         g => {
-            desc    => _ "Genre is set",    #depend	=> 'genre',
+            desc    => "Genre is set",    #depend	=> 'genre',
             default => '.5g',
             filter  => 'genre:~:',
             boolean => 1,
         },
         l => {
             depend         => 'lastplay',
-            desc           => _ "Number of days since last played",
-            unit           => _ "days",
+            desc           => "Number of days since last played",
+            unit           => "days",
             round          => '%.1f',
             default        => '-1l10',
             value          => 'lastplay:daycount',
@@ -7258,8 +7259,8 @@ INIT {
         },
         L => {
             depend         => 'lastskip',
-            desc           => _ "Number of days since last skipped",
-            unit           => _ "days",
+            desc           => "Number of days since last skipped",
+            unit           => "days",
             round          => '%.1f',
             default        => '1L10',
             value          => 'lastskip:daycount',
@@ -7267,8 +7268,8 @@ INIT {
         },
         a => {
             depend         => 'added',
-            desc           => _ "Number of days since added",
-            unit           => _ "days",
+            desc           => "Number of days since added",
+            unit           => "days",
             round          => '%.1f',
             default        => '1a50',
             value          => 'added:daycount',
@@ -7276,8 +7277,8 @@ INIT {
         },
         M => {
             depend         => 'modif',
-            desc           => _ "Number of days since modified",
-            unit           => _ "days",
+            desc           => "Number of days since modified",
+            unit           => "days",
             round          => '%.1f',
             default        => '1M50',
             value          => 'modif:daycount',
@@ -7285,23 +7286,23 @@ INIT {
         },
         n => {
             depend  => 'playcount',
-            desc    => _ "Number of times played",
-            unit    => _ "times",
+            desc    => "Number of times played",
+            unit    => "times",
             round   => '%d',
             default => '1n5',
             value   => 'playcount:get',
         },
         N => {
             depend  => 'skipcount',
-            desc    => _ "Number of times skipped",
-            unit    => _ "times",
+            desc    => "Number of times skipped",
+            unit    => "times",
             round   => '%d',
             default => '-1N5',
             value   => 'skipcount:get',
         },
         r => {
             depend  => 'rating',
-            desc    => _ "Rating",
+            desc    => "Rating",
             unit    => '%',
             round   => '%d',
             default => '1r0_.1_.2_.3_.4_.5_.6_.7_.8_.9_1',
@@ -7621,7 +7622,7 @@ sub MakeExample {
     my $score;
     if ($ScoreTypes{$type}{boolean}) {
         $score = $value;
-        $value = "($score)? '" . _("true") . "' : '" . _("false") . "'";
+        $value = "($score)? '" . "true" . "' : '" . "false" . "'";
     }
     elsif ($type eq 'r') {
         my @l = split /,/, $extra;

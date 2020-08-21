@@ -26,6 +26,7 @@ BEGIN {
 }
 
 package Play_GST;
+
 use strict;
 use warnings;
 
@@ -38,7 +39,7 @@ my $support_install_missing;
 
 BEGIN {
     %Sinks = (
-        autoaudio => {name   => _ "auto detect",},
+        autoaudio => {name   => 'auto detect',},
         oss       => {option => 'device'},
         oss4      => {option => 'device'},
         alsa      => {option => 'device'},
@@ -304,7 +305,7 @@ sub init_sink {
     unless ($sink) {
         ::ErrorPlay(
             ::__x(
-                _ "Can't create sink '{sink}'", sink => $::Options{gst_sink}
+                "Can't create sink '{sink}'", sink => $::Options{gst_sink}
             )
         );
         return;
@@ -655,7 +656,7 @@ sub AdvancedOptions {
     my $vbox     = Gtk2::VBox->new(::FALSE, 2);
     my $modif_cb = sub { $self->{modif} = 1 };
     my $gapless  = ::NewPrefCheckButton(
-        gst_gapless => _ "enable gapless (experimental)",
+        gst_gapless => "enable gapless (experimental)",
         cb          => $modif_cb
     );
     $vbox->pack_start($gapless, ::FALSE, ::FALSE, 2);
@@ -670,20 +671,19 @@ sub AdvancedOptions {
     $vbox->pack_start($monitor_volume, ::FALSE, ::FALSE, 2);
 
     my $sync_EQpresets = ::NewPrefCheckButton(
-        gst_sync_EQpresets => _ "Synchronize equalizer presets",
+        gst_sync_EQpresets => "Synchronize equalizer presets",
         cb                 => sub { EQ_Import_Presets(); $modif_cb->() },
-        tip                => _
-          "Imports gstreamer presets, and synchronize modifications made with jukebox"
+        tip                => "Imports gstreamer presets, and synchronize modifications made with jukebox"
     );
     $vbox->pack_start($sync_EQpresets, ::FALSE, ::FALSE, 2);
 
     my $sg1    = Gtk2::SizeGroup->new('horizontal');
     my $custom = ::NewPrefEntry(
-        gst_custom => _ "Custom pipeline",
+        gst_custom => "Custom pipeline",
         cb         => $modif_cb,
         sizeg1     => $sg1,
         expand     => 1,
-        tip        => _ "Insert this pipeline before the audio sink",
+        tip        => "Insert this pipeline before the audio sink",
         history    => 'gst_custom_history'
     );
     $vbox->pack_start($custom, ::FALSE, ::FALSE, 2);
@@ -833,24 +833,24 @@ package GMB::GST_ReplayGain;
 my $RGA_pipeline;
 my (@towrite, $writing);
 my $RGA_songmenu = {
-    label    => _ "Replaygain analysis",
+    label    => "Replaygain analysis",
     notempty => 'IDs',
     notmode  => 'P',
     test     => sub { $Play_GST::GST_RGA_ok && $::Options{gst_rg_songmenu}; },
     submenu  => [
-        {   label   => _ "Scan this file",
+        {   label   => "Scan this file",
             code    => sub { Analyse($_[0]{IDs}); },
             onlyone => 'IDs',
         },
-        {   label    => _ "Scan per-file track gain",
+        {   label    => "Scan per-file track gain",
             code     => sub { Analyse($_[0]{IDs}); },
             onlymany => 'IDs',
         },
-        {   label    => _ "Scan using tag-defined album",
+        {   label    => "Scan using tag-defined album",
             code     => sub { Analyse_byAlbum($_[0]{IDs}); },
             onlymany => 'IDs',
         },
-        {   label    => _ "Scan as an album",
+        {   label    => "Scan as an album",
             code     => sub { Analyse([join ' ', @{$_[0]{IDs}}]); },
             onlymany => 'IDs',
         },
@@ -942,7 +942,7 @@ sub Analyse {
         'replaygain',
         add     => $nb,
         abortcb => \&StopAnalysis,
-        title   => _ "Replaygain analysis"
+        title   => "Replaygain analysis"
     );
     process_next()
       unless $::Progress{replaygain}{current}
@@ -1093,8 +1093,8 @@ sub WriteRGtags {
     my $modif = shift @towrite;
     Songs::Set(
         $ID, $modif,
-        abortmsg        => _ "Abort ReplayGain analysis",
-        errormsg        => _ "Error while writing replaygain data",
+        abortmsg        => "Abort ReplayGain analysis",
+        errormsg        => "Error while writing replaygain data",
         abortcb         => \&StopAnalysis,
         callback_finish => \&WriteRGtags,
     );
@@ -1109,8 +1109,11 @@ sub StopAnalysis {
 
 
 package Play_GST_server;
+
 use Socket;
+
 use constant {EOL => "\015\012"};
+
 our @ISA = ('Play_GST');
 
 my %Encodings;
@@ -1304,3 +1307,6 @@ sub get_connections {
 }
 
 1;
+
+# vim:sw=4:ts=4:sts=4:et:cc=80
+# End of file

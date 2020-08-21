@@ -13,7 +13,6 @@ title	last.fm plugin
 desc	Submit played songs to last.fm
 =cut
 
-
 package GMB::Plugin::AUDIOSCROBBLER;
 
 use strict;
@@ -70,19 +69,19 @@ sub prefbox {
     my $sg1    = Gtk2::SizeGroup->new('horizontal');
     my $sg2    = Gtk2::SizeGroup->new('horizontal');
     my $entry1 = ::NewPrefEntry(
-        OPT . 'USER', _ "username :",
+        OPT . 'USER', "username :",
         cb     => \&userpass_changed,
         sizeg1 => $sg1,
         sizeg2 => $sg2
     );
     my $entry2 = ::NewPrefEntry(
-        OPT . 'PASS', _ "password :",
+        OPT . 'PASS', "password :",
         cb     => \&userpass_changed,
         sizeg1 => $sg1,
         sizeg2 => $sg2,
         hide   => 1
     );
-    my $label2 = Gtk2::Button->new(_ "(see http://www.last.fm)");
+    my $label2 = Gtk2::Button->new("(see http://www.last.fm)");
     $label2->set_relief('none');
     $label2->signal_connect(
         clicked => sub {
@@ -92,7 +91,7 @@ sub prefbox {
             ::openurl($url);
         }
     );
-    my $ignore = Gtk2::CheckButton->new(_ "Don't submit current song");
+    my $ignore = Gtk2::CheckButton->new("Don't submit current song");
     $ignore->signal_connect(
         toggled => sub {
             return if $_[0]->{busy};
@@ -109,7 +108,7 @@ sub prefbox {
         }
     );
     my $queue   = Gtk2::Label->new;
-    my $sendnow = Gtk2::Button->new(_ "Send now");
+    my $sendnow = Gtk2::Button->new("Send now");
     $sendnow->signal_connect(clicked => \&SendNow);
     my $qbox = ::Hpack($queue, $sendnow);
     $vbox->pack_start($_, ::FALSE, ::FALSE, 0)
@@ -198,39 +197,38 @@ sub Handshake {
 sub response_cb {
     my ($response, @lines) = @_;
     my $error;
-    if    (!defined $response)            { $error = _ "connection failed"; }
+    if    (!defined $response)            { $error = "connection failed"; }
     elsif ($response eq 'OK')             { }
     elsif ($response =~ m/^FAILED (.*)$/) { $error = $1 }
     elsif ($response eq 'BADAUTH') {
-        $error = _("User authentification error");
+        $error = "User authentification error";
         $Stop  = 'BadAuth';
     }
     elsif ($response eq 'BANNED') {
-        $error = _("Client banned, contact jukebox' developer");
+        $error = "Client banned, contact jukebox' developer";
         $Stop  = 'Banned';
     }
     elsif ($response eq 'BADTIME') {
-        $error = _("System clock is not close enough to the current time");
+        $error = "System clock is not close enough to the current time";
         $Stop  = 'BadTime';
     }
-    else { $error = _ "unknown error"; }
+    else { $error = "unknown error"; }
 
     if (defined $error) {
         unless ($Stop) {
             $interval *= 2;
             $interval = 30 * 60 if $interval > 30 * 60;
             $interval = 60      if $interval < 60;
-            $error .= ::__x(' (' . _("retry in {seconds} s") . ')',
-                seconds => $interval);
+            $error .= ::__x(' (retry in {seconds} s)', seconds => $interval);
         }
-        Log(_("Handshake failed : ") . $error);
+        Log("Handshake failed : " . $error);
     }
     else {
         ($sessionid, $nowplayingurl, $submiturl) = @lines;
         $interval    = 5;
         $HandshakeOK = 1;
         $Serrors     = 0;
-        Log(_ "Handshake OK");
+        Log("Handshake OK");
     }
 }
 
@@ -264,16 +262,16 @@ sub Submit {
     my $response_cb = sub {
         my ($response, @lines) = @_;
         my $error;
-        if (!defined $response) { $error = _ "connection failed"; $Serrors++ }
+        if (!defined $response) { $error = "connection failed"; $Serrors++ }
         elsif ($response eq 'OK') {
             $Serrors = 0;
             if ($i) {
-                Log(_("Submit OK") . ' ('
+                Log("Submit OK" . ' ('
                       . (
                         $i > 1
                         ? ::__n("%d song", "%d songs", $i)
                         : ::__x(
-                            _ "{song} by {artist}",
+                            "{song} by {artist}",
                             song   => $ToSubmit[0][1],
                             artist => $ToSubmit[0][0]
                         )
@@ -284,9 +282,9 @@ sub Submit {
                 ::IdleDo("9_" . __PACKAGE__, 10000, \&Save) if $unsent_saved;
             }
             elsif ($NowPlaying) {
-                Log(_("Submit Now-Playing OK") . ' ('
+                Log("Submit Now-Playing OK" . ' ('
                       . ::__x(
-                        _ "{song} by {artist}",
+                        "{song} by {artist}",
                         song   => $NowPlaying->[1],
                         artist => $NowPlaying->[0]
                       )
@@ -296,19 +294,19 @@ sub Submit {
             }
         }
         elsif ($response eq 'BADSESSION') {
-            $error       = _ "Bad session";
+            $error       = "Bad session";
             $HandshakeOK = 0;
         }
         elsif ($response =~ m/^FAILED (.*)$/) {
             $error = $1;
             $Serrors++;
         }
-        else { $error = _ "unknown error"; $Serrors++ }
+        else { $error = "unknown error"; $Serrors++ }
 
         $HandshakeOK = 0 if $Serrors && $Serrors > 2;
 
         if (defined $error) {
-            Log(_("Submit failed : ") . $error);
+            Log("Submit failed : " . $error);
         }
     };
 

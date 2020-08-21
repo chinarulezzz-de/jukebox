@@ -44,61 +44,61 @@ use constant {
 my %sites = (
     biography => [
         "$API_URL/?method=artist.getinfo&artist=%a&api_key=$API_KEY&autocorrect=1",
-        _ "Biography",
-        _ "Show artist's biography"
+        "Biography",
+        "Show artist's biography"
     ],
     albums => [
         "$API_URL/?method=artist.getTopAlbums&artist=%a&api_key=$API_KEY"
           . "&autocorrect=1&format=json",
-        _ "Albums",
-        _ "Show artist's albums"
+        "Albums",
+        "Show artist's albums"
     ],
     similar => [
         "$API_URL/?method=artist.getsimilar&artist=%a&api_key=$API_KEY"
           . "&autocorrect=1&limit=%l",
-        _ "Similar",
-        _ "Show similar artists"
+        "Similar",
+        "Show similar artists"
     ]
 );
 
 my @External = (
     [   'rutracker',
         "https://rutracker.org/forum/tracker.php?nm=%a",
-        _ "Search for Artist on rutracker torrent tracker"
+        "Search for Artist on rutracker torrent tracker"
     ],
-    ['lastfm', "http://www.last.fm/music/%a", _ "Show Artist page on last.fm"],
+    ['lastfm', "http://www.last.fm/music/%a", "Show Artist page on last.fm"],
     [   'wikipedia', "http://en.wikipedia.org/wiki/%a",
-        _ "Show Artist page on wikipedia"
+        "Show Artist page on wikipedia"
     ],
     [   'youtube',
         "http://www.youtube.com/results?search_type=&aq=1&search_query=%a",
-        _ "Search for Artist on youtube"
+        "Search for Artist on youtube"
     ],
     [   'amazon',
         "http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias=aps&field-keywords=%a",
-        _ "Search amazon.com for Artist"
+        "Search amazon.com for Artist"
     ],
     [   'google', "http://www.google.com/search?q=%a",
-        _ "Search google for Artist"
+        "Search google for Artist"
     ],
     [   'allmusic',
         "http://www.allmusic.com/search/artist/%a",
-        _ "Search allmusic for Artist"
+        "Search allmusic for Artist"
     ],
     [   'pitchfork',
         "http://pitchfork.com/search/?search_type=standard&query=%a",
-        _ "Search pitchfork for Artist"
+        "Search pitchfork for Artist"
     ],
     [   'discogs', "http://www.discogs.com/artist/%a",
-        _ "Search discogs for Artist"
+        "Search discogs for Artist"
     ],
 );
 
 my %menuitem = (
-    label => _ "Search on the web",    #label of the menu item
+    label => "Search on the web",    #label of the menu item
     submenu =>
       sub { CreateSearchMenu(Songs::Gid_to_Get('artist', $_[0]{gid})); }
-    ,                                  #when menu item selected
+    ,                                #when menu item selected
     test => sub { $_[0]{mainfield} eq 'artist' }
     ,    #the menu item is displayed if returns true
 );
@@ -107,8 +107,8 @@ my $queuewaiting;
 my %queuemode = (
     order    => 10,
     icon     => 'gtk-refresh',
-    short    => _ "similar-artists",
-    long     => _ "Auto-fill queue with similar artists (from last.fm)",
+    short    => "similar-artists",
+    long     => "Auto-fill queue with similar artists (from last.fm)",
     changed  => \&QAutofillSimilarArtists,
     keep     => 1,
     save     => 1,
@@ -226,7 +226,7 @@ sub new {
                 click1     => \&apiczoom,
                 xalign     => 0,
                 group      => $group,
-                tip        => _ "Click to show fullsize image"
+                tip        => "Click to show fullsize image"
             }
         );
         $child->show_all;
@@ -254,7 +254,7 @@ sub new {
     );
     my $treeview  = Gtk2::TreeView->new($store);
     my $tc_artist = Gtk2::TreeViewColumn->new_with_attributes(
-        _ "Artist",
+        "Artist",
         Gtk2::CellRendererText->new,
         markup => 0
     );
@@ -264,7 +264,7 @@ sub new {
     $treeview->append_column($tc_artist);
     $treeview->set_has_tooltip(1);
     $treeview->set_tooltip_text(
-        _ "Middle-click on local artists to set a filter on them, "
+            "Middle-click on local artists to set a filter on them, "
           . "right-click non-local artists to search for them on the web.");
     my $renderer = Gtk2::CellRendererText->new;
     my $tc_similar =
@@ -329,13 +329,13 @@ sub new {
                 my $self = ::find_ancestor($_[0], __PACKAGE__);
                 SongChanged($self, 'force');
             },
-            _ "Refresh",
-            _ "Refresh"
+            "Refresh",
+            "Refresh"
         ],
         [   save => 'gtk-save',
             \&Save_text,
-            _ "Save",
-            _ "Save artist biography",
+            "Save",
+            "Save artist biography",
             $::Options{OPT . 'AutoSave'}
         ],
       )
@@ -419,7 +419,7 @@ sub cancel {
 sub prefbox {
     my $vbox  = Gtk2::VBox->new(0, 2);
     my $entry = ::NewPrefEntry(
-        OPT . 'PathFile' => _ "Load/Save Artist Info in :",
+        OPT . 'PathFile' => "Load/Save Artist Info in :",
         width            => 50
     );
     my $preview = Label::Preview->new(
@@ -429,31 +429,31 @@ sub prefbox {
         wrap     => 1
     );
     my $autosave = ::NewPrefCheckButton(
-        OPT . 'AutoSave' => _ "Auto-save positive finds",
-        tip => _ "only works when the artist-info tab is displayed",
-        cb  => sub { ::HasChanged('plugin_lastfm_option_save'); }
+        OPT . 'AutoSave' => "Auto-save positive finds",
+        tip              => "only works when the artist-info tab is displayed",
+        cb               => sub { ::HasChanged('plugin_lastfm_option_save'); }
     );
     my $picsize = ::NewPrefSpinButton(
         OPT . 'ArtistPicSize', 50, 500,
         step => 5,
         page => 10,
-        text => _("Artist picture size : %d"),
+        text => "Artist picture size : %d",
         cb   => sub { ::HasChanged('plugin_lastfm_option_pic'); }
     );
     my $picshow = ::NewPrefCheckButton(
-        OPT . 'ArtistPicShow' => _ "Show artist picture",
+        OPT . 'ArtistPicShow' => "Show artist picture",
         widget                => ::Vpack($picsize),
         cb => sub { ::HasChanged('plugin_lastfm_option_pic'); }
     );
 
 #my $eventformat = ::NewPrefEntry(
-#    OPT . 'Eventformat' => _ "Enter custom event string :",
+#    OPT . 'Eventformat' => "Enter custom event string :",
 #    expand              => 1,
-#    tip                 => _
+#    tip                 =>
 #      "Use tags from last.fm's XML event pages with a leading % (e.g. %headliner), furthermore linebreaks '<br>' and any text you'd like to have in between. E.g. '%title taking place at %startDate<br>in %city, %country<br><br>'",
 #    history => OPT . 'Eventformat_history'
 #);
-#my $eventformat_reset = Gtk2::Button->new(_ "reset format");
+#my $eventformat_reset = Gtk2::Button->new("reset format");
 #$eventformat_reset->{format_combo} = $eventformat;
 #$eventformat_reset->signal_connect(
 #    clicked => sub {
@@ -471,45 +471,43 @@ sub prefbox {
         OPT . 'SimilarLimit', 0, 500,
         step  => 1,
         page  => 10,
-        text1 => _ "Limit similar artists to the first : ",
-        tip   => _ "0 means 'show all'"
+        text1 => "Limit similar artists to the first : ",
+        tip   => "0 means 'show all'"
     );
     my $similar_rating = ::NewPrefSpinButton(
         OPT . 'SimilarRating', 0, 100,
         step  => 1,
-        text1 => _ "Limit similar artists to a rate of similarity : ",
-        tip   => _
-          "last.fm's similarity categories:\n".
-          ">90 super\n".
-          ">70 very high\n".
-          ">50 high\n".
-          ">30 medium\n".
-          ">10 lower"
+        text1 => "Limit similar artists to a rate of similarity : ",
+        tip   => "last.fm's similarity categories:\n"
+          . ">90 super\n"
+          . ">70 very high\n"
+          . ">50 high\n"
+          . ">30 medium\n"
+          . ">10 lower"
     );
     my $similar_local = ::NewPrefCheckButton(
-        OPT
-          . 'SimilarLocal' => _ "Only show similar artists from local library",
-        tip => _ "applied on reload"
+        OPT . 'SimilarLocal' => "Only show similar artists from local library",
+        tip                  => "applied on reload"
     );
     my $similar_exclude_seed = ::NewPrefCheckButton(
-        OPT . 'SimilarExcludeSeed' => _ "Exclude 'seed'-artist from queue",
-        tip                        => _
-          "The artists similar to the 'seed'-artist will be used to populate ".
-          "the queue, but you can decide to exclude the 'seed'-artist him/herself."
+        OPT . 'SimilarExcludeSeed' => "Exclude 'seed'-artist from queue",
+        tip =>
+          "The artists similar to the 'seed'-artist will be used to populate "
+          . "the queue, but you can decide to exclude the 'seed'-artist him/herself."
     );
     my $lastfm =
       ::NewIconButton('plugin-lastfm', undef,
         sub { ::main::openurl("http://www.last.fm/music/"); },
-        'none', _ "Open last.fm website in your browser");
+        'none', "Open last.fm website in your browser");
     my $titlebox = Gtk2::HBox->new(0, 0);
     $titlebox->pack_start($picshow, 1, 1, 0);
     $titlebox->pack_start($lastfm,  0, 0, 5);
-    my $frame_bio = Gtk2::Frame->new(_ "Biography");
+    my $frame_bio = Gtk2::Frame->new("Biography");
     $frame_bio->add(::Vpack($entry, $preview, $autosave));
-    my $frame_albums = Gtk2::Frame->new(_ "Albums");
+    my $frame_albums = Gtk2::Frame->new("Albums");
 
     #$frame_albums->add(::Hpack('_', $albumsformat, $albumsformat_reset));
-    my $frame_similar = Gtk2::Frame->new(_ "Similar Artists");
+    my $frame_similar = Gtk2::Frame->new("Similar Artists");
     $frame_similar->add(
         ::Vpack(
             $similar_limit, $similar_rating,
@@ -528,8 +526,8 @@ sub filename_preview {
     $t = ::filename_to_utf8displayname($t) if $t;
     $t =
       $t
-      ? ::PangoEsc(_("example : ") . $t)
-      : "<i>" . ::PangoEsc(_ "invalid pattern") . "</i>";
+      ? ::PangoEsc("example : " . $t)
+      : "<i>" . ::PangoEsc("invalid pattern") . "</i>";
     return '<small>' . $t . '</small>';
 }
 
@@ -579,7 +577,7 @@ sub tv_contextmenu {
         }
         else {
             my $menu  = CreateSearchMenu($artist, $url);
-            my $title = Gtk2::MenuItem->new(_ "Search for artist on:");
+            my $title = Gtk2::MenuItem->new("Search for artist on:");
             $menu->prepend($title);
             $menu->show_all;
             $menu->popup(undef, undef, undef, undef, $event->button,
@@ -706,10 +704,10 @@ sub ArtistChanged {
     $self->{artistplaycount}   = AA::Get("playcount:sum", 'artist', $aID);
     $self->{albumplaycount}    = AA::Get("playcount:sum", 'album', $albumID);
     my $tip = join "\n",
-      _("Average rating:") . ' ' . $self->{artistratingvalue},
-      _("Rating range:") . ' ' . $self->{artistratingrange},
-      _("Artist playcount:") . ' ' . $self->{artistplaycount},
-      _("Album playcount:") . ' ' . $self->{albumplaycount};
+      "Average rating:" . ' ' . $self->{artistratingvalue},
+      "Rating range:" . ' ' . $self->{artistratingrange},
+      "Artist playcount:" . ' ' . $self->{artistplaycount},
+      "Album playcount:" . ' ' . $self->{albumplaycount};
 
     $self->{artistrating}
       ->set_from_pixbuf(Songs::Stars($self->{artistratingvalue}, 'rating'));
@@ -765,7 +763,7 @@ sub GetUrl {
 
 sub load_url {
     my ($self, $url) = @_;
-    $self->set_buffer(_ "Loading...");
+    $self->set_buffer("Loading...");
     $self->cancel;
     warn "info : loading $url\n" if $::debug;
     $self->{url} = $url;
@@ -785,9 +783,7 @@ sub loaded {
     my $type   = $prop{type};
     unless ($data) {
         $data =
-            _("Loading failed.")
-          . qq( <a href="$self->{url}">)
-          . _("retry") . '</a>';
+          "Loading failed." . qq( <a href="$self->{url}">) . "retry" . '</a>';
         $type = "text/html";
     }
     $self->{url} = $prop{url} if $prop{url};    #for redirections
@@ -840,7 +836,7 @@ sub loaded {
           ;   # last part of the regexp removes the license-notice (=last line)
 
         if (!defined $data) {
-            $infoheader = "\n" . _ "No results found";
+            $infoheader = "\n" . "No results found";
             $tag_header = $tag_noresults;
             $buffer->insert_with_tags($iter, $infoheader . "\n", $tag_header);
         }     # fallback text if artist-info not found
@@ -866,14 +862,14 @@ sub loaded {
               if $warning;
             $buffer->insert($iter, $data);
             $buffer->insert_with_tags($iter,
-                "\n\n" . _ "Edit in the last.fm wiki", $href);
+                "\n\n" . "Edit in the last.fm wiki", $href);
             $buffer->insert_with_tags(
                 $iter,
                 "\n\n"
-                  . _ "Listeners: "
+                  . "Listeners: "
                   . $listeners
                   . "  |   "
-                  . _ "Playcount: "
+                  . "Playcount: "
                   . $playcount,
                 $tag_extra
             );    # only shown on fresh load, not saved to local info
@@ -894,7 +890,7 @@ sub loaded {
         my $text = $json->decode($data);
 
         if (!defined $data) {
-            $infoheader = "\n" . _ "No results found";
+            $infoheader = "\n" . "No results found";
             $tag_header = $tag_noresults;
             $buffer->insert_with_tags($iter, $infoheader . "\n", $tag_header);
         }    # fallback text if album-info not found
@@ -913,6 +909,7 @@ sub loaded {
                     $tag_header = $buffer->create_tag(
                         undef,
                         justification => 'left',
+
                         #foreground    => "#4ba3d2",
                     );
                     $tag_header->{url} = $name->{url};
@@ -922,25 +919,20 @@ sub loaded {
                         my $img = $name->{image}[0]->{"#text"};
                         print $img;
 
-                        $buffer->insert_with_tags(
-                            $iter,
-                            "✔ $album_name\n",
-                            $tag_header
-                        );
-                    } else {
+                        $buffer->insert_with_tags($iter, "✔ $album_name\n",
+                            $tag_header);
+                    }
+                    else {
                         $tag_header = $buffer->create_tag(
                             undef,
-                            justification => 'left',
+                            justification  => 'left',
                             foreground_gdk => $self->style->text_aa("normal"),
                         );
                         $tag_header->{url} = $name->{url};
                         $tag_header->{tip} = $name->{url};
 
-                        $buffer->insert_with_tags(
-                            $iter,
-                            "✖ $album_name\n",
-                            $tag_header
-                        );
+                        $buffer->insert_with_tags($iter, "✖ $album_name\n",
+                            $tag_header);
                     }
                 }
             }
@@ -948,7 +940,7 @@ sub loaded {
 
 =pod
         if ($data =~ m#total=\"(.*?)\">#g) {
-            if ($1 == 0) { $self->set_buffer(_ "No results found"); return; }
+            if ($1 == 0) { $self->set_buffer("No results found"); return; }
             else {
                 $infoheader =
                   ::__("%d Upcoming Event", "%d Upcoming Events", $1) . "\n\n";
@@ -1044,7 +1036,7 @@ sub load_file {
     my ($self, $file) = @_;
     my $buffer = $self->{buffer};
     $buffer->delete($buffer->get_bounds);
-    my $text = _("Loading failed.");
+    my $text = "Loading failed.";
     if (open my $fh, '<', $file) {
         local $/ = undef;    #slurp mode
         $text = <$fh>;
@@ -1076,7 +1068,7 @@ sub load_file {
     $buffer->insert($iter, $text);
     if ($url) {
         $href->{url} = $url;
-        $buffer->insert_with_tags($iter, _ "Edit in the last.fm wiki", $href);
+        $buffer->insert_with_tags($iter, "Edit in the last.fm wiki", $href);
     }
     $buffer->set_modified(0);
 }
@@ -1097,11 +1089,10 @@ sub Save_text {
     my ($path, $file) =
       ::pathfilefromformat(::GetSelID($self), $format, undef, 1);
     unless ($path && $file) {
-        ::ErrorMessage(_("Error: invalid filename pattern") . " : $format",
-            $win);
+        ::ErrorMessage("Error: invalid filename pattern : $format", $win);
         return;
     }
-    my $res = ::CreateDir($path, $win, _ "Error saving artistbio");
+    my $res = ::CreateDir($path, $win, "Error saving artistbio");
     return unless $res eq 'ok';
     if (open my $fh, '>:utf8', $path . $file) {
         print $fh $text;
@@ -1112,7 +1103,7 @@ sub Save_text {
     else {
         ::ErrorMessage(
             ::__x(
-                _("Error saving artistbio in '{file}' :\n{error}"),
+                "Error saving artistbio in '{file}' :\n{error}",
                 file  => $file,
                 error => $!
             ),

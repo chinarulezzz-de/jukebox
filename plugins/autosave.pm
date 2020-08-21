@@ -12,7 +12,6 @@ name	Autosave
 title	Autosave plugin
 =cut
 
-
 package GMB::Plugin::AUTOSAVE;
 
 use strict;
@@ -22,6 +21,7 @@ use constant {OPT => 'PLUGIN_AUTOSAVE_',};
 
 my $savesub = $::Command{Save}[0];
 my $handle;
+
 ::SetDefaultOptions(OPT, minutes => 15);
 
 sub Start {
@@ -46,9 +46,9 @@ sub prefbox {
             Stop() if $handle;
             Start();
         },
-        text => _ "Save tags/settings every %d minutes"
+        text => "Save tags/settings every %d minutes"
     );
-    my $button = Gtk2::Button->new(_ "Save now");
+    my $button = Gtk2::Button->new("Save now");
     $button->signal_connect(clicked => $savesub);
     $vbox->pack_start($_, ::FALSE, ::FALSE, 2) for $spin, $button;
     return $vbox;

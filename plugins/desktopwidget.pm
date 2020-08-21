@@ -37,9 +37,9 @@ sub prefbox {
     my $vbox = Gtk2::VBox->new(::FALSE, 2);
     $LayoutCombo = TextCombo::Tree->new(sub { Layout::get_layout_list('D') },
         undef, undef, event => 'Layouts',);
-    my $layoutlabel = Gtk2::Label->new(_ "Layout :");
-    my $add         = ::NewIconButton('gtk-add', _ "Add",
-        sub { New($LayoutCombo->get_value); });
+    my $layoutlabel = Gtk2::Label->new("Layout :");
+    my $add =
+      ::NewIconButton('gtk-add', "Add", sub { New($LayoutCombo->get_value); });
 
     my $store =
       Gtk2::ListStore->new('Glib::String', 'Glib::Boolean', 'Glib::String');
@@ -158,11 +158,8 @@ sub FillOptions {
     my $opt    = $DWlist->{$key};
     my $layout = $opt->{layout};
     my $label  = Gtk2::Label->new;
-    my $remove = ::NewIconButton(
-        'gtk-remove',
-        _ "Remove this widget",
-        sub { Remove($key) }
-    );
+    my $remove = ::NewIconButton('gtk-remove', "Remove this widget",
+        sub { Remove($key) });
     if ($Layout::Layouts{$layout}) {
         my $name   = $Layout::Layouts{$layout}{Name} || $layout;
         my $author = $Layout::Layouts{$layout}{Author};
@@ -175,7 +172,7 @@ sub FillOptions {
     }
     else {
         $label->set_markup_with_format("<b>%s</b>",
-            _ "The layout for this desktop widget is missing.");
+            "The layout for this desktop widget is missing.");
         my $vbox = ::Hpack($label, '-', $remove);
         $OptionsBox->pack_start($vbox, ::FALSE, ::FALSE, 2);
         $OptionsBox->show_all;
@@ -235,7 +232,7 @@ sub FillOptions {
     );
 
     my $ontop =
-      Gtk2::CheckButton->new(_ "On top of other windows instead of below");
+      Gtk2::CheckButton->new("On top of other windows instead of below");
     $ontop->set_active($opt->{ontop});
     $ontop->signal_connect(
         toggled => sub {
@@ -262,24 +259,23 @@ sub FillOptions {
           sub { $opt->{h} = $_[0]->get_value; ResizeWindow($key); });
 
     my $vbox = ::Vpack(
-        [$label,                                   '-', $remove],
-        [Gtk2::Label->new(_ "Default text color"), $textcolor],
-        [Gtk2::Label->new(_ "Default text font"),  $textfont],
-        [   Gtk2::Label->new(_ "Centered on"),
+        [$label,                                 '-', $remove],
+        [Gtk2::Label->new("Default text color"), $textcolor],
+        [Gtk2::Label->new("Default text font"),  $textfont],
+        [   Gtk2::Label->new("Centered on"),
             '_', $spinx, Gtk2::Label->new('%  x'),
             '_', $spiny, Gtk2::Label->new('%')
         ],
-        [Gtk2::Label->new(_ "Monitor"), $spin_mon,],
-        [   Gtk2::Label->new(_ "Minimum size"), $spinw,
-            Gtk2::Label->new('x'),              $spinh
+        [Gtk2::Label->new("Monitor"), $spin_mon,],
+        [   Gtk2::Label->new("Minimum size"), $spinw,
+            Gtk2::Label->new('x'),            $spinh
         ],
-        [Gtk2::Label->new(_ "Opacity"), $spino, Gtk2::Label->new('%')],
+        [Gtk2::Label->new("Opacity"), $spino, Gtk2::Label->new('%')],
         $ontop
     );
     $OptionsBox->pack_start($vbox, ::FALSE, ::FALSE, 2);
     $OptionsBox->show_all;
 }
-
 
 sub CreateWindow {
     my $key = shift;

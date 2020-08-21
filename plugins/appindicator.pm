@@ -15,8 +15,10 @@ req	perl(Gtk2::AppIndicator, libgtk2-appindicator-perl perl-Gtk2-AppIndicator)
 =cut
 
 package GMB::Plugin::AppIndicator;
+
 use strict;
 use warnings;
+
 use constant {OPT => 'PLUGIN_AppIndicator_',};
 
 use Gtk2::AppIndicator;
@@ -25,9 +27,9 @@ use Gtk2::AppIndicator;
 
 my %mactions
   = # action when middle-clicking on icon, must correspond to an id in the tray menu (@::TrayMenu)
-  ( playpause => _ "Play/Pause",
-    showhide  => _ "Show/Hide",
-    next      => _ "Next",
+  ( playpause => "Play/Pause",
+    showhide  => "Show/Hide",
+    next      => "Next",
   );
 my ($indicator, $iconpath);
 
@@ -53,11 +55,11 @@ sub prefbox {
     my $vbox        = Gtk2::VBox->new(::FALSE, 2);
     my $middleclick = ::NewPrefCombo(
         OPT . 'MiddleClick', \%mactions,
-        text => _ "Middle-click action :",
+        text => "Middle-click action :",
         cb   => \&Update
     );
     my $warning = Gtk2::Label->new_with_format("<i>%s</i>",
-        _ "(The middle-click action doesn't work correctly in some desktops)");
+        "(The middle-click action doesn't work correctly in some desktops)");
     $vbox->pack_start($_, ::FALSE, ::FALSE, 2) for $middleclick, $warning;
     return $vbox;
 }
@@ -100,7 +102,6 @@ sub set_secondary_activate_target {
     $self->{secondary} = $widget;
     appindicator_set_secondary_activate_target($self->{ind}, $widget);
 }
-
 
 1;
 

@@ -37,7 +37,7 @@ use constant RES_PER_PAGE => RES_PER_LINE * RES_LINES;
 my %Sites = (
     artist => {
         googlei => [
-            _ "google images",
+            "google images",
             "http://images.google.com/images?q=%s&imgsz=medium|large",
             \&parse_googlei, GOOGLE_USER_AGENT
         ],
@@ -60,13 +60,13 @@ my %Sites = (
     },
     album => {
         googlei => [
-            _ "google images",
+            "google images",
             "http://images.google.com/images?q=%s&imgsz=medium|large&imgar=ns",
             \&parse_googlei,
             GOOGLE_USER_AGENT
         ],
         googleihi => [
-            _ "google images (hi-res)",
+            "google images (hi-res)",
             "http://www.google.com/images?q=%s&imgsz=xlarge|xxlarge&imgar=ns",
             \&parse_googlei,
             GOOGLE_USER_AGENT
@@ -98,15 +98,15 @@ my %Sites = (
 );
 
 my %menuitem = (
-    label => _ "Search for a picture on internet",    #label of the menu item
+    label => "Search for a picture on internet",    #label of the menu item
     code => sub { Fetch($_[0]{mainfield}, $_[0]{gid}, $_[0]{ID}); }
-    ,                                                 #when menu item selected
+    ,                                               #when menu item selected
     test =>
       sub { $_[0]{mainfield} eq 'album' || $_[0]{mainfield} eq 'artist' }
     ,    #the menu item is displayed if returns true
 );
 my %fpane_menuitem = (
-    label => _ "Search for a picture on internet",
+    label => "Search for a picture on internet",
     code  => sub { Fetch($_[0]{field}, $_[0]{gidlist}[0]); },
     onlyone =>
       'gidlist', #menu item is hidden if more than one album/artist is selected
@@ -132,17 +132,17 @@ sub Stop {
 
 sub prefbox {
     my $check1 = ::NewPrefCheckButton(OPT . 'ASK',
-        _ "Ask confirmation only if file already exists");
+        "Ask confirmation only if file already exists");
     my $check2 = ::NewPrefCheckButton(OPT . 'UNIQUE',
-        _ "Find a unique filename if file already exists");
+        "Find a unique filename if file already exists");
     my $entry1 = ::NewPrefEntry(OPT . 'COVERPATH');
     my $entry2 = ::NewPrefEntry(OPT . 'COVERFILE');
     my ($radio1a, $radio1b) =
-      ::NewPrefRadio(OPT . 'USEPATH', [_ "use song folder", 0, _ "use :", 1]);
+      ::NewPrefRadio(OPT . 'USEPATH', ["use song folder", 0, "use :", 1]);
     my ($radio2a, $radio2b) =
-      ::NewPrefRadio(OPT . 'USEFILE', [_ "use album name", 0, _ "use :", 1]);
-    my $frame1 = Gtk2::Frame->new(_ "default folder");
-    my $frame2 = Gtk2::Frame->new(_ "default filename");
+      ::NewPrefRadio(OPT . 'USEFILE', ["use album name", 0, "use :", 1]);
+    my $frame1 = Gtk2::Frame->new("default folder");
+    my $frame2 = Gtk2::Frame->new("default filename");
     my $vbox1  = ::Vpack($radio1a, [$radio1b, $entry1]);
     my $vbox2  = ::Vpack($radio2a, [$radio2b, $entry2]);
     $frame1->add($vbox1);
@@ -155,20 +155,21 @@ sub Fetch {
     my $mainfield = Songs::MainField($field);    #'artist' or 'album'
     my $self      = bless Gtk2::Window->new;
     $self->set_border_width(4);
-    my $Bsearch = ::NewIconButton('gtk-find', _ "Search");
-    my $Bcur =
-      Gtk2::Button->new($mainfield eq 'artist'
-        ? _ "Search for current artist"
-        : _ "Search for current album");
+    my $Bsearch = ::NewIconButton('gtk-find', "Search");
+    my $Bcur    = Gtk2::Button->new(
+        $mainfield eq 'artist'
+        ? "Search for current artist"
+        : "Search for current album"
+    );
     ::set_drag($Bcur,
         dest =>
           [::DRAG_ID, sub { $_[0]->get_toplevel->SearchID(undef, $_[2]); }],);
     my $Bclose = Gtk2::Button->new_from_stock('gtk-close');
     my @entry;
     push @entry, $self->{"searchentry_$_"} = Gtk2::Entry->new for qw/s a l/;
-    $self->{searchentry_s}->set_tooltip_text(_ "Keywords");
-    $self->{searchentry_a}->set_tooltip_text(_ "Artist");
-    $self->{searchentry_l}->set_tooltip_text(_ "Album");
+    $self->{searchentry_s}->set_tooltip_text("Keywords");
+    $self->{searchentry_a}->set_tooltip_text("Artist");
+    $self->{searchentry_l}->set_tooltip_text("Album");
     my $source = ::NewPrefCombo(
         OPT . 'PictureSite_' . $mainfield,
         {map { $_ => $Sites{$mainfield}{$_}[0] } keys %{$Sites{$mainfield}}},
@@ -176,7 +177,7 @@ sub Fetch {
     );
 
     #$self->{Bnext}=	my $Bnext=::NewIconButton('gtk-go-forward',"More");
-    $self->{Bnext}    = my $Bnext = Gtk2::Button->new(_ "More results");
+    $self->{Bnext}    = my $Bnext = Gtk2::Button->new("More results");
     $self->{Bstop}    = my $Bstop = Gtk2::Button->new_from_stock('gtk-stop');
     $self->{progress} = my $pbar  = Gtk2::ProgressBar->new;
     $self->{table}    = my $table =
@@ -262,7 +263,7 @@ sub SearchID {
           unless $search eq '' || $artistname eq '';
     }
     else { $artistname = $name }
-    $self->set_title(_("Searching for a picture of : ") . $name);
+    $self->set_title("Searching for a picture of : " . $name);
     $self->{searchentry_s}->set_text($search);
     $self->{searchentry_a}->set_text($artistname);
     $self->{searchentry_l}->set_text($albumname);
@@ -548,7 +549,7 @@ sub searchresults_cb {
     my ($self, $result) = @_;
     $self->{waiting} = undef;
     warn "Getting results from $self->{url}\n" if $::Verbose;
-    unless (defined $result) { stop($self, _ "connection failed."); return; }
+    unless (defined $result) { stop($self, "connection failed."); return; }
     my $parse = $Sites{$self->{mainfield}}{$self->{site}}[2];
     my ($list, $nexturl, $ignore0) =
       $parse->($result, $self->{url}, $self->{searchcontext});
@@ -560,7 +561,7 @@ sub searchresults_cb {
     $self->{Bnext}->set_sensitive($more > 0 || $nexturl);
     unless ($ignore0 || @{$self->{results}}) {
         stop($self,
-            _ "no matches found, you might want to remove some search terms.");
+            "no matches found, you might want to remove some search terms.");
         return;
     }
     ::IdleDo('8_FetchCovers' . $self, 100, \&get_next, $self);
@@ -700,12 +701,12 @@ sub set_cover {
     my $name   = Songs::Gid_to_Get($field, $gid);
     my $text;
     if ($self->{mainfield} eq 'album') {
-        $text = ::__x(_ "Use this picture as cover for album '{album}'",
+        $text = ::__x("Use this picture as cover for album '{album}'",
             album => $name);
     }
     else {
         $text =
-          ::__x(_ "Use this picture for artist '{artist}'", artist => $name);
+          ::__x("Use this picture for artist '{artist}'", artist => $name);
     }
     my $check = Gtk2::CheckButton->new($text);
     $check->set_active(1);
@@ -729,7 +730,7 @@ sub set_cover {
     }
     my $file = $default_dir . ::SLASH . $default_file;
     if (!$::Options{OPT . 'ASK'} || -e $file) {
-        $file = ::ChooseSaveFile($self, _ "Save picture as",
+        $file = ::ChooseSaveFile($self, "Save picture as",
             $default_dir, $default_file, $check);
     }
     return unless $file;
@@ -745,9 +746,9 @@ sub set_cover {
         unless ($ok) {
             my $retry = ::Retry_Dialog(
                 $!,
-                _ "Error saving picture",
+                "Error saving picture",
                 details => ::__x(
-                    _ "Error writing '{file}'",
+                    "Error writing '{file}'",
                     file => ::filename_to_utf8displayname($file)
                 ),
                 window => $self

@@ -28,13 +28,13 @@ my %Programs =               #id => [name,cmd]
   ( soundjuicer => ['sound-juicer', 'sound-juicer'],
     grip        => ['grip',         'grip'],
     xcfa        => ['xcfa',         'xcfa'],
-    custom      => [_ "custom"],
+    custom      => ["custom"],
   );
 
 my %button_definition = (
     class        => 'Layout::Button',
     stock        => 'plugin-rip',
-    tip          => _ "Launch ripping program",
+    tip          => "Launch ripping program",
     activate     => \&Launch,
     autoadd_type => 'button main',
 );
@@ -52,16 +52,16 @@ sub prefbox {
     my $sg1   = Gtk2::SizeGroup->new('horizontal');
     my $sg2   = Gtk2::SizeGroup->new('horizontal');
     my $entry = ::NewPrefEntry(
-        OPT . 'custom', _ "Custom command :",
+        OPT . 'custom', "Custom command :",
         sizeg1 => $sg1,
         sizeg2 => $sg2,
-        tip    => _('Command to launch when the button is pressed')
+        tip    => 'Command to launch when the button is pressed'
     );
     my %list  = map { $_, $Programs{$_}[0] } keys %Programs;
     my $combo = ::NewPrefCombo(
         OPT . 'program',
         \%list,
-        text => _ "Ripping software :",
+        text => "Ripping software :",
         cb   => sub {
             $entry->set_sensitive($::Options{OPT . 'program'} eq 'custom');
         },

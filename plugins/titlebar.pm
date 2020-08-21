@@ -36,10 +36,10 @@ use constant {OPT => 'PLUGIN_TITLEBAR_',};
 my ($Screen, $Handle, $Popupwin, $ActiveWindow);
 
 my %refpoints = (
-    upper_left  => _ "Upper left",
-    upper_right => _ "Upper right",
-    lower_left  => _ "Lower left",
-    lower_right => _ "Lower right",
+    upper_left  => "Upper left",
+    upper_right => "Upper right",
+    lower_left  => "Lower left",
+    lower_right => "Lower right",
 );
 
 sub Start {
@@ -63,12 +63,12 @@ sub prefbox {
     my $sg2    = Gtk2::SizeGroup->new('horizontal');
     my $layout = ::NewPrefLayoutCombo(
         OPT . 'layout' => 'O',
-        _ "Overlay layout :", $sg1, $sg2, \&init
+        "Overlay layout :", $sg1, $sg2, \&init
     );
     my $refpoint = ::NewPrefCombo(
         OPT . 'refpoint' => \%refpoints,
         cb               => \&move,
-        text             => _ "Reference point :",
+        text             => "Reference point :",
         sizeg1           => $sg1,
         sizeg2           => $sg2
     );
@@ -77,7 +77,7 @@ sub prefbox {
         cb     => \&move,
         step   => 1,
         page   => 5,
-        text   => _ "x offset :",
+        text   => "x offset :",
         sizeg1 => $sg1
     );
     my $offy = ::NewPrefSpinButton(
@@ -85,12 +85,12 @@ sub prefbox {
         cb     => \&move,
         step   => 1,
         page   => 5,
-        text   => _ "y offset :",
+        text   => "y offset :",
         sizeg1 => $sg1
     );
     my $notdialog = ::NewPrefCheckButton(
         OPT . 'notdialog',
-        _ "Don't add the overlay to dialogs",
+        "Don't add the overlay to dialogs",
         cb => \&init
     );
 
@@ -103,7 +103,7 @@ sub prefbox {
         }
     );
     my $set_textcolor = ::NewPrefCheckButton(
-        OPT . 'set_textcolor', _ "Change default text color",
+        OPT . 'set_textcolor', "Change default text color",
         cb         => \&init,
         widget     => $textcolor,
         horizontal => 1
@@ -114,7 +114,7 @@ sub prefbox {
           sub { $::Options{OPT . 'textfont'} = $_[0]->get_font_name; init(); }
     );
     my $set_font = ::NewPrefCheckButton(
-        OPT . 'set_textfont', _ "Change default text font and size",
+        OPT . 'set_textfont', "Change default text font and size",
         cb         => \&init,
         widget     => $font,
         horizontal => 1

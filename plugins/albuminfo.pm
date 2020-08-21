@@ -36,49 +36,49 @@ use constant {
 
 my @showfields = (
     {   short       => 'rec_date',
-        long        => _ "Recording date",
+        long        => "Recording date",
         active      => 1,
         multi       => 0,
         defaultshow => 1
     },
     {   short       => 'rls_date',
-        long        => _ "Release date",
+        long        => "Release date",
         active      => 1,
         multi       => 0,
         defaultshow => 1
     },
     {   short       => 'time',
-        long        => _ "Running time",
+        long        => "Running time",
         active      => 0,
         multi       => 0,
         defaultshow => 0
     },
     {   short       => 'rating',
-        long        => _ "Rating",
+        long        => "Rating",
         active      => 1,
         multi       => 0,
         defaultshow => 1
     },
     {   short       => 'genre',
-        long        => _ "Genres",
+        long        => "Genres",
         active      => 1,
         multi       => 1,
         defaultshow => 0
     },
     {   short       => 'mood',
-        long        => _ "Moods",
+        long        => "Moods",
         active      => 1,
         multi       => 1,
         defaultshow => 0
     },
     {   short       => 'style',
-        long        => _ "Styles",
+        long        => "Styles",
         active      => 1,
         multi       => 1,
         defaultshow => 0
     },
     {   short       => 'theme',
-        long        => _ "Themes",
+        long        => "Themes",
         active      => 1,
         multi       => 1,
         defaultshow => 0
@@ -100,17 +100,17 @@ delete $::Options{OPT . 'Column' . $_} for 0 .. 3;   #remove old column options
 my $albuminfowidget = {
     class        => __PACKAGE__,
     tabicon      => 'plugin-albuminfo',
-    tabtitle     => _ "Albuminfo",
+    tabtitle     => "Albuminfo",
     schange      => sub { $_[0]->song_changed },
     group        => 'Play',
     autoadd_type => 'context page text',
 };
 
 my %Columns = (
-    album  => {name => _ "Album",  storecol => 0, width => 130,},
-    artist => {name => _ "Artist", storecol => 1, width => 130,},
-    genre  => {name => _ "Genre",  storecol => 2, width => 110,},
-    year   => {name => _ "Year",   storecol => 3, width => 50,},
+    album  => {name => "Album",  storecol => 0, width => 130,},
+    artist => {name => "Artist", storecol => 1, width => 130,},
+    genre  => {name => "Genre",  storecol => 2, width => 110,},
+    year   => {name => "Year",   storecol => 3, width => 50,},
 );
 
 my @towrite
@@ -127,16 +127,16 @@ sub Stop {
 }
 
 sub prefbox {
-    my $frame_cover  = Gtk2::Frame->new(' ' . _("Album cover") . ' ');
+    my $frame_cover  = Gtk2::Frame->new(' Album cover ');
     my $spin_picsize = ::NewPrefSpinButton(
         OPT . 'CoverSize', 50, 500,
         step => 5,
         page => 10,
-        text => _ "Cover Size : ",
+        text => "Cover Size : ",
         cb   => sub { ::HasChanged('plugin_albuminfo_option_pic'); }
     );
     my $chk_picshow = ::NewPrefCheckButton(
-        OPT . 'ShowCover' => _ "Show",
+        OPT . 'ShowCover' => "Show",
         widget            => $spin_picsize,
         cb => sub { ::HasChanged('plugin_albuminfo_option_pic'); }
     );
@@ -145,9 +145,9 @@ sub prefbox {
 # my $hbox_picsize = ::Hpack($spin_picsize, '-', $btn_amg);
     $frame_cover->add($chk_picshow);
 
-    my $frame_review = Gtk2::Frame->new(_ " Review ");
+    my $frame_review = Gtk2::Frame->new(" Review ");
     my $entry_path =
-      ::NewPrefEntry(OPT . 'PathFile' => _ "Save album info in:", width => 40);
+      ::NewPrefEntry(OPT . 'PathFile' => "Save album info in:", width => 40);
     my $lbl_preview = Label::Preview->new(
         event    => 'CurSong Option',
         noescape => 1,
@@ -160,21 +160,21 @@ sub prefbox {
             $t = ::filename_to_utf8displayname($t) if $t;
             $t =
               $t
-              ? ::PangoEsc(_("example : ") . $t)
-              : "<i>" . ::PangoEsc(_ "invalid pattern") . "</i>";
+              ? ::PangoEsc("example : " . $t)
+              : "<i>" . ::PangoEsc("invalid pattern") . "</i>";
             return '<small>' . $t . '</small>';
         }
     );
     my $chk_autosave = ::NewPrefCheckButton(
-        OPT . 'AutoSave' => _ "Auto-save positive finds",
+        OPT . 'AutoSave' => "Auto-save positive finds",
         cb => sub { ::HasChanged('plugin_albuminfo_option_save'); }
     );
     $frame_review->add(::Vpack($entry_path, $lbl_preview, $chk_autosave));
 
-    my $frame_fields = Gtk2::Frame->new(_ " Fields ");
+    my $frame_fields = Gtk2::Frame->new(" Fields ");
     my $chk_join     = ::NewPrefCheckButton(
-        OPT . 'StyleAsGenre' => _ "Include Styles in Genres",
-        tip                  => _
+        OPT . 'StyleAsGenre' => "Include Styles in Genres",
+        tip =>
           "Allmusic uses both Genres and Styles to describe albums. If you use only Genres, you may want to include Styles in allmusic's list of Genres."
     );
     my @chk_fields;
@@ -182,24 +182,24 @@ sub prefbox {
         push(
             @chk_fields,
             ::NewPrefCheckButton(
-                OPT . $field => _(ucfirst($field) . "s"),
-                tip          => _
+                OPT . $field => ucfirst($field) . "s",
+                tip =>
                   "Note: inactive fields must be enabled by the user in the 'Fields' tab in Settings"
             )
         );
         $chk_fields[-1]->set_sensitive(0) unless Songs::FieldEnabled($field);
     }
     my ($radio_add, $radio_rpl) = ::NewPrefRadio(OPT . 'ReplaceFields',
-        [_ "Add to existing values", 1, _ "Replace existing values", 0]);
+        ["Add to existing values", 1, "Replace existing values", 0]);
     my $chk_saveflds = ::NewPrefCheckButton(
-        OPT . 'SaveFields' => _ "Auto-save fields with data from allmusic",
+        OPT . 'SaveFields' => "Auto-save fields with data from allmusic",
         widget             => ::Vpack(\@chk_fields, $radio_add, $radio_rpl),
-        tip                => _
+        tip =>
           "Save selected fields for all tracks on the same album whenever album data is loaded from allmusic or from file."
     );
     $frame_fields->add(::Vpack($chk_join, $chk_saveflds));
 
-    my $frame_layout = Gtk2::Frame->new(_ " Context pane layout ");
+    my $frame_layout = Gtk2::Frame->new(" Context pane layout ");
     my @chk_show     = ();
     for my $f (@showfields) {
         push(@chk_show,
@@ -208,14 +208,14 @@ sub prefbox {
     }
     $frame_layout->add(::Hpack(@chk_show));
 
-    my $btn_download = Gtk2::Button->new(_ "Download");
-    $btn_download->set_tooltip_text(_
-          "Fields will be saved according to the settings above. Albuminfo files will be re-read if there are fields to be saved and you choose 'albums missing reviews' in the combo box."
+    my $btn_download = Gtk2::Button->new("Download");
+    $btn_download->set_tooltip_text(
+        "Fields will be saved according to the settings above. Albuminfo files will be re-read if there are fields to be saved and you choose 'albums missing reviews' in the combo box."
     );
     my $cmb_download = ::NewPrefCombo(
         OPT . 'mass_download',
-        {all => _ "entire collection", missing => _ "albums missing reviews"},
-        text => _ "album information now for"
+        {all => "entire collection", missing => "albums missing reviews"},
+        text => "album information now for"
     );
     $btn_download->signal_connect(clicked => \&mass_download);
     return ::Vpack($frame_cover, $frame_review, $frame_fields, $frame_layout,
@@ -232,8 +232,8 @@ sub mass_download {
     ::Progress(
         'albuminfo',
         end       => $self->{end},
-        aborthint => _ "Stop fetching albuminfo",
-        title     => _ "Fetching albuminfo",
+        aborthint => "Stop fetching albuminfo",
+        title     => "Fetching albuminfo",
         abortcb   => sub { $self->cancel },
         bartext   => '$current / $end',
     );
@@ -306,7 +306,7 @@ sub new {
                 forceratio => 1,
                 maxsize    => $::Options{OPT . 'CoverSize'},
                 xalign     => 0,
-                tip        => _ "Click to show larger image",
+                tip        => "Click to show larger image",
                 click1     => \&cover_popup,
                 click3     => sub {
                     ::PopupAAContextMenu(
@@ -344,7 +344,7 @@ sub new {
     my $refreshbutton =
       ::NewIconButton('gtk-refresh', undef,
         sub { song_changed($_[0], 'force'); },
-        "none", _ "Refresh");
+        "none", "Refresh");
     my $savebutton = ::NewIconButton(
         'gtk-save',
         undef,
@@ -353,7 +353,7 @@ sub new {
             save_review(::GetSelID($self), $self->{fields});
         },
         "none",
-        _ "Save review"
+        "Save review"
     );
     $savebutton->show_all;
     $savebutton->set_no_show_all(1);
@@ -426,8 +426,8 @@ sub new {
     # Manual search layout
     my $searchview = Gtk2::VBox->new();
     $self->{search} = my $search = Gtk2::Entry->new();
-    $search->set_tooltip_text(_ "Enter album name");
-    my $Bsearch = ::NewIconButton('gtk-find', _ "Search");
+    $search->set_tooltip_text("Enter album name");
+    my $Bsearch = ::NewIconButton('gtk-find', "Search");
     my $Bok     = Gtk2::Button->new_from_stock('gtk-ok');
     my $Bcancel = Gtk2::Button->new_from_stock('gtk-cancel');
     $Bok->set_size_request(80, -1);
@@ -664,7 +664,7 @@ sub print_warning {
 sub print_review {
     my ($self) = @_;
     unless ($self->{fields}{url}) {
-        $self->print_warning(_ "No review found");
+        $self->print_warning("No review found");
         return;
     }
     my $buffer = $self->{buffer};
@@ -705,8 +705,8 @@ sub print_review {
                         $tag->{field} = $f->{short};
                         $tag->{val}   = $val;
                         $tag->{tip}   = ::__x(
-                            _
-                              "Add {value} to {field} for all tracks on this album.",
+
+                            "Add {value} to {field} for all tracks on this album.",
                             value => $val,
                             field => lc($f->{long})
                         );
@@ -726,8 +726,8 @@ sub print_review {
                     );
                     $tag->{field} = 'year';
                     $tag->{val}   = $1;
-                    $tag->{tip}   = ::__x(
-                        _ "Set {year} as year for all tracks on this album.",
+                    $tag->{tip} =
+                      ::__x("Set {year} as year for all tracks on this album.",
                         year => $1);
                     $buffer->insert_with_tags($iter, $fields->{rls_date},
                         $tag);
@@ -748,15 +748,14 @@ sub print_review {
     }
 
     if ($fields->{review}) {
-        $buffer->insert_with_tags($iter, "\n" . _("Review") . "\n", $tag_h2);
+        $buffer->insert_with_tags($iter, "\n" . "Review" . "\n", $tag_h2);
         $buffer->insert_with_tags($iter,
-            ::__x(_ "by {author}", author => $fields->{author}) . "\n",
-            $tag_i);
+            ::__x("by {author}", author => $fields->{author}) . "\n", $tag_i);
         $buffer->insert($iter, $fields->{review});
     }
     else {
         $buffer->insert_with_tags($iter,
-            "\n" . _("No review written.") . "\n", $tag_h2);
+            "\n" . "No review written." . "\n", $tag_h2);
     }
     $buffer->insert($iter, "\n\n");
     my $tag_a = $buffer->create_tag(
@@ -766,7 +765,7 @@ sub print_review {
     );
     $tag_a->{url} = $fields->{url};
     $tag_a->{tip} = $fields->{url};
-    $buffer->insert_with_tags($iter, _ "Lookup at allmusic.com", $tag_a);
+    $buffer->insert_with_tags($iter, "Lookup at allmusic.com", $tag_a);
     $buffer->set_modified(0);
 }
 
@@ -875,7 +874,7 @@ sub song_changed {
                 $self->update_titlebox($aID);
                 length($self->{album})
                   ? $self->print_review()
-                  : $self->print_warning(_ "Unknown album");
+                  : $self->print_warning("Unknown album");
             }
         );
     }
@@ -886,9 +885,9 @@ sub album_changed {
     $self->cancel();
     $self->update_titlebox($aID);
     my $album = ::url_escapeall(Songs::Gid_to_Get("album", $aID));
-    unless (length($album)) { $self->print_warning(_ "Unknown album"); return }
+    unless (length($album)) { $self->print_warning("Unknown album"); return }
     my $url = AMG_SEARCH_URL . $album;
-    $self->print_warning(_ "Loading...");
+    $self->print_warning("Loading...");
     unless ($force) {    # Try loading from file.
         my $file =
           ::pathfilefromformat(::GetSelID($self), $::Options{OPT . 'PathFile'},
@@ -914,9 +913,9 @@ sub update_titlebox {
     $self->{ratingrange} = AA::Get("rating:range", 'album', $aID);
     $self->{playcount}   = AA::Get("playcount:sum", 'album', $aID);
     my $tip = join("\n",
-        _("Average rating:") . ' ' . $self->{rating},
-        _("Rating range:") . ' ' . $self->{ratingrange},
-        _("Total playcount:") . ' ' . $self->{playcount});
+        "Average rating:" . ' ' . $self->{rating},
+        "Rating range:" . ' ' . $self->{ratingrange},
+        "Total playcount:" . ' ' . $self->{playcount});
     $self->{ratingpic}
       ->set_from_pixbuf(Songs::Stars($self->{rating}, 'rating'));
     $self->{Ltitle}->set_markup(
@@ -961,7 +960,7 @@ sub load_search_results {
     else {
         $self->{fields} = {};
         warn "Albuminfo: album not found in search results\n" if $::debug;
-        $self->print_warning(_ "No review found") unless $md;
+        $self->print_warning("No review found") unless $md;
         ::IdleDo('9_download_one' . $self, undef, $cb, $self) if $cb;
     }
 }
@@ -1122,7 +1121,7 @@ sub load_file {
     }
     else {
         warn "Albuminfo: failed retrieving info from $file\n" if $::debug;
-        $self->print_warning(_ "No review found") unless $md;
+        $self->print_warning("No review found") unless $md;
     }
     ::IdleDo('9_download_one' . $self, undef, $cb, $self) if $cb;
 }
@@ -1144,13 +1143,12 @@ sub save_review {
     my $format = $::Options{OPT . 'PathFile'};
     my ($path, $file) = ::pathfilefromformat($ID, $format, undef, 1);
     unless ($path && $file) {
-        ::ErrorMessage(_("Error: invalid filename pattern") . " : $format",
+        ::ErrorMessage("Error: invalid filename pattern" . " : $format",
             $::MainWindow);
         return;
     }
     return
-      unless ::CreateDir($path, $::MainWindow, _ "Error saving review") eq
-      'ok';
+      unless ::CreateDir($path, $::MainWindow, "Error saving review") eq 'ok';
     if (open(my $fh, '>:utf8', $path . $file)) {
         print $fh $text;
         close $fh;
@@ -1159,7 +1157,7 @@ sub save_review {
     else {
         ::ErrorMessage(
             ::__x(
-                _ "Error saving review in '{file}' :\n{error}",
+                "Error saving review in '{file}' :\n{error}",
                 file  => $file,
                 error => $!
             ),

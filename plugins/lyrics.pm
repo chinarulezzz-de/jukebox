@@ -31,31 +31,31 @@ use constant {
     ,    # MUST begin by PLUGIN_ followed by the plugin ID / package name
 };
 
-my $notfound = _ "No lyrics found";
+my $notfound = "No lyrics found";
 
 my @justification = (
-    left   => _ "Left aligned",
-    center => _ "Centered",
-    right  => _ "Right aligned",
-    fill   => _ "Justified",
+    left   => "Left aligned",
+    center => "Centered",
+    right  => "Right aligned",
+    fill   => "Justified",
 );
 
 my @ContextMenuAppend = (
-    {   label => _ "Scroll with song",
+    {   label => "Scroll with song",
         check => sub { $_[0]{self}{AutoScroll} },
         code  => sub {
             $::Options{OPT . 'AutoScroll'} = $_[1];
             $_[0]{self}->SetAutoScroll;
         },
     },
-    {   label => _ "Hide toolbar",
+    {   label => "Hide toolbar",
         check => sub { $_[0]{self}{HideToolbar} },
         code  => sub { $_[0]{self}->SetToolbarHide($_[1]); },
     },
-    {   label => _ "Choose font...",
+    {   label => "Choose font...",
         code  => sub { $_[0]{self}->ChooseFont; },
     },
-    {   label                => _ "Lyrics alignement",
+    {   label                => "Lyrics alignement",
         check                => sub { $_[0]{self}{justification} },
         submenu              => \@justification,
         submenu_reverse      => 1,
@@ -133,7 +133,7 @@ my %Sites
 #	sub { $_[0]!~m#<pre>\W*Not found\W*</pre>#s }],
 #azlyrics => [ azlyrics => 'http://search.azlyrics.com/cgi-bin/azseek.cgi?q="%a"+"%t"'],
 #Lyricsfly ?
-    AUTO => [_ "Auto",],    #special mode that search multiple sources
+    AUTO => ["Auto",],    #special mode that search multiple sources
   );
 
 $::Options{OPT . 'Font'}
@@ -153,7 +153,7 @@ if (my $site = $::Options{OPT . 'LyricSite'}) {
 my $lyricswidget = {
     class    => __PACKAGE__,
     tabicon  => 'gmb-lyrics',    # no icon by that name by default
-    tabtitle => _ "Lyrics",
+    tabtitle => "Lyrics",
     saveoptions => 'HideToolbar font follow justification edit',
     schange       => sub { $_[0]->SongChanged($_[1]); },    #$_[1] is new ID
     group         => 'Play',
@@ -206,9 +206,9 @@ sub new {
     $toolbar->set_icon_size($options->{ToolbarSize} || 'small-toolbar');
 
     for my $aref (
-        [backb => 'gtk-go-back', \&Back_cb,   _ "Previous page"],
-        [saveb => 'gtk-save',    \&Save_text, _ "Save", _ "Save lyrics"],
-        [undef, 'gtk-refresh', \&Refresh_cb, _ "Refresh"],
+        [backb => 'gtk-go-back', \&Back_cb,   "Previous page"],
+        [saveb => 'gtk-save',    \&Save_text, "Save", "Save lyrics"],
+        [undef, 'gtk-refresh', \&Refresh_cb, "Refresh"],
       )
     {
         my ($key, $stock, $cb, $label, $tip) = @$aref;
@@ -228,23 +228,23 @@ sub new {
       Gtk2::ToggleToolButton->new_from_stock('gtk-edit');
     $editmode->signal_connect(
         toggled => sub { SetEditable($_[0], $_[0]->get_active); });
-    $editmode->set_tooltip_text(_ "Edit mode");
+    $editmode->set_tooltip_text("Edit mode");
 
     my $adj = $self->{fontsize_adj} =
       Gtk2::Adjustment->new(10, 4, 80, 1, 5, 0);
     my $zoom      = Gtk2::ToolItem->new;
     my $zoom_spin = Gtk2::SpinButton->new($adj, 1, 0);
     $zoom->add($zoom_spin);
-    $zoom->set_tooltip_text(_ "Font size");
+    $zoom->set_tooltip_text("Font size");
     my $source = ::NewPrefCombo(
         OPT . 'LyricSite', {map { $_ => $Sites{$_}[0] } keys %Sites},
         cb       => \&Refresh_cb,
-        toolitem => _ "Lyrics source"
+        toolitem => "Lyrics source"
     );
     my $scroll = ::NewPrefCheckButton(
-        OPT . 'AutoScroll', _ "Auto-scroll",
+        OPT . 'AutoScroll', "Auto-scroll",
         cb       => \&SetAutoScroll,
-        tip      => _ "Scroll with the song",
+        tip      => "Scroll with the song",
         toolitem => 1
     );
     $toolbar->insert($_, -1) for $editmode, $follow, $zoom, $scroll, $source;
@@ -288,9 +288,9 @@ sub cancel {
 sub prefbox {
     my $vbox  = Gtk2::VBox->new(::FALSE, 2);
     my $entry = ::NewPrefEntry(
-        OPT . 'PathFile' => _ "Lyrics file :",
+        OPT . 'PathFile' => "Lyrics file :",
         width            => 30,
-        tip              => _ "Lyrics file name format"
+        tip              => "Lyrics file name format"
     );
     my $preview = Label::Preview->new(
         preview  => \&filename_preview,
@@ -299,18 +299,18 @@ sub prefbox {
         wrap     => 1
     );
     my $autosave = ::NewPrefCheckButton(
-        OPT . 'AutoSave' => _ "Auto-save positive finds",
-        tip              => _
+        OPT . 'AutoSave' => "Auto-save positive finds",
+        tip =>
           "only works with some lyrics source and when the lyrics tab is active"
     );
     my $embed = ::NewPrefCombo(
         OPT . 'PreferEmbeddedLyrics',
-        {0 => _ "lyrics file", 1 => _ "file tag"},
-        text => _ "Prefered place to load and save lyrics :"
+        {0 => "lyrics file", 1 => "file tag"},
+        text => "Prefered place to load and save lyrics :"
     );
     my $alwaysload = ::NewPrefCheckButton(
-        OPT . 'AlwaysLoad' => _ "Load lyrics even if lyrics panel is hidden");
-    my $Bopen = Gtk2::Button->new(_ "open context window");
+        OPT . 'AlwaysLoad' => "Load lyrics even if lyrics panel is hidden");
+    my $Bopen = Gtk2::Button->new("open context window");
     $Bopen->signal_connect(clicked => sub { ::ContextWindow; });
     $vbox->pack_start($_, ::FALSE, ::FALSE, 1)
       for $embed, $entry, $preview, $autosave, $alwaysload, $Bopen;
@@ -324,8 +324,8 @@ sub filename_preview {
     $t = ::filename_to_utf8displayname($t) if $t;
     $t =
       $t
-      ? ::PangoEsc(_("example : ") . $t)
-      : "<i>" . ::PangoEsc(_ "invalid pattern") . "</i>";
+      ? ::PangoEsc("example : " . $t)
+      : "<i>" . ::PangoEsc("invalid pattern") . "</i>";
     return '<small>' . $t . '</small>';
 }
 
@@ -381,7 +381,7 @@ sub SetFont {
 
 sub ChooseFont {
     my $self   = shift;
-    my $dialog = Gtk2::FontSelectionDialog->new(_ "Choose font for lyrics");
+    my $dialog = Gtk2::FontSelectionDialog->new("Choose font for lyrics");
     $dialog->set_font_name($self->{font});
     my $response = $dialog->run;
     if ($response eq 'ok') {
@@ -443,7 +443,7 @@ sub load_from_web {
     if ($next) {
         $site = shift @{$self->{trynext}};
         if (!$site) {
-            $self->Set_message(_ "No lyrics found");
+            $self->Set_message("No lyrics found");
             return;
         }
     }
@@ -494,9 +494,9 @@ sub populate_popup_cb {
     my ($x, $y) =
       $textview->window_to_buffer_coords('widget', $textview->get_pointer);
     if (my $url = $self->url_at_coords($x, $y)) {
-        my $item2 = Gtk2::MenuItem->new(_ "Open link in Browser");
+        my $item2 = Gtk2::MenuItem->new("Open link in Browser");
         $item2->signal_connect(activate => sub { ::openurl($url); });
-        my $item3 = Gtk2::MenuItem->new(_ "Copy link address");
+        my $item3 = Gtk2::MenuItem->new("Copy link address");
         $item3->signal_connect(
             activate => sub {
                 my $url = $_[1];
@@ -539,7 +539,7 @@ sub html_extract {
 
 sub load_url {
     my ($self, $url, $post, $check) = @_;
-    $self->Set_message(_ "Loading...");
+    $self->Set_message("Loading...");
     $self->cancel;
     warn "lyrics : loading $url\n";    # if $::debug;
     $self->{url}   = $url;
@@ -561,9 +561,7 @@ sub loaded    #_very_ crude html to gtktextview renderer
     my $encoding;
     unless ($data) {
         $data =
-            _("Loading failed.")
-          . qq( <a href="$self->{url}">)
-          . _("retry") . '</a>';
+          "Loading failed." . qq( <a href="$self->{url}">) . "retry" . '</a>';
         $type     = "text/html";
         $encoding = 0;
     }
@@ -944,7 +942,7 @@ sub _load_from_lyrics_file {
     my $file =
       ::pathfilefromformat($ID, $::Options{OPT . 'PathFile'}, undef, 1);
     return unless $file && -e $file;
-    my $text = _ "Loading failed.";
+    my $text = "Loading failed.";
     if (open my $fh, '<', $file) {
         local $/ = undef;    #slurp mode
         $text = <$fh>;
@@ -968,11 +966,10 @@ sub Save_text {
         my ($path, $file) =
           ::pathfilefromformat($self->{ID}, $format, undef, 1);
         unless ($path && $file) {
-            ::ErrorMessage(_("Error: invalid filename pattern") . " : $format",
-                $win);
+            ::ErrorMessage("Error: invalid filename pattern : $format", $win);
             return;
         }
-        my $res = ::CreateDir($path, $win, _ "Error saving lyrics");
+        my $res = ::CreateDir($path, $win, "Error saving lyrics");
         return unless $res eq 'ok';
         if (open my $fh, '>:utf8', $path . ::SLASH . $file) {
             print $fh $text;
@@ -984,7 +981,7 @@ sub Save_text {
         else {
             ::ErrorMessage(
                 ::__x(
-                    _("Error saving lyrics in '{file}' :\n{error}"),
+                    "Error saving lyrics in '{file}' :\n{error}",
                     file  => $file,
                     error => $!
                 ),

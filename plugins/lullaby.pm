@@ -19,19 +19,17 @@ desc	Allow for scheduling fade-out and stop
 #- way to abort
 
 package GMB::Plugin::LULLABY;
+
 use strict;
 use warnings;
+
 use constant {OPT => 'PLUGIN_LULLABY_',};
 
 ::SetDefaultOptions(OPT, timespan => 30);
+
 my @dayname = (
-    _ "Sunday",
-    _ "Monday",
-    _ "Tuesday",
-    _ "Wednesday",
-    _ "Thursday",
-    _ "Friday",
-    _ "Saturday"
+    "Sunday",   "Monday", "Tuesday", "Wednesday",
+    "Thursday", "Friday", "Saturday"
 );
 my $handle;
 my $alarm;
@@ -40,8 +38,8 @@ my $StartingVolume;
 sub Start {
     $::Command{FadeOut} = [
         \&start_fadeout,
-        _ "Fade-out then stop",
-        _ "Timespan of the fade-out in seconds"
+        "Fade-out then stop",
+        "Timespan of the fade-out in seconds"
     ];
     update_alarm();
 }
@@ -54,15 +52,14 @@ sub Stop {
     delete $::Command{FadeOut};
 }
 
-
 sub prefbox {
     my $vbox = Gtk2::VBox->new;
     my $spin = ::NewPrefSpinButton(
         OPT . 'timespan', 1, 60 * 60 * 24,
         step => 1,
-        text => _ "Fade-out in %d seconds"
+        text => "Fade-out in %d seconds"
     );
-    my $button = Gtk2::Button->new(_ "Fade-out");
+    my $button = Gtk2::Button->new("Fade-out");
     $button->signal_connect(clicked => \&start_fadeout);
     my $sg = Gtk2::SizeGroup->new('horizontal');
     my @hours;
@@ -119,6 +116,7 @@ sub update_alarm {
     return unless $next;    #warn ($next-$now);
     $alarm = Glib::Timeout->add(($next - $now) * 1000, \&alarm);
 }
+
 sub alarm { start_fadeout(); update_alarm(); }
 
 sub start_fadeout {

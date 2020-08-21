@@ -48,7 +48,7 @@ sub Stop {
 sub prefbox {
     my $vbox  = Gtk2::VBox->new(::FALSE, 2);
     my $entry = ::NewPrefEntry(
-        OPT . 'PathFile' => _ "Pattern to find .lrc files :",
+        OPT . 'PathFile' => "Pattern to find .lrc files :",
         width            => 30
     );
     my $preview = Label::Preview->new(
@@ -57,7 +57,7 @@ sub prefbox {
         noescape => 1,
         wrap     => 1
     );
-    my $showbutton = Gtk2::Button->new(_ "Show/Hide lyrics line");
+    my $showbutton = Gtk2::Button->new("Show/Hide lyrics line");
     $showbutton->signal_connect(
         clicked => sub { ::OpenSpecialWindow('Karaoke', 1); });
     $vbox->pack_start($_, ::FALSE, ::FALSE, 1)
@@ -88,8 +88,8 @@ sub filename_preview {
     $t = ::filename_to_utf8displayname($t) if $t;
     $t =
       $t
-      ? ::PangoEsc(_("example : ") . $t)
-      : "<i>" . ::PangoEsc(_ "invalid pattern") . "</i>";
+      ? ::PangoEsc("example : " . $t)
+      : "<i>" . ::PangoEsc("invalid pattern") . "</i>";
     return '<small>' . $t . '</small>';
 }
 

@@ -15,9 +15,12 @@ req	perl(Net::DBus, libnet-dbus-perl perl-Net-DBus)
 =cut
 
 package GMB::Plugin::MPRIS2;
+
 use strict;
 use warnings;
+
 use constant {OPT => 'PLUGIN_MPRIS2_',};
+
 use Net::DBus::Annotation 'dbus_call_async';
 
 my $TEMPCOVERFILE = $::HomeDir . 'temp_mpris2_cover' . $::DBus_suffix . '.jpg';
@@ -44,9 +47,8 @@ sub Stop {
 sub prefbox {
     my $vbox = Gtk2::VBox->new(0, 2);
     my $desc =
-      Gtk2::Label->new(_
-          "This plugin is needed for jukebox to appear in unity's sound menu."
-      );
+      Gtk2::Label->new(
+        "This plugin is needed for jukebox to appear in unity's sound menu.");
     $vbox->pack_start($desc, 0, 0, 0);
     return $vbox;
 }
@@ -507,7 +509,6 @@ sub Net::DBus::Object::_dispatch_all_prop_read {
 ### end of patch
     return $reply;
 }
-
 
 1;
 

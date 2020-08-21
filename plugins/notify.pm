@@ -25,7 +25,7 @@ use Gtk2::Notify -init, ::PROGRAM_NAME;
 
 ::SetDefaultOptions(OPT,
     title   => "%S",
-    text    => _ "<i>by</i> %a\\n<i>from</i> %l",
+    text    => "<i>by</i> %a\\n<i>from</i> %l",
     picsize => 50,
     timeout => 5
 );
@@ -46,7 +46,7 @@ sub Start {
     $can_actions = grep $_ eq 'actions', @caps;
     set_actions();
     ::Watch($notify, 'PlayingSong', \&Changed);
-    $::Command{PopupNotify} = [\&Changed, _ "Popup notify window"];
+    $::Command{PopupNotify} = [\&Changed, "Popup notify window"];
 }
 
 sub Stop {
@@ -61,56 +61,56 @@ sub prefbox {
     my $sg2         = Gtk2::SizeGroup->new('horizontal');
     my $replacetext = ::MakeReplaceText('talydngLfS');
     my $summary     = ::NewPrefEntry(
-        OPT . 'title', _ "Summary :",
+        OPT . 'title', "Summary :",
         sizeg1 => $sg1,
         sizeg2 => $sg2,
         tip    => $replacetext
     );
     my $body = ::NewPrefEntry(
         OPT . 'text',
-        _ "Body :",
+        "Body :",
         sizeg1 => $sg1,
         sizeg2 => $sg2,
         width  => 40,
         tip    => $replacetext . "\n\n"
-          . _(
-            "You can use some markup, eg :\n<b>bold</b> <i>italic</i> <u>underline</u>\nNote that the markup may be ignored by the notification daemon"
-          ),
+          . "You can use some markup, eg :\n"
+          . "<b>bold</b> <i>italic</i> <u>underline</u>\n"
+          . "Note that the markup may be ignored by the notification daemon",
     );
     my $size = ::NewPrefSpinButton(
         OPT . 'picsize', 0, 1000,
         step   => 10,
         page   => 40,
-        text   => _ "Picture size : %d",
+        text   => "Picture size : %d",
         sizeg1 => $sg1,
-        tip    => _
+        tip =>
           "Note that some notification daemons resize the displayed picture"
     );
     my $timeout = ::NewPrefSpinButton(
         OPT . 'timeout', 0, 9999,
         step   => 2,
         page   => 5,
-        text   => _ "Timeout : %d seconds",
+        text   => "Timeout : %d seconds",
         sizeg1 => $sg1,
         digits => 1
     );
     my $actions = ::NewPrefCheckButton(
         OPT . 'actions',
-        _ "Display stop/next actions",
+        "Display stop/next actions",
         cb => \&set_actions
     );
     $actions->set_sensitive($can_actions);
     $actions->set_tooltip_text(
-        _("Actions are not supported by current notification daemon") . ' : '
+        "Actions are not supported by current notification daemon : "
           . $Daemon_name)
       unless $can_actions;
     $body->set_sensitive($can_body);
     $body->set_tooltip_text(
-        _("Body text is not supported by current notification daemon") . ' : '
+        "Body text is not supported by current notification daemon : "
           . $Daemon_name)
       unless $can_body;
     my $whenhidden = ::NewPrefCheckButton(OPT . 'onlywhenhidden',
-        _ "Don't notify if the main window is visible");
+        "Don't notify if the main window is visible");
     $vbox->pack_start($_, ::FALSE, ::FALSE, 2)
       for $summary, $body, $size, $timeout, $actions, $whenhidden;
     return $vbox;
@@ -148,8 +148,8 @@ sub set_actions {
     return unless $can_actions;
     $notify->clear_actions;
     if ($::Options{OPT . 'actions'}) {
-        $notify->add_action('media-stop', _ "Stop", \&::Stop);
-        $notify->add_action('media-next', _ "Next", \&::NextSong);
+        $notify->add_action('media-stop', "Stop", \&::Stop);
+        $notify->add_action('media-next', "Next", \&::NextSong);
     }
 }
 

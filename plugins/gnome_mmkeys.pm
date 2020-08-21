@@ -15,6 +15,7 @@ req	perl(Net::DBus, libnet-dbus-perl perl-Net-DBus)
 =cut
 
 package GMB::Plugin::GMMKEYS;
+
 use strict;
 use warnings;
 

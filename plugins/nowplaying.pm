@@ -51,12 +51,12 @@ sub prefbox {
     my $vbox  = Gtk2::VBox->new(::FALSE, 2);
     my $sg1   = Gtk2::SizeGroup->new('horizontal');
     my $entry = ::NewPrefEntry(
-        OPT . 'CMD', _ "Command when playing song changed :",
+        OPT . 'CMD', "Command when playing song changed :",
         expand => 1,
         sizeg1 => $sg1
     );
     my $entry2 = ::NewPrefEntry(
-        OPT . 'StoppedCMD', _ "Command when stopped :",
+        OPT . 'StoppedCMD', "Command when stopped :",
         expand => 1,
         sizeg1 => $sg1
     );
@@ -66,7 +66,7 @@ sub prefbox {
         noescape => 1
     );
     my $check = ::NewPrefCheckButton(OPT . 'SENDSTDINPUT',
-        _ "Send Title/Artist/Album in standard input");
+        "Send Title/Artist/Album in standard input");
     my $replacetable = ::MakeReplaceTable('talydnfc');
     $vbox->pack_start($_, ::FALSE, ::FALSE, 2)
       for $replacetable, $entry, $preview, $entry2, $check;
@@ -81,9 +81,9 @@ sub command_preview {
     return '' unless @cmd;
     $_ = ::PangoEsc(::ReplaceFields($ID, $_)) for @cmd;
     splice @cmd, $_, 0,
-      ::MarkupFormat("\n<i>%s</i>", ::__x(_ "argument {n} :", n => $_))
+      ::MarkupFormat("\n<i>%s</i>", ::__x("argument {n} :", n => $_))
       for reverse 1 .. $#cmd;
-    unshift @cmd, ::MarkupFormat('<i>%s</i>', _ "command :");
+    unshift @cmd, ::MarkupFormat('<i>%s</i>', "command :");
     my $t = join(' ', @cmd);
     return '<small>' . $t . '</small>';
 }

@@ -250,7 +250,7 @@ our %Widgets = (
     PluginWebLyrics => {
         class => 'GMB::Plugin::WebContext::Lyrics',
         tabicon  => 'gmb-lyrics',    # no icon by that name by default
-        tabtitle => _ "Lyrics",
+        tabtitle => "Lyrics",
         schange  => \&Update,
         group    => 'Play',
         autoadd_type => 'context page lyrics html',
@@ -259,7 +259,7 @@ our %Widgets = (
     PluginWikipedia => {
         class        => 'GMB::Plugin::WebContext::Wikipedia',
         tabicon      => 'plugin-wikipedia',
-        tabtitle     => _ "Wikipedia",
+        tabtitle     => "Wikipedia",
         schange      => \&Update,
         group        => 'Play',
         autoadd_type => 'context page wikipedia html',
@@ -267,14 +267,14 @@ our %Widgets = (
     },
     PluginWebCustom => {
         class       => 'GMB::Plugin::WebContext::Custom',
-        tabtitle    => _ "Untitled",
+        tabtitle    => "Untitled",
         schange     => \&Update,
         group       => 'Play',
         saveoptions => 'follow urientry statusbar',
     },
     PluginWebPage => {
         class       => 'GMB::Plugin::WebContext::Page',
-        tabtitle    => _ "Untitled",
+        tabtitle    => "Untitled",
         saveoptions => 'url title urientry statusbar',
         options     => 'url title'
         , #load/save the title because page is only loaded when mapped, so we can ask it its title until tab is selected
@@ -283,7 +283,7 @@ our %Widgets = (
 
 our @default_options = (follow => 1, urientry => 1, statusbar => 0,);
 our @contextmenu     = (
-    {   label        => _ "Show/hide URI entry",
+    {   label        => "Show/hide URI entry",
         toggleoption => 'self/urientry',
         code         => sub {
             my $w = $_[0]{self}{Entry};
@@ -294,7 +294,7 @@ our @contextmenu     = (
             else { $w->hide; }
         },
     },
-    {   label        => _ "Show/hide status bar",
+    {   label        => "Show/hide status bar",
         toggleoption => 'self/statusbar',
         code         => sub {
             my $w = $_[0]{self}{Status};
@@ -382,7 +382,7 @@ sub UpdateCustom {
         autoadd_type => 'context page custom html',
         %$hash
     );            #base the widget on the PluginWebCustom widget
-    $widget{tabtitle} ||= _ "Untitled";
+    $widget{tabtitle} ||= "Untitled";
 
     my $name =
         'PluginWebCustom_'
@@ -423,7 +423,7 @@ sub new {
       Gtk2::ToolButton->new_from_stock('gtk-go-forward');
     my $stop = $self->{BStop} = Gtk2::ToolButton->new_from_stock('gtk-stop');
     my $open = $self->{BOpen} = Gtk2::ToolButton->new_from_stock('gtk-open');
-    $open->set_tooltip_text(_ "Open this page in the web browser");
+    $open->set_tooltip_text("Open this page in the web browser");
 
     #$open->set_use_drag_window(1);
     #::set_drag($open,source=>[::DRAG_FILE,sub {$embed->get_location;}]);
@@ -485,23 +485,23 @@ sub prefbox {
 
 #my $combo=::NewPrefCombo(OPT.'Site',[sort keys %sites],'site : ',sub {$ID=undef;&Changed;});
     my $check = ::NewPrefCheckButton(
-        OPT . 'StrippedWiki', _ "Strip wikipedia pages",
+        OPT . 'StrippedWiki', "Strip wikipedia pages",
         cb  => \&set_stripped_wiki,
-        tip => _ "Remove header, footer and left column from wikipedia pages"
+        tip => "Remove header, footer and left column from wikipedia pages"
     );
-    my $Bopen = Gtk2::Button->new(_ "open context window");
+    my $Bopen = Gtk2::Button->new("open context window");
     $Bopen->signal_connect(clicked => sub { ::ContextWindow; });
     my ($radio_wk, $radio_moz) = ::NewPrefRadio(
         OPT . 'Backend',
-        [_ "Use WebKit", 'WebKit', _ "Use MozEmbed", 'MozEmbed',],
+        ["Use WebKit", 'WebKit', "Use MozEmbed", 'MozEmbed',],
         cb => sub {
             $check->set_sensitive($::Options{OPT . 'Backend'} eq 'MozEmbed');
             UpdateBackend();
         }
     );
-    my $label_wk = $OKWebKit ? '' : _ "Not found";
+    my $label_wk = $OKWebKit ? '' : "Not found";
     my $label_moz =
-      $OKMoz ? '' : $CrashMoz ? _ "Found but not working" : _ "Not found";
+      $OKMoz ? '' : $CrashMoz ? "Found but not working" : "Not found";
     $radio_wk->set_tooltip_text($label_wk)   if $label_wk;
     $radio_moz->set_tooltip_text($label_moz) if $label_moz;
     $radio_wk->set_sensitive($OKWebKit);
@@ -620,7 +620,7 @@ sub addtoolbar {    #my $self=$_[0];
     my $combo = ::NewPrefCombo(
         OPT . 'LyricSite', \%h,
         cb       => $cb,
-        toolitem => _ "Lyrics source"
+        toolitem => "Lyrics source"
     );
     return $combo;
 }
@@ -675,7 +675,7 @@ sub addtoolbar {    #my $self=$_[0];
     my $combo = ::NewPrefCombo(
         OPT . 'WikiLocale', \%locales,
         cb       => $cb,
-        toolitem => _ "Wikipedia Locale"
+        toolitem => "Wikipedia Locale"
     );
     return $combo;
 }
@@ -787,16 +787,16 @@ sub new {
     $hbox->pack_start($sw, ::FALSE, ::FALSE, 2);
     $hbox->add($editbox);
     my $label = Gtk2::Label->new;
-    $label->set_markup_with_format('<b>%s</b>', _ "Custom context pages :");
+    $label->set_markup_with_format('<b>%s</b>', "Custom context pages :");
     $label->set_alignment(0, .5);
     $self->pack_start($label, ::FALSE, ::FALSE, 2);
     $self->add($hbox);
 
     #buttons
-    my $new    = ::NewIconButton('gtk-new',    _ "New");
-    my $save   = ::NewIconButton('gtk-save',   _ "Save");
-    my $remove = ::NewIconButton('gtk-remove', _ "Remove");
-    my $preset = ::NewIconButton('gtk-add',    _ "Pre-set");
+    my $new    = ::NewIconButton('gtk-new',    "New");
+    my $save   = ::NewIconButton('gtk-save',   "Save");
+    my $remove = ::NewIconButton('gtk-remove', "Remove");
+    my $preset = ::NewIconButton('gtk-add',    "Pre-set");
     $preset->child->add(Gtk2::Arrow->new('down', 'none'));
     $new->signal_connect(
         clicked => sub {
@@ -842,7 +842,7 @@ sub fill_editbox #if $id => fill entries with existing properties, if $hash => f
     $editbox->{id}          = $id;
     my $preview = Label::Preview->new(
         entry   => $entry_url,
-        format  => ::MarkupFormat('<small>%s</small>', _ "example : %s"),
+        format  => ::MarkupFormat('<small>%s</small>', "example : %s"),
         event   => 'CurSong',
         preview => sub {
             my $url = shift;
@@ -860,8 +860,8 @@ sub fill_editbox #if $id => fill entries with existing properties, if $hash => f
         $entry_url->set_text($hash->{baseurl});
     }
     my $sg          = Gtk2::SizeGroup->new('horizontal');
-    my $label_title = Gtk2::Label->new(_ "Title");
-    my $label_url   = Gtk2::Label->new(_ "url");
+    my $label_title = Gtk2::Label->new("Title");
+    my $label_url   = Gtk2::Label->new("url");
     $sg->add_widget($_) for $label_title, $label_url;
     my $box = ::Vpack([$label_title, '_', $entry_title],
         [$label_url, '_', $entry_url], $preview);
@@ -976,7 +976,6 @@ sub preset_menu_cb {
     }
     ::PopupMenu($menu);
 }
-
 
 1;
 

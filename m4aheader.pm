@@ -26,11 +26,14 @@
 # uses @Tag::MP3::Genres for numeric genres
 
 package Tag::M4A;
+
 use strict;
 use warnings;
+
 use Encode qw(decode encode);
 
 my %IsParent;
+
 INIT {
     $IsParent{$_} = 0
       for qw/moov trak udta mdia minf stbl ilst moof traf/

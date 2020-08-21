@@ -26,6 +26,7 @@ use constant {
 
 my @crc_lookup;
 my $digestcrc;
+
 INIT {
     eval {
         require Digest::CRC;

@@ -13,8 +13,10 @@ package Tag::Flac;
 
 use strict;
 use warnings;
+
 use Encode qw(decode encode);
 use MIME::Base64;
+
 our @ISA = ('Tag::OGG');
 
 use constant {

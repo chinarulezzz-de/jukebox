@@ -8,8 +8,10 @@
 # published by the Free Software Foundation
 
 package Tag::WVfile;
+
 use strict;
 use warnings;
+
 our @ISA = ('Tag::MP3');
 my @sample_rates;
 

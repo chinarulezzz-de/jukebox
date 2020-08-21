@@ -16,11 +16,12 @@ BEGIN {
     require 'wvheader.pm';
     require 'm4aheader.pm';
 }
+
+package FileTag;
+
 use strict;
 use warnings;
 use utf8;
-
-package FileTag;
 
 our %FORMATS;
 
@@ -353,7 +354,7 @@ sub WriteLyrics {
         sub {
             my ($syserr, $details) = Error_Message(@_);
             return ::Retry_Dialog(
-                $syserr, _ "Error writing lyrics",
+                $syserr, "Error writing lyrics",
                 details => $details,
                 ID      => $ID
             );
@@ -367,7 +368,7 @@ sub Error_Message {
     my $details =
       $type eq 'openwrite'
       ? ::__x(
-        _ "Error opening '{file}' for writing.",
+        "Error opening '{file}' for writing.",
         file => ::filename_to_utf8displayname($file)
       )
       : 'Unknown error';    #currently $type is always "openwrite"
@@ -381,10 +382,11 @@ use constant {TRUE => 1, FALSE => 0,};
 our @FORMATS;
 our @FORMATS_user;
 our @Tools;
+
 INIT {
     @Tools = (
-        {label => _ "Capitalize", for_all => sub { ucfirst lc $_[0]; },},
-        {   label   => _ "Capitalize each word",
+        {label => "Capitalize", for_all => sub { ucfirst lc $_[0]; },},
+        {   label   => "Capitalize each word",
             for_all => sub { join '', map ucfirst lc, split /(\W+)/, $_[0]; },
         },
     );
@@ -460,10 +462,10 @@ sub new {
         my $displaysub = Songs::DisplayFromHash_sub('path');
         if (@$folders > 1) {
             my $common = ::find_common_parent_folder(@$folders);
-            $folder = _ "different folders";
+            $folder = "different folders";
             $folder .= "\n"
               . ::__x(
-                _ "(common parent folder : {common})",
+                "(common parent folder : {common})",
                 common => $displaysub->($common)
               ) if length($common) > 5;
         }
@@ -530,7 +532,7 @@ sub add_per_file_part {
     $self->add_column('title');
 
     my $lastcol = 1;    #for the filename column
-    my $BSelFields = Gtk2::Button->new(_ "Select fields");
+    my $BSelFields = Gtk2::Button->new("Select fields");
     {
         my $menu    = Gtk2::Menu->new;
         my $menu_cb = sub { $self->add_column($_[1]) };
@@ -575,7 +577,7 @@ sub add_per_file_part {
         );                                #filename
     }
 
-    my $Btools = Gtk2::Button->new(_ "tools");
+    my $Btools = Gtk2::Button->new("tools");
     {
         my $menu    = Gtk2::Menu->new;
         my $menu_cb = sub { $self->tool($_[1]) };
@@ -601,7 +603,7 @@ sub add_per_file_part {
             $self->tool(sub {''});
         },
         undef,
-        _ "Clear selected fields"
+        "Clear selected fields"
     );
 
     my $sw = Gtk2::ScrolledWindow->new;
@@ -611,7 +613,7 @@ sub add_per_file_part {
 
     # expander to hide/show the per-file part
     my $exp_label =
-      Gtk2::Label->new_with_format("<b>%s</b>", _ "Per-song values");
+      Gtk2::Label->new_with_format("<b>%s</b>", "Per-song values");
     my $expander = Gtk2::Expander->new;
     $expander->set_expanded(TRUE);
     $expander->set_label_widget($exp_label);
@@ -640,7 +642,7 @@ sub add_per_file_part {
     $Bautofill->signal_connect(changed => \&autofill_cb);
     ::Watch($self, AutofillFormats => \&autofill_check);
 
-    my $checkOBlank = Gtk2::CheckButton->new(_ "Auto fill only blank fields");
+    my $checkOBlank = Gtk2::CheckButton->new("Auto fill only blank fields");
     $self->{AFOBlank} = $checkOBlank;
     my $hbox = Gtk2::HBox->new;
     $hbox->pack_start($_, FALSE, FALSE, 0)
@@ -689,8 +691,8 @@ sub add_column {
     {    #$_->set_alignment(1) for @entries;
         my ($increment, $tip) =
           $field eq 'track'
-          ? (1, _ "Auto-increment track numbers")
-          : (0, _ "Copy missing values from previous line");
+          ? (1, "Auto-increment track numbers")
+          : (0, "Copy missing values from previous line");
         my $autosub = sub {
             my $i = $field ne 'year' ? 1 : 0;
             for my $e (@entries) {
@@ -771,7 +773,7 @@ sub autofill_check {
     my $store = $combo->get_model;
     $store->clear;
     $store->set($store->append, 0,
-        ::PangoEsc(_ "Auto fill based on filenames ..."));
+        ::PangoEsc("Auto fill based on filenames ..."));
     my @files = map ::filename_to_utf8displayname($_),
       Songs::Map('barefilename', $self->{IDs});
     autofill_user_formats();
@@ -786,7 +788,7 @@ sub autofill_check {
             "</b><i>%s</i><b>");
         $store->set($store->append, 0, $formatname, 1, $ref);
     }
-    $store->set($store->append, 0, ::PangoEsc(_ "Edit auto-fill formats ..."),
+    $store->set($store->append, 0, ::PangoEsc("Edit auto-fill formats ..."),
         1, \&GMB::Edit::Autofill_formats::new);
     $combo->set_active(0);
 }
@@ -843,9 +845,11 @@ sub autofill_cb {
             if ($entry && $entry->is_sensitive) {
                 next
                   if $OBlank
-                  && !($entry->can('is_blank')
+                  && !(
+                      $entry->can('is_blank')
                     ? $entry->is_blank
-                    : $entry->get_text eq '');
+                    : $entry->get_text eq ''
+                  );
                 $entry->set_text(keys %h);
                 next;
             }
@@ -953,7 +957,7 @@ sub new {
     $self->{treeview} = my $treeview = Gtk2::TreeView->new($store);
     $treeview->append_column(
         Gtk2::TreeViewColumn->new_with_attributes(
-            _ "Custom formats",
+            "Custom formats",
             Gtk2::CellRendererText->new,
             text => 0
         )
@@ -962,19 +966,18 @@ sub new {
     #$treeview->set_headers_visible(::FALSE);
     $treeview->signal_connect(cursor_changed => \&cursor_changed_cb);
 
-    my $label_format = Gtk2::Label->new(_ "Filename format :");
-    my $label_re     = Gtk2::Label->new(_ "Regular expression :");
+    my $label_format = Gtk2::Label->new("Filename format :");
+    my $label_re     = Gtk2::Label->new("Regular expression :");
     $self->{entry_format} = my $entry_format = Gtk2::Entry->new;
     $self->{entry_re}     = my $entry_re     = Gtk2::Entry->new;
     $self->{check_re}     = my $check_re =
-      Gtk2::CheckButton->new(_ "Use default regular expression");
+      Gtk2::CheckButton->new("Use default regular expression");
     $self->{error}   = my $error   = Gtk2::Label->new;
     $self->{preview} = my $preview = Gtk2::Label->new;
     $self->{remove_button} = my $button_del =
-      ::NewIconButton('gtk-remove', _ "Remove");
-    $self->{add_button} = my $button_add =
-      ::NewIconButton('gtk-save', _ "Save");
-    my $button_new = ::NewIconButton('gtk-new', _ "New");
+      ::NewIconButton('gtk-remove', "Remove");
+    $self->{add_button} = my $button_add = ::NewIconButton('gtk-save', "Save");
+    my $button_new = ::NewIconButton('gtk-new', "New");
     $button_del->signal_connect(clicked => \&button_cb, 'remove');
     $button_add->signal_connect(clicked => \&button_cb, 'save');
     $button_new->signal_connect(clicked => \&button_cb, 'new');
@@ -1057,7 +1060,7 @@ sub preview_update {
     if ($@) {
         $self->{error}->show;
         $self->{error}->set_markup_with_format("<i><b>%s</b></i>",
-            _ "Invalid regular expression");
+            "Invalid regular expression");
         $self->{preview}->set_text('');
         return;
     }
@@ -1065,7 +1068,7 @@ sub preview_update {
     my @fields  = map Songs::FieldName($_), find_fields($format);
     my $ID      = $self->{ID};
     my $file    = Songs::Display($ID, 'barefilename');
-    my @text    = (_ "Example :", Songs::FieldName('file'), $file);
+    my @text    = ("Example :", Songs::FieldName('file'), $file);
     my $preview = "%s\n<i>%s</i> : <small>%s</small>\n\n";
     my @v;
     @v = ($file =~ m/$qr/) if $re;
@@ -1073,7 +1076,7 @@ sub preview_update {
     else {
         $self->{error}->show;
         $self->{error}->set_markup_with_format("<i><b>%s</b></i>",
-            _ "Regular expression didn't match");
+            "Regular expression didn't match");
     }
     s/_/ /g, s/^\s+//, s/\s+$// for @v;
     for my $i (sort { $fields[$a] cmp $fields[$b] } 0 .. $#fields) {
@@ -1204,7 +1207,7 @@ sub new {
         $self->{IDs}    = $IDs;
         $self->{field}  = $field;
         $self->{append} = my $append =
-          Gtk2::CheckButton->new(_ "Append (only if not already present)");
+          Gtk2::CheckButton->new("Append (only if not already present)");
         $self->pack_end($append, 0, 0, 0);
     }
     else { $val = Songs::Get($IDs, $field); }
@@ -1397,7 +1400,7 @@ sub new {
             );
         };
         my $pick = ::NewIconButton('gtk-index', undef, $cb, 'none',
-            _ "Pick an existing one");
+            "Pick an existing one");
         $self->pack_end($pick, 0, 0, 0);
     }
     $combo->append_text($_) for @l;
@@ -1439,7 +1442,7 @@ sub new {
 
     my $adj  = Gtk2::Adjustment->new(0,    0,  100, 10, 20, 0);
     my $spin = Gtk2::SpinButton->new($adj, 10, 0);
-    my $check = Gtk2::CheckButton->new(_ "use default");
+    my $check = Gtk2::CheckButton->new("use default");
     my $stars = Stars->new($field, $init, \&update_cb);
 
     $self->pack_start($_, 0, 0, 0) for $stars, $spin, $check;
@@ -1601,12 +1604,12 @@ sub new {
     my $sg        = Gtk2::SizeGroup->new('horizontal');
     my $entry     = $self->{entry} = Gtk2::Entry->new;
     my $add       = ::NewIconButton('gtk-add');
-    my $removeall = ::NewIconButton('gtk-clear', _ "Remove all", \&clear);
+    my $removeall = ::NewIconButton('gtk-clear', "Remove all", \&clear);
     $add->signal_connect(button_press_event =>
           sub { add_entry_text_cb($_[0]); $_[0]->grab_focus; 1; });
     $add->signal_connect(clicked => \&add_entry_text_cb);
 
-    for my $ref (['toadd', 1, _ "Add"], ['toremove', -1, _ "Remove"]) {
+    for my $ref (['toadd', 1, "Add"], ['toremove', -1, "Remove"]) {
         my ($key, $mode, $text) = @$ref;
         my $label = $self->{$key} = Gtk2::Label->new;
         $label->set_ellipsize('end');
@@ -1846,7 +1849,7 @@ sub new {
         ],
         motion => sub {
             my ($view, $context, $x, $y, $time) = @_;
-            $view->{dnd_message} = _ "Set picture using this file";
+            $view->{dnd_message} = "Set picture using this file";
             1;
         }
     );
@@ -1858,15 +1861,15 @@ sub new {
         }
     );
 
-    my $button_del = ::NewIconButton('gtk-remove', _ "Remove picture");
-    my $button_set = ::NewIconButton('gtk-open',   _ "Set picture");
+    my $button_del = ::NewIconButton('gtk-remove', "Remove picture");
+    my $button_set = ::NewIconButton('gtk-open',   "Set picture");
     my $button_new = $self->{button_new} =
-      ::NewIconButton('gtk-add', _ "Add picture");
+      ::NewIconButton('gtk-add', "Add picture");
     my $combo_type = $self->{combo_type} = Gtk2::ComboBox->new_text;
     my $entry_desc = $self->{entry_desc} = Gtk2::Entry->new;
     my $info_label = $self->{info_label} = Gtk2::Label->new;
-    $entry_desc->set_tooltip_text(_ "Description");
-    $combo_type->set_tooltip_text(_ "Picture type");
+    $entry_desc->set_tooltip_text("Description");
+    $combo_type->set_tooltip_text("Picture type");
     $combo_type->append_text($_) for @$EntryMulti::PICTYPE;
     $button_new->signal_connect(clicked => \&new_picture_cb);
     $button_del->signal_connect(clicked => \&remove_selected_cb);
@@ -1940,7 +1943,7 @@ sub fill {
 sub make_row_text {
     my ($self, $nb) = @_;
     my ($mime, $typeid, $desc, $data) = @{$self->{pix}[$nb]};
-    my $text = $EntryMulti::PICTYPE->[$typeid] || _ "Unknown";
+    my $text = $EntryMulti::PICTYPE->[$typeid] || "Unknown";
     if (defined $desc && length $desc) { $text .= ": $desc" }
     return $text;
 }
@@ -1974,7 +1977,7 @@ sub selection_changed_cb {
         }
         $pixbuf = $loader->get_pixbuf;
         my $size =
-          ::format_number($info{size} / ::KB(), "%.1f") . ' ' . _ "KB";
+          ::format_number($info{size} / ::KB(), "%.1f") . ' ' . "KB";
         my $dim = sprintf "%d x %d", $pixbuf->get_width, $pixbuf->get_height;
         $self->{info_label}->set_text("($dim) $size");
     }
@@ -2165,7 +2168,7 @@ sub save {
     $self->{filetag}{errorsub} = sub {
         my ($syserr, $details) = FileTag::Error_Message(@_);
         return ::Retry_Dialog(
-            $syserr, _ "Error writing tag",
+            $syserr, "Error writing tag",
             details => $details,
             window  => $self->{window}
         );
@@ -2192,101 +2195,101 @@ my %tagprop;
 
 INIT {
     my $id3v2_types = {    #id3v2.3/4
-        TIT2 => [_ "Title",                  1],
-        TIT3 => [_ "Version",                2],
-        TPE1 => [_ "Artist",                 3],
-        TPE2 => [_ "Album artist",           4.5],
-        TALB => [_ "Album",                  4],
-        TPOS => [_ "Disc #",                 5],
-        TRCK => [_ "Track",                  6],
-        TYER => [_ "Date",                   7],
-        COMM => [_ "Comments",               9],
-        TCON => [_ "Genre",                  8],
-        TLAN => [_ "Languages",              20],
-        USLT => [_ "Lyrics",                 14],
-        APIC => [_ "Picture",                15],
-        TOPE => [_ "Original Artist",        40],
-        TXXX => [_ "Custom Text",            50],
-        WOAR => [_ "Artist URL",             50],
-        WXXX => [_ "Custom URL",             50],
-        PCNT => [_ "Play counter",           44],
-        POPM => [_ "Popularimeter",          45],
-        GEOB => [_ "Encapsulated object",    60],
-        PRIV => [_ "Private Data",           98],
-        UFID => [_ "Unique file identifier", 99],
-        TCOP => [_("Copyright") . " ©",      80],
-        TPRO => [_ "Produced (P)",           81],    #FIXME find (P) symbol
-        TCOM => [_ "Composer",               12],
-        TIT1 => [_ "Grouping",               13],
-        TENC => [_ "Encoded by",             51],
-        TSSE => [_ "Encoded with",           52],
-        TMED => [_ "Media type"],
-        TFLT => [_ "File type"],
-        TOAL => [_ "Originaly from"],
-        TOFN => [_ "Original Filename"],
-        TORY => [_ "Original release year"],
-        TPUB => [_ "Label/Publisher"],
-        TRDA => [_ "Recording Dates"],
+        TIT2 => ["Title",                  1],
+        TIT3 => ["Version",                2],
+        TPE1 => ["Artist",                 3],
+        TPE2 => ["Album artist",           4.5],
+        TALB => ["Album",                  4],
+        TPOS => ["Disc #",                 5],
+        TRCK => ["Track",                  6],
+        TYER => ["Date",                   7],
+        COMM => ["Comments",               9],
+        TCON => ["Genre",                  8],
+        TLAN => ["Languages",              20],
+        USLT => ["Lyrics",                 14],
+        APIC => ["Picture",                15],
+        TOPE => ["Original Artist",        40],
+        TXXX => ["Custom Text",            50],
+        WOAR => ["Artist URL",             50],
+        WXXX => ["Custom URL",             50],
+        PCNT => ["Play counter",           44],
+        POPM => ["Popularimeter",          45],
+        GEOB => ["Encapsulated object",    60],
+        PRIV => ["Private Data",           98],
+        UFID => ["Unique file identifier", 99],
+        TCOP => ["Copyright ©",            80],
+        TPRO => ["Produced (P)",           81],    #FIXME find (P) symbol
+        TCOM => ["Composer",               12],
+        TIT1 => ["Grouping",               13],
+        TENC => ["Encoded by",             51],
+        TSSE => ["Encoded with",           52],
+        TMED => ["Media type"],
+        TFLT => ["File type"],
+        TOAL => ["Originaly from"],
+        TOFN => ["Original Filename"],
+        TORY => ["Original release year"],
+        TPUB => ["Label/Publisher"],
+        TRDA => ["Recording Dates"],
         TSRC => ["ISRC"],
-        TCMP => [_ "Compilation", 60, 'f'],
+        TCMP => ["Compilation", 60, 'f'],
     };
     my $vorbis_types = {
-        title                  => [_ "Title",           1],
-        version                => [_ "Version",         2],
-        artist                 => [_ "Artist",          3],
-        album                  => [_ "Album",           4],
-        discnumber             => [_ "Disc #",          5],
-        tracknumber            => [_ "Track",           6],
-        date                   => [_ "Date",            7],
-        comments               => [_ "Comments",        9, 'M'],
-        description            => [_ "Description",     9, 'M'],
-        genre                  => [_ "Genre",           8],
-        lyrics                 => [_ "Lyrics",          14, 'L'],
-        fmps_lyrics            => [_ "Lyrics",          14, 'L'],
-        author                 => [_ "Original Artist", 40],
-        metadata_block_picture => [_ "Picture",         15, 'tCTb'],
+        title                  => ["Title",           1],
+        version                => ["Version",         2],
+        artist                 => ["Artist",          3],
+        album                  => ["Album",           4],
+        discnumber             => ["Disc #",          5],
+        tracknumber            => ["Track",           6],
+        date                   => ["Date",            7],
+        comments               => ["Comments",        9, 'M'],
+        description            => ["Description",     9, 'M'],
+        genre                  => ["Genre",           8],
+        lyrics                 => ["Lyrics",          14, 'L'],
+        fmps_lyrics            => ["Lyrics",          14, 'L'],
+        author                 => ["Original Artist", 40],
+        metadata_block_picture => ["Picture",         15, 'tCTb'],
     };
     my $ape_types = {
-        title            => [_ "Title",             1],
-        artist           => [_ "Artist",            3],
-        album            => [_ "Album",             4],
-        subtitle         => [_ "Subtitle",          5],
-        publisher        => [_ "Publisher",         14],
-        conductor        => [_ "Conductor",         13],
-        track            => [_ "Track",             6],
-        genre            => [_ "Genre",             8],
-        composer         => [_ "Composer",          12],
-        comment          => [_ "Comment",           9],
-        copyright        => [_ "Copyright",         80],
-        publicationright => [_ "Publication right", 81],
-        year             => [_ "Year",              7],
-        'debut album'    => [_ "Debut Album",       8],
-        fmps_lyrics      => [_ "Lyrics",            14, 'L'],
+        title            => ["Title",             1],
+        artist           => ["Artist",            3],
+        album            => ["Album",             4],
+        subtitle         => ["Subtitle",          5],
+        publisher        => ["Publisher",         14],
+        conductor        => ["Conductor",         13],
+        track            => ["Track",             6],
+        genre            => ["Genre",             8],
+        composer         => ["Composer",          12],
+        comment          => ["Comment",           9],
+        copyright        => ["Copyright",         80],
+        publicationright => ["Publication right", 81],
+        year             => ["Year",              7],
+        'debut album'    => ["Debut Album",       8],
+        fmps_lyrics      => ["Lyrics",            14, 'L'],
     };
     my $lyrics3v2_types = {
-        LYR => [_ "Lyrics", 7, 'M'],
-        INF => [_ "Info",   6, 'M'],
-        AUT => [_ "Author", 5],
-        EAL => [_ "Album",  4],
-        EAR => [_ "Artist", 3],
-        ETT => [_ "Title",  1],
+        LYR => ["Lyrics", 7, 'M'],
+        INF => ["Info",   6, 'M'],
+        AUT => ["Author", 5],
+        EAL => ["Album",  4],
+        EAR => ["Artist", 3],
+        ETT => ["Title",  1],
     };
     my $ilst_types = {
-        "\xA9nam" => [_ "Title",        1],
-        "\xA9ART" => [_ "Artist",       3],
-        "\xA9alb" => [_ "Album",        4],
-        "\xA9day" => [_ "Year",         8],
-        "\xA9cmt" => [_ "Comment",      12, 'M'],
-        "\xA9gen" => [_ "Genre",        10],
-        "\xA9wrt" => [_ "Author",       14],
-        "\xA9lyr" => [_ "Lyrics",       50],
-        "\xA9too" => [_ "Encoder",      51],
-        '----'    => [_ "Custom",       52, 'ttt'],
-        trkn      => [_ "Track",        6],
-        disk      => [_ "Disc #",       7],
-        aART      => [_ "Album artist", 9],
-        covr      => [_ "Picture",      20, 'p'],
-        cpil      => [_ "Compilation",  19, 'f'],
+        "\xA9nam" => ["Title",        1],
+        "\xA9ART" => ["Artist",       3],
+        "\xA9alb" => ["Album",        4],
+        "\xA9day" => ["Year",         8],
+        "\xA9cmt" => ["Comment",      12, 'M'],
+        "\xA9gen" => ["Genre",        10],
+        "\xA9wrt" => ["Author",       14],
+        "\xA9lyr" => ["Lyrics",       50],
+        "\xA9too" => ["Encoder",      51],
+        '----'    => ["Custom",       52, 'ttt'],
+        trkn      => ["Track",        6],
+        disk      => ["Disc #",       7],
+        aART      => ["Album artist", 9],
+        covr      => ["Picture",      20, 'p'],
+        cpil      => ["Compilation",  19, 'f'],
 
         # pgap => gapless album
         # pcst => podcast
@@ -2349,11 +2352,11 @@ INIT {
         M => ['EntryMultiLines'],    #multi-line text
 
 #l => ['EntrySimple'],	#3 letters language #unused, found only in multi-fields frames
-        c => ['EntryNumber'],          #counter
-        C => ['EntryNumber', 255],     #1 byte integer (0-255)
+        c => ['EntryNumber'],        #counter
+        C => ['EntryNumber', 255],   #1 byte integer (0-255)
         n => ['EntryNumber', 65535],
-        b => ['EntryBinary'],          #binary
-        u => ['EntryBinary'],          #unknown -> binary
+        b => ['EntryBinary'],        #binary
+        u => ['EntryBinary'],        #unknown -> binary
         f => ['EntryBoolean'],
         p => ['EntryCover'],
         L => ['EntryLyrics'],
@@ -2384,7 +2387,7 @@ sub new {
     $table->{widgets} = [];
     $sw->add_with_viewport($table);
     if ($option) {
-        my $checkrm = Gtk2::CheckButton->new(_ "Remove this tag");
+        my $checkrm = Gtk2::CheckButton->new("Remove this tag");
         $checkrm->signal_connect(
             toggled => sub {
                 my $state = $_[0]->get_active;
@@ -2397,7 +2400,7 @@ sub new {
     $self->add($sw);
 
     if (my $list = $tagtype->{addlist}) {
-        my $addbut  = ::NewIconButton('gtk-add', _ "add");
+        my $addbut  = ::NewIconButton('gtk-add', "add");
         my $addlist = Gtk2::ComboBox->new_text;
         my $hbox    = Gtk2::HBox->new(FALSE, 8);
         $hbox->pack_start($_, FALSE, FALSE, 0) for $addlist, $addbut;
@@ -2405,7 +2408,7 @@ sub new {
         for my $key (@$list) {
             $key = lc $key if $tagtype->{lckeys};
             my $name =
-              ($key ne '') ? $tagtype->{types}{$key}[TAGNAME] : _ "(other)";
+              ($key ne '') ? $tagtype->{types}{$key}[TAGNAME] : "(other)";
             $addlist->append_text($name);
         }
         $addlist->set_active(0);
@@ -2555,13 +2558,13 @@ use constant {TRUE => 1, FALSE => 0};
 sub new {
     my ($class, $tag, $option) = @_;
     my $self = bless Gtk2::VBox->new, $class;
-    $self->{title}    = _ "id3v1 tag";
+    $self->{title}    = "id3v1 tag";
     $self->{tag}      = $tag;
     $self->{table}    = my $table = Gtk2::Table->new(2, 2, FALSE);
     $table->{widgets} = [];
     my $row = 0;
     if ($option) {
-        my $checkrm = Gtk2::CheckButton->new(_ "Remove this tag");
+        my $checkrm = Gtk2::CheckButton->new("Remove this tag");
         $checkrm->signal_connect(
             toggled => sub {
                 my $state = $_[0]->get_active;
@@ -2576,12 +2579,12 @@ sub new {
     }
     $self->add($table);
     for my $aref (
-        [_ "Title",   0, 30],
-        [_ "Artist",  1, 30],
-        [_ "Album",   2, 30],
-        [_ "Year",    3, 4],
-        [_ "Comment", 4, 30],
-        [_ "Track",   5, 2]
+        ["Title",   0, 30],
+        ["Artist",  1, 30],
+        ["Album",   2, 30],
+        ["Year",    3, 4],
+        ["Comment", 4, 30],
+        ["Track",   5, 2]
       )
     {
         my $label = Gtk2::Label->new($aref->[0]);
@@ -2594,7 +2597,7 @@ sub new {
     }
     my $combo = EntryCombo->new($tag->{ID3v1}[6], \@Tag::MP3::Genres);
     push @{$table->{widgets}}, $combo;
-    $table->attach(Gtk2::Label->new(_ "Genre"),
+    $table->attach(Gtk2::Label->new("Genre"),
         0, 1, $row, $row + 1, 'shrink', 'shrink', 1, 1);
     $table->attach($combo, 1, 2, $row, $row + 1, ['fill', 'expand'],
         'shrink', 1, 1);
@@ -2771,76 +2774,73 @@ my %SUBTAGPROP;
 our $PICTYPE;
 INIT {
     $PICTYPE = [
-        _ "other",
-        _ "32x32 PNG file icon",
-        _ "other file icon",
-        _ "front cover",
-        _ "back cover",
-        _ "leaflet page",
-        _ "media",
-        _ "lead artist",
-        _ "artist",
-        _ "conductor",
-        _ "band",
-        _ "composer",
-        _ "lyricist",
-        _ "recording location",
-        _ "during recording",
-        _ "during performance",
-        _ "movie/video screen capture",
-        _ "a bright coloured fish",
-        _ "illustration",
-        _ "band/artist logotype",
-        _ "Publisher/Studio logotype"
+        "other",
+        "32x32 PNG file icon",
+        "other file icon",
+        "front cover",
+        "back cover",
+        "leaflet page",
+        "media",
+        "lead artist",
+        "artist",
+        "conductor",
+        "band",
+        "composer",
+        "lyricist",
+        "recording location",
+        "during recording",
+        "during performance",
+        "movie/video screen capture",
+        "a bright coloured fish",
+        "illustration",
+        "band/artist logotype",
+        "Publisher/Studio logotype"
     ];
     %SUBTAGPROP =    # [label,row,col_start,col_end,widget,extra_parameter]
       ( USLT => [
-            [_ "Lang.",  0, 1, 2, 'EntrySimple', 3],
-            [_ "Descr.", 0, 3, 5],
-            ['',         1, 0, 5, 'EntryLyrics']
+            ["Lang.",  0, 1, 2, 'EntrySimple', 3],
+            ["Descr.", 0, 3, 5],
+            ['',       1, 0, 5, 'EntryLyrics']
         ],
         COMM => [
-            [_ "Lang",   0, 1, 2, 'EntrySimple', 3],
-            [_ "Descr.", 0, 3, 5],
-            ['',         1, 0, 5]
+            ["Lang",   0, 1, 2, 'EntrySimple', 3],
+            ["Descr.", 0, 3, 5],
+            ['',       1, 0, 5]
         ],
         APIC => [
-            [_ "MIME type",    0, 1, 5],
-            [_ "Picture Type", 1, 1, 5, 'EntryCombo', $PICTYPE],
-            [_ "Description",  2, 1, 5],
-            ['',               3, 0, 5, 'EntryCover']
+            ["MIME type",    0, 1, 5],
+            ["Picture Type", 1, 1, 5, 'EntryCombo', $PICTYPE],
+            ["Description",  2, 1, 5],
+            ['',             3, 0, 5, 'EntryCover']
         ],
         GEOB => [
-            [_ "MIME type",   0, 1, 5],
-            [_ "Filename",    1, 1, 5],
-            [_ "Description", 2, 1, 5],
+            ["MIME type",   0, 1, 5],
+            ["Filename",    1, 1, 5],
+            ["Description", 2, 1, 5],
             ['', 3, 0, 5, 'EntryBinary']    #FIXME load & save & launch?
         ],
-        TXXX => [[_ "Descr.", 0, 1, 2], [_ "Text", 1, 1, 2]],
+        TXXX => [["Descr.", 0, 1, 2], ["Text", 1, 1, 2]],
         WXXX => [
-            [_ "Descr.", 0, 1, 2],
-            [_ "URL",    1, 1, 2]           #FIXME URL click
+            ["Descr.", 0, 1, 2],
+            ["URL",    1, 1, 2]             #FIXME URL click
         ],
-        POPM => [
-            [_ "email", 0, 1, 4], [_ "Rating", 1, 1, 2], [_ "counter", 1, 3, 4]
-        ],
+        POPM =>
+          [["email", 0, 1, 4], ["Rating", 1, 1, 2], ["counter", 1, 3, 4]],
         USER =>
-          [[_ "Lang", 0, 1, 2, 'EntrySimple', 3], [_ "Terms of use", 1, 1, 4]],
+          [["Lang", 0, 1, 2, 'EntrySimple', 3], ["Terms of use", 1, 1, 4]],
         OWNE => [
-            [_ "Price paid",       0, 1, 2],
-            [_ "Date of purchase", 1, 1, 2],
-            [_ "Seller",           2, 1, 2],
+            ["Price paid",       0, 1, 2],
+            ["Date of purchase", 1, 1, 2],
+            ["Seller",           2, 1, 2],
         ],
-        UFID =>
-          [[_ "Owner identifier", 0, 1, 2], ['', 1, 0, 2, 'EntryBinary']],
-        PRIV =>
-          [[_ "Owner identifier", 0, 1, 2], ['', 1, 0, 2, 'EntryBinary']],
+        UFID => [["Owner identifier", 0, 1, 2], ['', 1, 0, 2, 'EntryBinary']],
+        PRIV => [["Owner identifier", 0, 1, 2], ['', 1, 0, 2, 'EntryBinary']],
         '----' =>
-          [[_ "Application", 0, 1, 2], [_ "Name", 1, 1, 2], ['', 2, 0, 2],],
+          [["Application", 0, 1, 2], ["Name", 1, 1, 2], ['', 2, 0, 2],],
         'com.apple.iTunes----FMPS_Lyrics' => [
-            [_ "Application", 0, 1, 2],
-            [_ "Name",        1, 1, 2],
-            ['',              2, 0, 2, 'EntryLyrics'],
+            ["Application", 0, 1, 2],
+            ["Name",        1, 1, 2],
+            ['',            2, 0, 2, 'EntryLyrics'],
         ],
       );
     $SUBTAGPROP{metadata_block_picture} =
@@ -2863,7 +2863,7 @@ sub new {
         my ($name, $frow, $cols, $cole, $widget, $param) =
           ($prop)
           ? @{$prop->[$subtag]}
-          : (_ "unknown", $row++, 1, 5, undef, undef);
+          : ("unknown", $row++, 1, 5, undef, undef);
         unless ($widget) {
             ($widget, $param) = @{$DataType{$t}};
         }
@@ -2905,7 +2905,7 @@ use base 'Gtk2::Button';
 
 sub new {
     my $class = shift;
-    my $self  = bless Gtk2::Button->new(_ "View binary data ..."), $class;
+    my $self  = bless Gtk2::Button->new("View binary data ..."), $class;
     $self->{init} = $self->{value} = shift;
     $self->signal_connect(clicked => \&view);
     return $self;
@@ -2921,7 +2921,7 @@ sub return_value {
 sub view {
     my $self   = $_[0];
     my $dialog = Gtk2::Dialog->new(
-        _ "View Binary", $self->get_toplevel,
+        "View Binary", $self->get_toplevel,
         'destroy-with-parent', 'gtk-close' => 'close'
     );
     $dialog->set_default_response('close');
@@ -2963,8 +2963,8 @@ sub new {
     $eventbox->add($img);
     $self->add($_) for $eventbox, $vbox;
     my $label = $self->{label} = Gtk2::Label->new;
-    my $Bload = ::NewIconButton('gtk-open', _ "Replace...");
-    my $Bsave = ::NewIconButton('gtk-save-as', _ "Save as...");
+    my $Bload = ::NewIconButton('gtk-open', "Replace...");
+    my $Bsave = ::NewIconButton('gtk-save-as', "Save as...");
     $vbox->pack_start($_, 0, 0, 2) for $label, $Bload, $Bsave;
     $Bload->signal_connect(clicked => \&load_cb);
     $Bsave->signal_connect(clicked => \&save_cb);
@@ -2997,14 +2997,14 @@ sub set {
     my $Bsave  = $self->{Bsave};
     my $length = length $self->{value};
     unless ($length) {
-        $label->set_text(_ "empty");
+        $label->set_text("empty");
         $Bsave->set_sensitive(0);
         return;
     }
     my $loader = GMB::Picture::LoadPixData($self->{value}, '-150');
     my $pixbuf;
     if (!$loader) {
-        $label->set_text(_ "error");
+        $label->set_text("error");
         $Bsave->set_sensitive(0);
         ($self->{ext}, $self->{mime}) = ('', '');
     }
@@ -3055,7 +3055,7 @@ sub load_cb {
 sub save_cb {
     my $self = ::find_ancestor($_[0], __PACKAGE__);
     return unless length $self->{value};
-    my $file = ::ChooseSaveFile($self->{window}, _ "Save picture as",
+    my $file = ::ChooseSaveFile($self->{window}, "Save picture as",
         undef, 'picture.' . $self->{ext});
     return unless defined $file;
     open my $fh, '>', $file or return;
@@ -3083,7 +3083,7 @@ use base 'Gtk2::Button';
 
 sub new {
     my $class = shift;
-    my $self  = bless Gtk2::Button->new(_ "Edit Lyrics ..."), $class;
+    my $self  = bless Gtk2::Button->new("Edit Lyrics ..."), $class;
     $self->{init} = $self->{value} = shift;
     $self->signal_connect(clicked => \&edit);
     return $self;

@@ -7,10 +7,10 @@
 # it under the terms of the GNU General Public License version 3, as
 # published by the Free Software Foundation.
 
+package Layout;
+
 use strict;
 use warnings;
-
-package Layout;
 
 use constant {
     TRUE  => 1,
@@ -21,11 +21,11 @@ use constant {
 };
 
 our @MenuQueue = (
-    {   label  => _ "Queue album",
+    {   label  => "Queue album",
         code   => sub { ::EnqueueSame('album', $_[0]{ID}); },
         istrue => 'ID',
     },
-    {   label  => _ "Queue artist",
+    {   label  => "Queue artist",
         code   => sub { ::EnqueueSame('artist', $_[0]{ID}); },
         istrue => 'ID',
     },    # or use field 'artists' or 'first_artist' ?
@@ -43,15 +43,15 @@ our @MenuQueue = (
             );
         },
     },
-    {   label => _ "Clear queue",
+    {   label => "Clear queue",
         code  => \&::ClearQueue,
         test  => sub {@$::Queue}
     },
-    {   label => _ "Shuffle queue",
+    {   label => "Shuffle queue",
         code  => sub { $::Queue->Shuffle },
         test  => sub {@$::Queue}
     },
-    {   label => _ "Auto fill up to",
+    {   label => "Auto fill up to",
         code  => sub {
             $::Options{MaxAutoFill} = $_[1];
             ::HasChanged('QueueAction', 'maxautofill');
@@ -62,7 +62,7 @@ our @MenuQueue = (
         },
         check => sub { $::Options{MaxAutoFill}; },
     },
-    {   label => _ "Edit...",
+    {   label => "Edit...",
         code  => \&::EditQueue,
         test  => sub { !$_[0]{mode} || $_[0]{mode} ne 'Q' },
     },
@@ -90,28 +90,28 @@ our @MenuQueue = (
 );
 
 our @MainMenu = (
-    {   label     => _ "Add files or folders",
+    {   label     => "Add files or folders",
         code      => sub { ::ChooseAddPath(0, 1) },
         stockicon => 'gtk-add'
     },
-    {   label     => _ "Settings",
+    {   label     => "Settings",
         code      => 'OpenPref',
         stockicon => 'gtk-preferences'
     },
-    {   label     => _ "Open Browser",
+    {   label     => "Open Browser",
         code      => \&::OpenBrowser,
         stockicon => 'gmb-playlist'
     },
-    {   label     => _ "Open Context window",
+    {   label     => "Open Context window",
         code      => \&::ContextWindow,
         stockicon => 'gtk-info'
     },
-    {   label     => _ "Switch to fullscreen mode",
+    {   label     => "Switch to fullscreen mode",
         code      => \&::ToggleFullscreenLayout,
         stockicon => 'gtk-fullscreen'
     },
-    {label => _ "About", code => \&::AboutDialog, stockicon => 'gtk-about'},
-    {label => _ "Quit",  code => \&::Quit,        stockicon => 'gtk-quit'},
+    {label => "About", code => \&::AboutDialog, stockicon => 'gtk-about'},
+    {label => "Quit",  code => \&::Quit,        stockicon => 'gtk-quit'},
 );
 
 our %Widgets = (
@@ -120,8 +120,8 @@ our %Widgets = (
 
         #size	=> SIZE_BUTTONS,
         stock    => 'gtk-media-previous',
-        tip      => _ "Recently played songs",
-        text     => _ "Previous",
+        tip      => "Recently played songs",
+        text     => "Previous",
         group    => 'Recent',
         activate => \&::PrevSong,
         options  => 'nbsongs',
@@ -131,7 +131,7 @@ our %Widgets = (
     Stop => {
         class    => 'Layout::Button',
         stock    => 'gtk-media-stop',
-        tip      => _ "Stop",
+        tip      => "Stop",
         activate => \&::Stop,
         click2   => 'EnqueueAction(stop)',
         click3   => 'SetNextAction(stop)',
@@ -140,7 +140,7 @@ our %Widgets = (
         class    => 'Layout::Button',
         state    => sub { $::TogPlay ? 'pause' : 'play' },
         stock    => {pause => 'gtk-media-pause', play => 'gtk-media-play'},
-        tip      => sub { $::TogPlay ? _ "Pause" : _ "Play" },
+        tip      => sub { $::TogPlay ? "Pause" : "Play" },
         activate => \&::PlayPause,
         click3   => 'Stop',
         event    => 'Playing',
@@ -148,8 +148,8 @@ our %Widgets = (
     Next => {
         class    => 'Layout::Button',
         stock    => 'gtk-media-next',
-        tip      => _ "Next Song",
-        text     => _ "Next",
+        tip      => "Next Song",
+        text     => "Next",
         group    => 'Next',
         activate => \&::NextSong,
         options  => 'nbsongs',
@@ -161,7 +161,7 @@ our %Widgets = (
         oldopt1  => 'toggle',
         options  => 'toggle',
         stock    => 'gmb-playlist',
-        tip      => _ "Open Browser window",
+        tip      => "Open Browser window",
         activate => sub { ::OpenSpecialWindow('Browser', $_[0]{toggle}); },
         click3   => sub { ::OpenSpecialWindow('Browser'); },
     },
@@ -170,22 +170,22 @@ our %Widgets = (
         oldopt1  => 'toggle',
         options  => 'toggle',
         stock    => 'gtk-info',
-        tip      => _ "Open Context window",
+        tip      => "Open Context window",
         activate => sub { ::OpenSpecialWindow('Context', $_[0]{toggle}); },
         click3   => sub { ::OpenSpecialWindow('Context'); },
     },
     OpenQueue => {
         class    => 'Layout::Button',
         stock    => 'gmb-queue-window',
-        tip      => _ "Open Queue window",
+        tip      => "Open Queue window",
         options  => 'toggle',
         activate => sub { ::OpenSpecialWindow('Queue', $_[0]{toggle}); },
     },
     Pref => {
         class    => 'Layout::Button',
         stock    => 'gtk-preferences',
-        tip      => _ "Edit Settings",
-        text     => _ "Settings",
+        tip      => "Edit Settings",
+        text     => "Settings",
         activate => 'OpenPref',
         click3   => sub { Layout::Window->new($::Options{Layout}); }
         ,    #mostly for debugging purpose
@@ -194,7 +194,7 @@ our %Widgets = (
     Quit => {
         class    => 'Layout::Button',
         stock    => 'gtk-quit',
-        tip      => _ "Quit",
+        tip      => "Quit",
         activate => \&::Quit,
         click2   => 'EnqueueAction(quit)',
         click3   => 'SetNextAction(quit)',
@@ -209,7 +209,7 @@ our %Widgets = (
           sub { ($::TogLock && $::TogLock eq $_[0]{field}) ? 'on' : 'off' },
         stock => {on => 'gmb-lock', off => '. gmb-locklight'},
         tip   => sub {
-            ::__x(_ "Lock on {field}", field => Songs::FieldName($_[0]{field}));
+            ::__x("Lock on {field}", field => Songs::FieldName($_[0]{field}));
         },
         click1 => sub { ::ToggleLock($_[0]{field}); },
         event  => 'Lock',
@@ -217,18 +217,18 @@ our %Widgets = (
     LockSong => {
         parent => 'Lock',
         field  => 'fullfilename',
-        tip    => _ "Lock on song",
+        tip    => "Lock on song",
     },
     LockArtist => {
         parent => 'Lock',
         field  => 'first_artist',
-        tip    => _ "Lock on Artist",
+        tip    => "Lock on Artist",
         click2 => 'EnqueueArtist',
     },
     LockAlbum => {
         parent => 'Lock',
         field  => 'album',
-        tip    => _ "Lock on Album",
+        tip    => "Lock on Album",
         click2 => 'EnqueueAlbum',
     },
     Sort => {
@@ -247,7 +247,7 @@ our %Widgets = (
             sorted  => 'gtk-sort-ascending'
         },
         tip =>
-          sub { _("Play order") . " :\n" . ::ExplainSort($::Options{Sort}); },
+          sub { "Play order :\n" . ::ExplainSort($::Options{Sort}); },
         text   => sub { ::ExplainSort($::Options{Sort}, 1); },
         click1 => 'MenuPlayOrder',
         click3 => 'ToggleRandom',
@@ -269,11 +269,11 @@ our %Widgets = (
         },
         tip => sub {
             defined $::ListMode
-              ? _ "static list"
-              : _("Playlist filter :\n") . $::SelectedFilter->explain;
+              ? "static list"
+              : "Playlist filter :\n" . $::SelectedFilter->explain;
         },
         text =>
-          sub { $::ListMode ? _ "static list" : $::SelectedFilter->name; },
+          sub { $::ListMode ? "static list" : $::SelectedFilter->name; },
         click1 => 'MenuPlayFilter',
         click3 => 'ClearPlayFilter',
         event  => 'Filter SavedFilters',
@@ -299,12 +299,12 @@ our %Widgets = (
               . (
                 $::QueueAction
                 ? "\n"
-                  . ::__x(_ "then {action}",
+                  . ::__x("then {action}",
                     action => $::QActions{$::QueueAction}{short})
                 : ''
               );
         },
-        text   => _ "Queue",
+        text   => "Queue",
         click1 => 'MenuQueue',
         click3 =>
           sub { ::EnqueueAction(''); ::SetNextAction(''); ::ClearQueue(); }
@@ -320,7 +320,7 @@ our %Widgets = (
             'gmb-vol'
               . ($_[0] eq 'm' ? 'm' : int(($_[0] - 1) / 100 * $::NBVolIcons));
         },
-        tip    => sub { _("Volume : ") . ::GetVol() . '%' },
+        tip    => sub { "Volume : " . ::GetVol() . '%' },
         click1 => sub { ::PopupLayout('Volume', $_[0]); },
         click3 => sub { ::ChangeVol('mute') },
         event  => 'Vol',
@@ -362,7 +362,7 @@ our %Widgets = (
         minsize      => 20,
         markup       => '<b><big>%S</big></b>%V',
         markup_empty => '<b><big>&lt;'
-          . _("Playlist Empty")
+          . "Playlist Empty"
           . '&gt;</big></b>',
         click1 => \&PopupSongsFromAlbum,
         click3 => sub {
@@ -379,7 +379,7 @@ our %Widgets = (
         class  => 'Layout::Label',
         parent => 'Title',
         markup => ::__x(
-            _ "{song} by {artist}",
+            "{song} by {artist}",
             song   => "<b><big>%S</big></b>%V",
             artist => "<b>%a</b>"
         ),
@@ -437,9 +437,9 @@ our %Widgets = (
     Length => {
         class => 'Layout::Label',
         group => 'Play',
-        initsize     => ::__x(_ " of {length}", 'length' => "XX:XX"),
-        markup       => ::__x(_ " of {length}", 'length' => "%m"),
-        markup_empty => ::__x(_ " of {length}", 'length' => "0:00"),
+        initsize     => ::__x(" of {length}", 'length' => "XX:XX"),
+        markup       => ::__x(" of {length}", 'length' => "%m"),
+        markup_empty => ::__x(" of {length}", 'length' => "0:00"),
 
 #		font	=> 'Monospace',
     },
@@ -462,9 +462,9 @@ our %Widgets = (
     Time => {
         parent       => 'PlayingTime',
         xalign       => .5,
-        markup       => '%s' . ::__x(_ " of {length}", 'length' => "%m"),
-        markup_empty => '%s' . ::__x(_ " of {length}", 'length' => "0:00"),
-        initsize => '-XX:XX' . ::__x(_ " of {length}", 'length' => "XX:XX"),
+        markup       => '%s' . ::__x(" of {length}", 'length' => "%m"),
+        markup_empty => '%s' . ::__x(" of {length}", 'length' => "0:00"),
+        initsize => '-XX:XX' . ::__x(" of {length}", 'length' => "XX:XX"),
     },
     TimeBar => {
         class   => 'Layout::Bar',
@@ -574,13 +574,13 @@ our %Widgets = (
     Filler    => {New => sub { Gtk2::HBox->new; },},
     QueueList => {
         New        => sub { $_[0]{type} = 'Q'; SongList::Common->new($_[0]); },
-        tabtitle   => _ "Queue",
+        tabtitle   => "Queue",
         tabicon    => 'gmb-queue',
         issonglist => 1,
     },
     PlayList => {
         New        => sub { $_[0]{type} = 'A'; SongList::Common->new($_[0]); },
-        tabtitle   => _ "Playlist",
+        tabtitle   => "Playlist",
         tabicon    => 'gtk-media-play',
         issonglist => 1,
     },
@@ -625,7 +625,7 @@ our %Widgets = (
         expander   => 1,
         hide_empty => 1,
         tabicon    => 'gtk-info',
-        tabtitle   => _ "Song informations",
+        tabtitle   => "Song informations",
     },
     PictureBrowser => {
         class         => 'Layout::PictureBrowser',
@@ -648,7 +648,7 @@ our %Widgets = (
         schange      => \&Layout::PictureBrowser::queue_song_changed,
         autoadd_type => 'context page pictures',
         tabicon      => 'gmb-picture',
-        tabtitle     => _ "Album pictures",
+        tabtitle     => "Album pictures",
     },
     AABox => {
         class   => 'GMB::AABox',
@@ -684,12 +684,12 @@ our %Widgets = (
     },
     HistItem => {
         New        => \&Layout::MenuItem::new,
-        text       => _ "Recent Filters",
+        text       => "Recent Filters",
         updatemenu => \&Browser::fill_history_menu,
     },
     PlayItem => {
         New        => \&Layout::MenuItem::new,
-        text       => _ "Playing",
+        text       => "Playing",
         updatemenu => sub {
             my $sl = ::GetSonglist($_[0]);
             unless ($sl) {
@@ -703,29 +703,29 @@ our %Widgets = (
     },
     LSortItem => {
         New        => \&Layout::MenuItem::new,
-        text       => _ "Sort",
+        text       => "Sort",
         updatemenu => \&Browser::make_sort_menu,
     },
     PSortItem => {
         New        => \&Layout::MenuItem::new,
-        text       => _ "Play order",
+        text       => "Play order",
         updatemenu => sub { SortMenu($_[0]->get_submenu); },
     },
     PFilterItem => {
         New        => \&Layout::MenuItem::new,
-        text       => _ "Playlist filter",
+        text       => "Playlist filter",
         updatemenu => sub { FilterMenu($_[0]->get_submenu); },
     },
     QueueItem => {
         New        => \&Layout::MenuItem::new,
-        text       => _ "Queue",
+        text       => "Queue",
         updatemenu => sub {
             ::BuildMenu(\@MenuQueue, {ID => $::SongID}, $_[0]->get_submenu);
         },
     },
     LayoutItem => {
         New        => \&Layout::MenuItem::new,
-        text       => _ "Layout",
+        text       => "Layout",
         updatemenu => sub {
             ::BuildChoiceMenu(
                 Layout::get_layout_list(qr/G.*\+/),
@@ -741,7 +741,7 @@ our %Widgets = (
     },
     MainMenuItem => {
         New  => \&Layout::MenuItem::new,
-        text => _ "Main",
+        text => "Main",
         updatemenu =>
           sub { ::BuildMenu(\@MainMenu, undef, $_[0]->get_submenu); },
     },
@@ -751,14 +751,14 @@ our %Widgets = (
         class    => 'Layout::Button',
         size     => 'menu',
         stock    => 'gtk-refresh',
-        tip      => _ "Refresh list",
+        tip      => "Refresh list",
         activate => sub { ::RefreshFilters($_[0]); },
     },
     PlayFilter => {
         class    => 'Layout::Button',
         size     => 'menu',
         stock    => 'gtk-media-play',
-        tip      => _ "Play filter",
+        tip      => "Play filter",
         activate => sub {
             ::Select(
                 filter => ::GetFilter($_[0]),
@@ -772,14 +772,14 @@ our %Widgets = (
         class    => 'Layout::Button',
         size     => 'menu',
         stock    => 'gmb-queue',
-        tip      => _ "Enqueue filter",
+        tip      => "Enqueue filter",
         activate => sub { ::EnqueueFilter(::GetFilter($_[0])); },
     },
     ResetFilter => {
         class    => 'Layout::Button',
         size     => 'menu',
         stock    => 'gtk-clear',
-        tip      => _ "Reset filter",
+        tip      => "Reset filter",
         activate => sub { ::SetFilter($_[0], undef); },
     },
     ToggleButton => {
@@ -791,13 +791,13 @@ our %Widgets = (
     Choose     => {
         class    => 'Layout::Button',
         stock    => 'gtk-add',
-        tip      => _ "Choose Artist/Album/Song",
+        tip      => "Choose Artist/Album/Song",
         activate => sub { Layout::Window->new('Search'); },
     },
     ChooseRandAlbum => {
         class    => 'Layout::Button',
         stock    => 'gmb-random-album',
-        tip      => _ "Choose Random Album",
+        tip      => "Choose Random Album",
         options  => 'action',
         activate => sub {
             my $al   = AA::GetAAList('album');
@@ -823,7 +823,7 @@ our %Widgets = (
                 'album',
                 list   => \@list,
                 format => ::__x(
-                    _ "{album}\n<small>by</small> {artist}",
+                    "{album}\n<small>by</small> {artist}",
                     album  => "%a",
                     artist => "%b"
                 )
@@ -875,8 +875,8 @@ our %Widgets = (
             my @c = $::Play_package->get_connections;
             my $t =
               @c
-              ? _("Connections from :") . "\n" . join("\n", @c)
-              : _("No connections");
+              ? "Connections from :\n" . join("\n", @c)
+              : "No connections";
             $_[0]->child->set_text($t);
         },
         event => 'connections',
@@ -885,7 +885,7 @@ our %Widgets = (
         class    => 'Layout::Button',
         stock    => 'gmb-shuffle',
         size     => SIZE_FLAGS,
-        tip      => _ "Shuffle list",
+        tip      => "Shuffle list",
         activate => sub {
             my $songarray = ::GetSongArray($_[0]) || return;
             $songarray->Shuffle;
@@ -898,7 +898,7 @@ our %Widgets = (
         class    => 'Layout::Button',
         stock    => 'gtk-clear',
         size     => SIZE_FLAGS,
-        tip      => _ "Empty list",
+        tip      => "Empty list",
         activate => sub {
             my $songarray = ::GetSongArray($_[0]) || return;
             $songarray->Replace();
@@ -912,8 +912,8 @@ our %Widgets = (
     Fullscreen      => {
         class          => 'Layout::Button',
         stock          => 'gtk-fullscreen',
-        tip            => _ "Toggle fullscreen mode",
-        text           => _ "Fullscreen",
+        tip            => "Toggle fullscreen mode",
+        text           => "Fullscreen",
         activate       => \&::ToggleFullscreenLayout,
         click3         => \&ToggleFullscreen,
         autoadd_type   => 'button main',
@@ -921,7 +921,7 @@ our %Widgets = (
     },
     Repeat => {
         New => sub {
-            my $w = Gtk2::CheckButton->new(_ "Repeat");
+            my $w = Gtk2::CheckButton->new("Repeat");
             $w->signal_connect(
                 clicked => sub { ::SetRepeat($_[0]->get_active); });
             return $w;
@@ -1023,7 +1023,7 @@ sub get_layout_list {
     for my $id (@list) {
         my $name2 = $id;
         my $cat   = $Layouts{$id}{Category};
-        my $name  = $Layouts{$id}{Name} || _($name2);
+        my $name  = $Layouts{$id}{Name} || $name2;
         my $array = $cat ? ($cat{$cat} ||= []) : \@tree;
         push @$array, $id, $name;
     }
@@ -1034,8 +1034,8 @@ sub get_layout_list {
 sub get_layout_name {
     my $layout = shift;
     my $def    = $Layouts{$layout};
-    return sprintf(_ "Unknown layout '%s'", $layout) unless $def;
-    my $name = $def->{Name} || _($layout);
+    return sprintf("Unknown layout '%s'", $layout) unless $def;
+    my $name = $def->{Name} || $layout;
     return $name;
 }
 
@@ -1117,7 +1117,7 @@ sub ParseLayout {
     else {return}
     my $currentkey;
     for (@$lines) {
-        s#_\"([^"]+)"#my $tr=_( $1 ); $tr=~y/"/'/; qq/"$tr"/#ge
+        s#_\"([^"]+)"#my $tr=$1; $tr=~y/"/'/; qq/"$tr"/#ge
           ; #translation, escaping the " so it is not picked up as a translatable string. Replace any " in translations because they would cause trouble
         unless (m/^(\w+)\s*=\s*(.*)$/) {
             $Layouts{$name}{$currentkey} .= ' ' . $1 if m/\s*(.*)$/;
@@ -1160,7 +1160,7 @@ sub ParseSongTreeSkin {
                   "Can't use reserved keyword $key in SongTreee column $name\n";
                 next;
             }
-            $string = _($1)
+            $string = $1
               if $string =~ m/_\"([^"]+)"/
               ; #translation, escaping the " so it is not picked up as a translatable string
             $ref->{$key} = $string;
@@ -1839,19 +1839,19 @@ sub PlayOrderComboUpdate {
     if (!$found && $check =~ m/^random:/) {
         $store->set(
             $iter = $store->append,
-            0, _ "unnamed random mode",
+            0, "unnamed random mode",
             1, $check, 2, 'gmb-random'
         );
         $found = $iter;
     }
-    $store->set($store->append, 0, _ "Edit random modes ...", 1, 'EDIT R');
+    $store->set($store->append, 0, "Edit random modes ...", 1, 'EDIT R');
     $store->set($iter = $store->append,
-        0, _ "Shuffle", 1, 'shuffle', 2, 'gmb-shuffle');
+        0, "Shuffle", 1, 'shuffle', 2, 'gmb-shuffle');
     $found = $iter if 'shuffle' eq $check;
     if (defined $::ListMode) {
         $store->set(
             $iter = $store->append,
-            0, _ "List order",
+            0, "List order",
             1, '', 2, 'gmb-list'
         );
         $found = $iter if '' eq $check;
@@ -1867,7 +1867,7 @@ sub PlayOrderComboUpdate {
             0, ::ExplainSort($check), 1, $check, 2, 'gtk-sort-ascending');
         $found = $iter;
     }
-    $store->set($store->append, 0, _ "Edit ordered modes ...", 1, 'EDIT O');
+    $store->set($store->append, 0, "Edit ordered modes ...", 1, 'EDIT O');
     $combo->set_active_iter($found);
     $combo->{busy} = undef;
 }
@@ -1893,14 +1893,14 @@ sub SortMenu {
     };
 
     my $submenu = Gtk2::Menu->new;
-    my $sitem   = Gtk2::MenuItem->new(_ "Weighted Random");
+    my $sitem   = Gtk2::MenuItem->new("Weighted Random");
     for my $name (sort keys %{$::Options{SavedWRandoms}}) {
         $append->($submenu, $name, $::Options{SavedWRandoms}{$name});
     }
     my $editcheck = (!$found && $check =~ m/^random:/);
     $append->(
         $submenu,
-        _ "Custom...",
+        "Custom...",
         undef,
         $editcheck,
         sub {
@@ -1911,16 +1911,16 @@ sub SortMenu {
     $sitem->set_submenu($submenu);
     $menu->prepend($sitem);
 
-    $append->($menu, _ "Shuffle", 'shuffle') unless $check eq 'shuffle';
+    $append->($menu, "Shuffle", 'shuffle') unless $check eq 'shuffle';
 
     if ($check =~ m/shuffle/) {
-        my $item = Gtk2::MenuItem->new(_ "Re-shuffle");
+        my $item = Gtk2::MenuItem->new("Re-shuffle");
         $item->signal_connect(activate => $callback, $check);
         $menu->append($item);
     }
 
     {
-        my $item = Gtk2::CheckMenuItem->new(_ "Repeat");
+        my $item = Gtk2::CheckMenuItem->new("Repeat");
         $item->set_active($::Options{Repeat});
         $item->set_sensitive(0) if $::RandomMode;
         $item->signal_connect(
@@ -1931,13 +1931,13 @@ sub SortMenu {
     $menu->append(Gtk2::SeparatorMenuItem->new)
       ;    #separator between random and non-random modes
 
-    $append->($menu, _ "List order", '') if defined $::ListMode;
+    $append->($menu, "List order", '') if defined $::ListMode;
     for my $name (sort keys %{$::Options{SavedSorts}}) {
         $append->($menu, $name, $::Options{SavedSorts}{$name});
     }
     $append->(
         $menu,
-        _ "Custom...",
+        "Custom...",
         undef,
         !$found,
         sub {
@@ -1956,7 +1956,7 @@ sub FilterMenu {
     $check = $::SelectedFilter->{string} if $::SelectedFilter;
     my $item_callback = sub { ::Select(filter => $_[1]); };
 
-    my $item0 = Gtk2::CheckMenuItem->new(_ "All songs");
+    my $item0 = Gtk2::CheckMenuItem->new("All songs");
     $item0->set_active($found = 1) if !$check && !defined $::ListMode;
     $item0->set_draw_as_radio(1);
     $item0->signal_connect(activate => $item_callback, '');
@@ -1970,7 +1970,7 @@ sub FilterMenu {
         $item->signal_connect(activate => $item_callback, $filt);
         $menu->append($item);
     }
-    my $item = Gtk2::CheckMenuItem->new(_ "Custom...");
+    my $item = Gtk2::CheckMenuItem->new("Custom...");
     $item->set_active(1) if defined $check && !$found;
     $item->set_draw_as_radio(1);
     $item->signal_connect(
@@ -1991,7 +1991,7 @@ sub FilterMenu {
             $item->signal_connect(activate => $list_cb, $list);
             $submenu->append($item);
         }
-        my $sitem = Gtk2::MenuItem->new(_ "Saved Lists");
+        my $sitem = Gtk2::MenuItem->new("Saved Lists");
 
         #my $sitem=Gtk2::CheckMenuItem->new('Saved Lists');
         #$item->set_draw_as_radio(1);
@@ -2039,7 +2039,7 @@ sub UpdateLabelsIcon {
 sub AddLabelEntry    #create entry to add a label to the current song
 {
     my $entry = Gtk2::Entry->new;
-    $entry->set_tooltip_text(_ "Adds labels to the current song");
+    $entry->set_tooltip_text("Adds labels to the current song");
     $entry->signal_connect(
         activate => sub {
             my $entry = shift;
@@ -2332,7 +2332,7 @@ sub SetWindowOptions {
       if $opt->{fixedsize};
     $self->set_border_width($self->{options}{borderwidth});
     $self->set_gravity($opt->{gravity}) if $opt->{gravity};
-    my $title = $layouthash->{Title} || $opt->{title} || _ "%S by %a";
+    my $title = $layouthash->{Title} || $opt->{title} || "%S by %a";
     $title =~ s/^"(.*)"$/$1/;
     if (my @l = ::UsedFields($title)) {
         $self->{TitleString} = $title;
@@ -2351,7 +2351,7 @@ sub UpdateWindowTitle {
         $title =
           defined $ID
           ? ::ReplaceFields($ID, $title)
-          : '<' . _("Playlist Empty") . '>';
+          : '<Playlist Empty>';
         $self->set_title($title);
     }
 }
@@ -3097,26 +3097,26 @@ package Layout::NoteBook;
 use base 'Gtk2::Notebook';
 
 our @contextmenu = (
-    {   label => _ "New list",
+    {   label => "New list",
         code => sub { $_[0]{self}->newtab('EditList', 1, {songarray => ''}); },
         type => 'L',
         stockicon => 'gtk-add',
     },
-    {   label     => _ "Open Queue",
+    {   label     => "Open Queue",
         code      => sub { $_[0]{self}->newtab('QueueList', 1); },
         type      => 'L',
         stockicon => 'gmb-queue',
         test =>
           sub { !grep $_->{name} eq 'QueueList', $_[0]{self}->get_children }
     },
-    {   label     => _ "Open Playlist",
+    {   label     => "Open Playlist",
         code      => sub { $_[0]{self}->newtab('PlayList', 1); },
         type      => 'L',
         stockicon => 'gtk-media-play',
         test =>
           sub { !grep $_->{name} eq 'PlayList', $_[0]{self}->get_children }
     },
-    {   label => _ "Open existing list",
+    {   label => "Open existing list",
         code =>
           sub { $_[0]{self}->newtab('EditList', 1, {songarray => $_[1]}); },
         type    => 'L',
@@ -3128,26 +3128,26 @@ our @contextmenu = (
             return [grep !$h{$_}, ::GetListOfSavedLists()];
         }
     },
-    {   label        => _ "Open page layout",
+    {   label        => "Open page layout",
         code         => sub { $_[0]{self}->newtab('@' . $_[1], 1); },
         type         => 'P',
         submenu      => sub { Layout::get_layout_list('P') },
         submenu_tree => 1,
     },
-    {   label   => _ "Open context page",
+    {   label   => "Open context page",
         type    => 'C',
         submenu => sub { $_[0]{self}->make_widget_list('context page'); },
         submenu_reverse => 1,
         code            => sub { $_[0]{self}->newtab($_[1], 1); },
     },
-    {   label  => _ "Delete list",
+    {   label  => "Delete list",
         code   => sub { $_[0]{page}->DeleteList; },
         type   => 'L',
         istrue => 'page',
         test   => sub { $_[0]{page}{name} =~ m/^EditList\d*$/; }
     },
-    {label => _ "Rename", code => \&pagerename_cb, istrue => 'rename',},
-    {   label     => _ "Close",
+    {label => "Rename", code => \&pagerename_cb, istrue => 'rename',},
+    {   label     => "Close",
         code      => sub { $_[0]{self}->close_tab($_[0]{page}, 1); },
         istrue    => 'close',
         stockicon => 'gtk-close',
@@ -3519,7 +3519,7 @@ sub create_chooser_page {
     }
     $bbox->show_all;
     $bbox->{name} = '';
-    $self->append_page($bbox, _ "Choose page to open");
+    $self->append_page($bbox, "Choose page to open");
 }
 
 sub make_widget_list {
@@ -5143,28 +5143,28 @@ use base 'Gtk2::Box';
 
 our @toolbar = (
     {   stockicon    => 'gmb-view-list',
-        label        => _ "Show file list",
+        label        => "Show file list",
         toggleoption => 'self/show_list',
         cb           => sub { $_[0]{self}->update_showhide; },
     },
     {   stockicon => 'gtk-zoom-in',
-        label     => _ "Zoom in",
+        label     => "Zoom in",
         cb        => sub { $_[0]{view}->change_zoom('+'); },
     },
     {   stockicon => 'gtk-zoom-out',
-        label     => _ "Zoom out",
+        label     => "Zoom out",
         cb        => sub { $_[0]{view}->change_zoom('-'); },
     },
     {   stockicon => 'gtk-zoom-100',
-        label     => _ "Zoom 1:1",
+        label     => "Zoom 1:1",
         cb        => sub { $_[0]{view}->change_zoom(1); },
     },
     {   stockicon => 'gtk-zoom-fit',
-        label     => _ "Zoom to fit",
+        label     => "Zoom to fit",
         cb        => sub { $_[0]{view}->set_zoom_fit; },
     },
     {   stockicon => 'gtk-fullscreen',
-        label     => _ "Fullscreen",
+        label     => "Fullscreen",
         cb        => sub { $_[0]{view}->set_fullscreen(1); },
     },
 
@@ -5175,8 +5175,8 @@ our @toolbar = (
     {   stockicon => 'gtk-jump-to',
         label     => sub {
             $_[0]{self}{group} eq 'Play'
-              ? _ "Follow playing song"
-              : _ "Follow selected song";
+              ? "Follow playing song"
+              : "Follow selected song";
         },
         toggleoption => 'self/follow',
         cb           => sub { $_[0]{self}->queue_song_changed; },
@@ -5186,8 +5186,8 @@ our @toolbar = (
 our @optionsubmenu = (
     {   label => sub {
             $_[0]{self}{group} eq 'Play'
-              ? _ "Follow playing song"
-              : _ "Follow selected song";
+              ? "Follow playing song"
+              : "Follow selected song";
         },
         code => sub {
             $_[0]{self}->queue_song_changed;
@@ -5197,59 +5197,57 @@ our @optionsubmenu = (
         mode         => 'V',
     },
 
-    {   label        => _ "Scroll to zoom",
+    {   label        => "Scroll to zoom",
         mode         => 'VP',
         toggleoption => 'view/scroll_zoom',
     },
 
-    {   label        => _ "Reset view position when file changes",
+    {   label        => "Reset view position when file changes",
         mode         => 'V',
         toggleoption => 'self/reset_offset_on_file_change',
     },
 
-    {   label                => _ "Reset zoom",
+    {   label                => "Reset zoom",
         mode                 => 'V',
         submenu_ordered_hash => 1,
         check                => sub { $_[0]{self}{reset_zoom_on} },
         submenu              => [
-            _
               "when file changes" => 'file',
-            _
               "when folder changes" => 'folder',
-            _ "never" => 'never'
+              "never" => 'never'
         ],
         code => sub { $_[0]{self}{reset_zoom_on} = $_[1] },
     },
 
     {separator => 1, mode => 'V',},
 
-    {   label        => _ "Show folder list",
+    {   label        => "Show folder list",
         mode         => 'VL',
         toggleoption => 'self/show_folders',
         test         => sub { $_[0]{self}{show_list}, },
         code         => sub { $_[0]{self}->update_showhide; },
     },
-    {   label        => _ "Show file list",
+    {   label        => "Show file list",
         mode         => 'VL',
         toggleoption => 'self/show_list',
         code         => sub { $_[0]{self}->update_showhide; },
     },
-    {   label        => _ "Show toolbar",
+    {   label        => "Show toolbar",
         mode         => 'VL',
         toggleoption => 'self/show_toolbar',
         code         => sub { $_[0]{self}->update_showhide; },
     },
-    {   label        => _ "Show pdf pages",
+    {   label        => "Show pdf pages",
         mode         => 'VL',
         toggleoption => 'self/pdf_mode',
         code         => sub { $_[0]{self}->update; },
     },
-    {   label        => _ "Show embedded pictures",
+    {   label        => "Show embedded pictures",
         mode         => 'VL',
         toggleoption => 'self/embedded_mode',
         code         => sub { $_[0]{self}->update; },
     },
-    {   label        => _ "Show all files",
+    {   label        => "Show all files",
         mode         => 'VL',
         toggleoption => 'self/all_mode',
         code         => sub { $_[0]{self}->update; },
@@ -5258,25 +5256,25 @@ our @optionsubmenu = (
 
 # mode L is for List, V for View, P for Pixbuf (Layout::PictureBrowser::View without a Layout::PictureBrowser, not used yet)
 our @ContextMenu = (
-    {   label     => _ "Zoom in",
+    {   label     => "Zoom in",
         code      => sub { $_[0]{view}->change_zoom('+'); },
         defined   => 'pixbuf',
         stockicon => 'gtk-zoom-in',
         mode      => 'PV',
     },
-    {   label     => _ "Zoom out",
+    {   label     => "Zoom out",
         code      => sub { $_[0]{view}->change_zoom('-'); },
         defined   => 'pixbuf',
         stockicon => 'gtk-zoom-out',
         mode      => 'PV',
     },
-    {   label     => _ "Zoom 1:1",
+    {   label     => "Zoom 1:1",
         code      => sub { $_[0]{view}->change_zoom(1); },
         defined   => 'pixbuf',
         stockicon => 'gtk-zoom-100',
         mode      => 'PV',
     },
-    {   label     => _ "Zoom to fit",
+    {   label     => "Zoom to fit",
         code      => sub { $_[0]{view}->set_zoom_fit; },
         defined   => 'pixbuf',
         stockicon => 'gtk-zoom-fit',
@@ -5284,12 +5282,12 @@ our @ContextMenu = (
     },
     {separator => 1, mode => 'V',},
 
-    {   label  => _ "View in new window",
+    {   label  => "View in new window",
         istrue => 'file',
         code   => sub { $_[0]{self}->view_in_new_window($_[0]{file}); },
         mode   => 'VL',
     },
-    {   label => _ "Rename file",
+    {   label => "Rename file",
         code  => sub {
             my $tv = $_[0]{self}{filetv};
             $tv->set_cursor($_[0]{treepaths}[0], $tv->get_column(0), ::TRUE);
@@ -5299,7 +5297,7 @@ our @ContextMenu = (
         istrue  => 'writeable',
         mode    => 'L',
     },
-    {   label     => _ "Delete file",
+    {   label     => "Delete file",
         code      => sub { $_[0]{self}->delete_selected },
         istrue    => 'writeable',
         isfalse   => 'ispage',
@@ -5307,12 +5305,12 @@ our @ContextMenu = (
         stockicon => 'gtk-delete',
     },
 
-    {label => _ "Options", submenu => \@optionsubmenu, mode => 'VL',},
+    {label => "Options", submenu => \@optionsubmenu, mode => 'VL',},
 
     {   label => sub {
             my $name = Songs::Gid_to_Display($_[0]{field}, $_[0]{gid});
             ::__x(
-                _ "Set as picture for '{name}'",
+                "Set as picture for '{name}'",
                 name => ::Ellipsize($name, 30)
             );
         },
@@ -5329,7 +5327,7 @@ our @ContextMenu = (
         # test => sub { Songs::FilterListProp($_[0]{field},'picture') },
     },
 
-    {   label => _ "Paste link",
+    {   label => "Paste link",
         test  => sub {
             return unless $_[0]{self}->can('drop_uris');
             $_[0]{clip} =
@@ -5344,7 +5342,7 @@ our @ContextMenu = (
     },
 
     {   label =>
-          sub { $_[0]{view}{fullwin} ? _ "Exit full screen" : _ "Full screen" }
+          sub { $_[0]{view}{fullwin} ? "Exit full screen" : "Full screen" }
         ,
         code      => sub { $_[0]{view}->set_fullscreen },
         mode      => 'VP',
@@ -5511,8 +5509,8 @@ sub new {
             }
             $view->{dnd_message} =
               $datatype eq 'uri'
-              ? _ "Drop files in this folder"
-              : _ "View pictures from this album's folder"
+              ? "Drop files in this folder"
+              : "View pictures from this album's folder"
               ;    #FIXME make second message depend $self->{field};
             1;
         }
@@ -5615,7 +5613,7 @@ sub delete_selected {
     my $dialog =
       Gtk2::MessageDialog->new($self->get_toplevel, 'modal',
         'warning', 'cancel', '%s',
-        ::__x(_("About to delete {files}\nAre you sure ?"), files => $text));
+        ::__x("About to delete {files}\nAre you sure ?", files => $text));
     $dialog->add_button("gtk-delete", 2);
     $dialog->show_all;
 
@@ -5625,14 +5623,14 @@ sub delete_selected {
         for my $file (@files) {
             unless (unlink $file) {
                 my $res      = $skip_all;
-                my $errormsg = _ "Deletion failed";
+                my $errormsg = "Deletion failed";
                 $errormsg .= ' (' . ($done + 1) . '/' . @files . ')'
                   if @files > 1;
                 $res ||= ::Retry_Dialog(
                     $!,
                     $errormsg,
                     details => ::__x(
-                        _("Failed to delete '{file}'"),
+                        "Failed to delete '{file}'",
                         file => ::filename_to_utf8displayname($file)
                     ),
                     window => $dialog,
@@ -5968,7 +5966,7 @@ sub refresh_treeviews {
         for my $n (@pages) {
             $filestore->set(
                 $filestore->append($iter),
-                0, ::__x(_ "page {number}", number => $n + 1),
+                0, ::__x("page {number}", number => $n + 1),
                 1, "$efile:$n"
             );
         }
@@ -5977,10 +5975,10 @@ sub refresh_treeviews {
 
     if ($self->{embfiles}) {
         my $text =
-            $self->{mode} eq 'path' ? _ "Embedded pictures in this folder"
+            $self->{mode} eq 'path' ? "Embedded pictures in this folder"
           : $self->{mode} eq 'song'
-          && $self->{field} eq 'album' ? _ "Embedded pictures for this album"
-          : _ "Embedded pictures";
+          && $self->{field} eq 'album' ? "Embedded pictures for this album"
+          : "Embedded pictures";
         $filestore->set($filestore->append(undef), 0, '', 1, '')
           ;    #empty separator row
         my $iter = $filestore->append(undef);
@@ -6072,7 +6070,7 @@ sub scan_embedded_pictures_update_tv {
     my $filestore = $self->{filestore};
     $filestore->set(
         $filestore->append(undef),                                     0,
-        ' ' . sprintf(_ "in %d/%d files", scalar(@{$_->[2]}), $count), 1,
+        ' ' . sprintf("in %d/%d files", scalar(@{$_->[2]}), $count), 1,
         Songs::filename_escape($_->[0]),                               3,
         $_->[1]
     ) for @$pix;
@@ -6232,8 +6230,8 @@ sub set_pixbuf {
           $info{filename}
           ? ::filename_to_utf8displayname(::basename($info{filename}))
           : '';
-        $file .= " (" . sprintf(_ "page %d", $info{page}) . ")" if $info{page};
-        my $size = ::format_number($info{size}) . ' ' . _ "bytes";
+        $file .= " (" . sprintf("page %d", $info{page}) . ")" if $info{page};
+        my $size = ::format_number($info{size}) . ' ' . "bytes";
         $self->{info} = ::PangoEsc(sprintf "%s  %s\n%s", $dim, $size, $file);
     }
     $self->resize;
@@ -6654,8 +6652,8 @@ sub new_follow_toolitem {
     $follow->set_active($self->{follow});
     my $follow_text =
       $self->{group} eq 'Play'
-      ? _ "Follow playing song"
-      : _ "Follow selected song";
+      ? "Follow playing song"
+      : "Follow selected song";
     $follow->set_label($follow_text);
     $follow->set_tooltip_text($follow_text);
     $follow->signal_connect(clicked => \&ToggleFollow);
@@ -6734,7 +6732,7 @@ sub set {
     my ($self, $nb) = @_;
     $self->{nb} = $nb;
     $nb = $::Options{DefaultRating} if !defined $nb || $nb eq '' || $nb == 255;
-    $self->set_tooltip_text(_("Song rating") . " : $nb %");
+    $self->set_tooltip_text("Song rating: $nb %");
     my $pixbuf = Songs::Stars($nb, $self->{field});
     $self->{width} = $pixbuf->get_width;
     $self->{image}->set_from_pixbuf($pixbuf);
@@ -6768,7 +6766,7 @@ sub popup {
     $set = '' unless defined $set;
     my $sub = sub { $self->callback($_[1]); };
     for my $nb (0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, '') {
-        my $item = Gtk2::CheckMenuItem->new(($nb eq '' ? _ "default" : $nb));
+        my $item = Gtk2::CheckMenuItem->new(($nb eq '' ? "default" : $nb));
         $item->set_draw_as_radio(1);
         $item->set_active(1) if $set eq $nb;
         $item->signal_connect(activate => $sub, $nb);
@@ -6796,7 +6794,7 @@ sub createmenu {
         my $item = Gtk2::CheckMenuItem->new;
         my ($child, $rating) =
           $nb eq ''
-          ? (Gtk2::Label->new(_ "default"), '')
+          ? (Gtk2::Label->new("default"), '')
           : (Gtk2::Image->new_from_pixbuf($pixbufs->[$nb]),
             $nb * 100 / $nbstars);
         $item->add($child);
@@ -6837,7 +6835,7 @@ sub new_pid {
     $vbox->pack_start($hbox, 0, 0, 2);
     $self->pack_start($vbox, 1, 1, 2);
     if (my $sub = $prop->{abortcb}) {
-        my $hint  = $prop->{aborthint} || _ "Abort";
+        my $hint  = $prop->{aborthint} || "Abort";
         my $abort = ::NewIconButton('gtk-stop', undef, $sub, 'none', $hint);
         $hbox->pack_end($abort, 0, 0, 0);
     }
@@ -6907,13 +6905,13 @@ sub new {
         }
     );
 
-    my $turnon = $self->{turnon} = Gtk2::Button->new(_ "Turn equalizer on");
+    my $turnon = $self->{turnon} = Gtk2::Button->new("Turn equalizer on");
     $turnon->signal_connect(clicked => \&button_cb, 'turn_on');
 
     unless ($opt->{notoggle}) {
         my $toggle = $self->{toggle} = Gtk2::ToggleButton->new;
         $toggle->add(Gtk2::Image->new_from_stock('gtk-edit', 'menu'));
-        $toggle->set_tooltip_text(_ "Toggle edit mode");
+        $toggle->set_tooltip_text("Toggle edit mode");
         $toggle->set_active(1) if $editmode;
         $toggle->signal_connect(toggled => \&button_cb, 'toggle_mode');
         $mainbox->pack_start($toggle, 0, 0, 0);
@@ -6924,7 +6922,7 @@ sub new {
     if (!$opt->{notoggle} || $editmode) {
         my $editbox = $self->{editbox} = Gtk2::HBox->new;
         my $entry   = $self->{entry}   = Gtk2::Entry->new;
-        my $sbutton = $self->{sbutton} = ::NewIconButton('gtk-save', _ "Save");
+        my $sbutton = $self->{sbutton} = ::NewIconButton('gtk-save', "Save");
         my $rbutton = $self->{rbutton} = ::NewIconButton('gtk-delete');
         my $completion = Gtk2::EntryCompletion->new;
         $completion->set_model($combo->get_model);
@@ -6933,9 +6931,9 @@ sub new {
         $entry->signal_connect(changed => \&button_cb, 'entry');
         $sbutton->signal_connect(clicked => \&button_cb, 'save');
         $rbutton->signal_connect(clicked => \&button_cb, 'delete');
-        $sbutton->set_tooltip_text(_ "Save preset");
-        $rbutton->set_tooltip_text(_ "Delete preset");
-        $entry->set_tooltip_text(_ "Save as...");
+        $sbutton->set_tooltip_text("Save preset");
+        $rbutton->set_tooltip_text("Delete preset");
+        $entry->set_tooltip_text("Save as...");
         $editbox->pack_start($_, 0, 0, 0) for $entry, $sbutton, $rbutton;
         $mainbox->pack_start($editbox, 0, 0, 0);
         $editbox->show_all;
@@ -7056,11 +7054,11 @@ sub update {
             $combo->append_text(SEPARATOR);
             $i++;
             if ($self->{open} > 0) {
-                $combo->append_text(_ "Open equalizer...");
+                $combo->append_text("Open equalizer...");
                 $self->{open} = $i++;
             }
             if ($self->{turnoff} > 0) {
-                $combo->append_text(_ "Turn equalizer off");
+                $combo->append_text("Turn equalizer off");
                 $self->{turnoff} = $i++;
             }
         }
@@ -7112,7 +7110,7 @@ sub new {
             $vbox->add($scale);
             my $label1 = Gtk2::Label->new;
             $label1->set_markup_with_format(qq(<span size="%s">%s</span>),
-                $self->{labels}, _ "pre-amp");
+                $self->{labels}, "pre-amp");
             $vbox->pack_start($label1, 0, 0, 0);
             $scale = $vbox;
         }
@@ -7599,3 +7597,6 @@ sub _resize {
 }
 
 1;
+
+# vim:sw=4:ts=4:sts=4:et:cc=80
+# End of file

@@ -8,13 +8,16 @@
 # published by the Free Software Foundation
 
 package Simple_http;
+
 use strict;
 use warnings;
+
 use Socket;    # 1.3; ?
 use Fcntl;
 use IO::Handle;
 
 use constant {EOL => "\015\012"};
+
 my %ipcache;    #FIXME purge %ipcache from time to time
 my $UseCache = *GMB::Cache::add{CODE};
 

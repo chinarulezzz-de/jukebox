@@ -8,10 +8,11 @@
 # published by the Free Software Foundation
 
 package Play_123;
+
 use strict;
 use warnings;
-use IO::Handle;
 
+use IO::Handle;
 use POSIX ':sys_wait_h';    #for WNOHANG in waitpid
 
 #use IPC::Open3;		#for open3 to read STDERR from ogg123 / mpg321 in Play function
@@ -196,11 +197,10 @@ sub Play {
         my $msg   = _("Can't play this file.") . "\n";
         $msg .=
           @hints > 1
-          ? _
-          "One of these commands is required to play files of type {type} : {cmd}"
+          ? "One of these commands is required to play files of type {type} : {cmd}"
           : @hints
-          ? _ "This command is required to play files of type {type} : {cmd}"
-          : _ "Don't know how to play files of type {type}";
+          ? "This command is required to play files of type {type} : {cmd}"
+          : "Don't know how to play files of type {type}";
         ::ErrorPlay(::__x($msg, type => $type, cmd => join(', ', @hints)));
         return undef;
     }
@@ -249,7 +249,7 @@ sub _eos_cb {
 
     #close $OUTPUTfh;
     if ($ChildPID && $ChildPID == waitpid($ChildPID, WNOHANG)) {
-        $Error ||= _ "Check your audio settings" if $?;
+        $Error ||= "Check your audio settings" if $?;
     }
     while (waitpid(-1, WNOHANG) > 0) { }    #reap dead children
     Glib::Source->remove($WatchTag);
@@ -376,7 +376,7 @@ sub AdvancedOptions {
     }
     my $i = my $j = 0;
     $table->attach_defaults(Gtk2::Label->new($_), $i++, $i, $j, $j + 1)
-      for (_ "Command", _ "Output", _ "Options", map " $ext{$_} ", @ext);
+      for ("Command", "Output", "Options", map " $ext{$_} ", @ext);
     my $hsize = Gtk2::SizeGroup->new('vertical');
     $hsize->add_widget($_) for $table->get_children;
     for my $cmd (sort keys %Commands) {
@@ -403,7 +403,7 @@ sub AdvancedOptions {
                 my $w = Gtk2::RadioButton->new($extgroup{$ext});
                 $w->set_tooltip_text(
                     ::__x(
-                        _ "Use {command} to play {ext} files",
+                        "Use {command} to play {ext} files",
                         command => $cmd,
                         ext     => $ext{$ext}
                     )
@@ -513,7 +513,7 @@ sub SetVolume {
 sub make_option_widget {
     my $hbox = ::NewPrefCombo(
         amixerSMC => [get_amixer_SMC_list()],
-        text      => _ "amixer control :",
+        text      => "amixer control :",
         cb        => sub { SetVolume() }
     );
     $hbox->set_sensitive(0) unless $mixer;

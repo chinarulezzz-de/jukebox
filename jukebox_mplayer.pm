@@ -8,10 +8,11 @@
 # published by the Free Software Foundation
 
 package Play_mplayer;
+
 use strict;
 use warnings;
-use IO::Handle;
 
+use IO::Handle;
 use POSIX ':sys_wait_h';    #for WNOHANG in waitpid
 
 #$SIG{CHLD} = 'IGNORE';  # to make sure there are no zombies #cause crash after displaying a file dialog and then runnning an external command with mandriva's gtk2
@@ -130,7 +131,7 @@ sub Play {
 
 sub handle_error {
     my $error = shift;
-    ::ErrorPlay($error, _("Command used :") . "\n@cmd_and_args");
+    ::ErrorPlay($error, "Command used :\n@cmd_and_args");
     Stop();
 }
 
@@ -140,7 +141,7 @@ sub _eos_cb {
 
     #close $OUTPUTfh;
     if ($ChildPID && $ChildPID == waitpid($ChildPID, WNOHANG)) {
-        $error = _ "Check your audio settings" if $?;
+        $error = "Check your audio settings" if $?;
     }
     while (waitpid(-1, WNOHANG) > 0) { }    #reap dead children
     Glib::Source->remove($WatchTag);
@@ -251,11 +252,11 @@ sub AdvancedOptions {
     my $vbox = Gtk2::VBox->new(::FALSE, 2);
     my $sg1  = Gtk2::SizeGroup->new('horizontal');
     my $opt =
-      ::NewPrefEntry('mplayeroptions', _ "mplayer options :", sizeg1 => $sg1);
+      ::NewPrefEntry('mplayeroptions', "mplayer options :", sizeg1 => $sg1);
     my $cmd = ::NewPrefEntry(
-        'mplayer_cmd', _ "mplayer executable :",
+        'mplayer_cmd', "mplayer executable :",
         cb     => \&init,
-        tip    => _ "Will use default if not found",
+        tip    => "Will use default if not found",
         sizeg1 => $sg1
     );
     $vbox->pack_start($_, ::FALSE, ::FALSE, 2), for $cmd, $opt;

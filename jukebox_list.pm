@@ -10536,7 +10536,7 @@ sub groupalbum {
         $album = '' unless defined $album;
         return $album;
     }
-    return ("%d album", "%d albums", scalar @$l);
+    return ::__("%d album", "%d albums", scalar @$l);
 }
 
 sub groupartist    #FIXME optimize PHASE1
@@ -10555,7 +10555,7 @@ sub groupartist    #FIXME optimize PHASE1
     }
     return @common
       ? join ' & ', @common
-      : ("%d artist", "%d artists", scalar(keys %h2));
+      : ::__("%d artist", "%d artists", scalar(keys %h2));
 }
 
 sub groupgenres {

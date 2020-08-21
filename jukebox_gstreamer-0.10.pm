@@ -646,11 +646,9 @@ sub AdvancedOptions {
     $vbox->pack_start($gapless, ::FALSE, ::FALSE, 2);
 
     my $monitor_volume = ::NewPrefCheckButton(
-        gst_monitor_pa_volume => _("Monitor the pulseaudio volume") . ' '
-          . _("(unstable)"),
+        gst_monitor_pa_volume => "Monitor the pulseaudio volume (unstable)",
         cb  => $modif_cb,
-        tip => _
-          "Makes jukebox monitor its pulseaudio volume, so that external changes to its volume are known."
+        tip => "Makes jukebox monitor its pulseaudio volume, so that external changes to its volume are known."
     );
     $monitor_volume->set_sensitive(0) unless $Glib::VERSION >= 1.251;
     $vbox->pack_start($monitor_volume, ::FALSE, ::FALSE, 2);

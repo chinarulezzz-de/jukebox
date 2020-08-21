@@ -23,6 +23,7 @@ BEGIN {
 }
 
 package Play_GST;
+
 use strict;
 use warnings;
 
@@ -38,17 +39,16 @@ my ($VolumeBusy, $VolumeHasChanged);
 
 $::PlayPacks{Play_GST} = 1;    #register the package
 
-
 BEGIN {
     %Sinks = (
-        autoaudio   => {name   => _ "auto detect",},
+        autoaudio   => {name   => 'auto detect',},
         oss         => {option => 'device'},
         oss4        => {option => 'device'},
         esd         => {option => 'host'},
         alsa        => {option => 'device'},
         artsd       => {},
         sdlaudio    => {},
-        gconfaudio  => {name => _ "use gnome settings"},
+        gconfaudio  => {name => "use gnome settings"},
         halaudio    => {name => "HAL device", option => 'udi'},
         pulse       => {name => "PulseAudio", option => 'server device'},
         jackaudio   => {name => "JACK", option => 'server'},
@@ -70,7 +70,9 @@ BEGIN {
 
     my $reg = GStreamer::Registry->get_default;
     $playbin2_ok = $reg->lookup_feature('playbin2');
-    if ($reg->lookup_feature('equalizer-10bands')) { $GST_EQ_ok = 1; }
+    if ($reg->lookup_feature('equalizer-10bands')) {
+        $GST_EQ_ok = 1;
+    }
     else {
         warn
           "gstreamer plugin 'equalizer-10bands' not found -> equalizer not available\n";
@@ -83,7 +85,9 @@ BEGIN {
         warn
           "gstreamer plugins 'rglimiter' and/or 'rgvolume' not found -> replaygain not available\n";
     }
-    if ($reg->lookup_feature('rganalysis')) { $GST_RGA_ok = 1; }
+    if ($reg->lookup_feature('rganalysis')) {
+        $GST_RGA_ok = 1;
+    }
     else {
         warn
           "gstreamer plugins 'rganalysis' not found -> replaygain analysis not available\n";
@@ -148,7 +152,13 @@ sub createPlayBin {
     SetVolume(undef, '');    #initialize volume
     my $bus = $PlayBin->get_bus;
     $bus->add_signal_watch;
-    $PlayBin->signal_connect("notify::volume" => sub { Glib::Idle->add(\&VolumeChanged) unless $VolumeHasChanged++; }, 100000) if $Glib::VERSION >= 1.251 && $::Options{gst_monitor_pa_volume}; #not stable with older version of perl-glib due to bug #620099 (https://bugzilla.gnome.org/show_bug.cgi?id=620099), and still not quite stable
+
+    $PlayBin->signal_connect(
+        "notify::volume" => sub {
+            Glib::Idle->add(\&VolumeChanged) unless $VolumeHasChanged++;
+        },
+        100000
+    ) if $Glib::VERSION >= 1.251 && $::Options{gst_monitor_pa_volume}; #not stable with older version of perl-glib due to bug #620099 (https://bugzilla.gnome.org/show_bug.cgi?id=620099), and still not quite stable
 
 #	$bus->signal_connect('message' => \&bus_message);
     $bus->signal_connect('message::eos'   => \&bus_message_end);
@@ -176,15 +186,21 @@ sub bus_message_end {
     my ($msg, $error) = ($_[1], $_[2]);
 
     #error msg if $error is true, else eos
-    if ($Sink->get_name eq 'server')    #FIXME
-    {
+    if ($Sink->get_name eq 'server') {    # FIXME
         $Sink->set_locked_state(1);
         $PlayBin->set_state('null');
         $Sink->set_locked_state(0);
     }
-    else        { $PlayBin->set_state('null'); }
-    if ($error) { ::ErrorPlay($msg->error); }
-    else        { ::end_of_file(); }
+    else {
+        $PlayBin->set_state('null');
+    }
+
+    if ($error) {
+        ::ErrorPlay($msg->error);
+    }
+    else {
+        ::end_of_file();
+    }
 }
 
 # when a song starts playing, notify::volume callbacks are called, which causes glib to hang (see https://bugzilla.gnome.org/show_bug.cgi?id=620099#c11) if a skip is done at the same moment
@@ -342,7 +358,7 @@ sub Play {
         unless ($Sink) {
             ::ErrorPlay(
                 ::__x(
-                    _ "Can't create sink '{sink}'",
+                    "Can't create sink '{sink}'",
                     sink => $::Options{gst_sink}
                 )
             );
@@ -623,7 +639,7 @@ sub AdvancedOptions {
     my $vbox     = Gtk2::VBox->new(::FALSE, 2);
     my $modif_cb = sub { $self->{modif} = 1 };
     my $gapless  = ::NewPrefCheckButton(
-        gst_gapless => _ "enable gapless (experimental)",
+        gst_gapless => "enable gapless (experimental)",
         cb          => $modif_cb
     );
     $gapless->set_sensitive(0) unless $playbin2_ok;
@@ -641,11 +657,11 @@ sub AdvancedOptions {
 
     my $sg1    = Gtk2::SizeGroup->new('horizontal');
     my $custom = ::NewPrefEntry(
-        gst_custom => _ "Custom pipeline",
+        gst_custom => "Custom pipeline",
         cb         => $modif_cb,
         sizeg1     => $sg1,
         expand     => 1,
-        tip        => _ "Insert this pipeline before the audio sink",
+        tip        => "Insert this pipeline before the audio sink",
         history    => 'gst_custom_history'
     );
     $vbox->pack_start($custom, ::FALSE, ::FALSE, 2);
@@ -670,24 +686,24 @@ package GMB::GST_ReplayGain;
 my $RGA_pipeline;
 my (@towrite, $writing);
 my $RGA_songmenu = {
-    label    => _ "Replaygain analysis",
+    label    => "Replaygain analysis",
     notempty => 'IDs',
     notmode  => 'P',
     test     => sub { $Play_GST::GST_RGA_ok && $::Options{gst_rg_songmenu}; },
     submenu  => [
-        {   label   => _ "Scan this file",
+        {   label   => "Scan this file",
             code    => sub { Analyse($_[0]{IDs}); },
             onlyone => 'IDs',
         },
-        {   label    => _ "Scan per-file track gain",
+        {   label    => "Scan per-file track gain",
             code     => sub { Analyse($_[0]{IDs}); },
             onlymany => 'IDs',
         },
-        {   label    => _ "Scan using tag-defined album",
+        {   label    => "Scan using tag-defined album",
             code     => sub { Analyse_byAlbum($_[0]{IDs}); },
             onlymany => 'IDs',
         },
-        {   label    => _ "Scan as an album",
+        {   label    => "Scan as an album",
             code     => sub { Analyse([join ' ', @{$_[0]{IDs}}]); },
             onlymany => 'IDs',
         },
@@ -783,7 +799,7 @@ sub Analyse {
         'replaygain',
         add     => $nb,
         abortcb => \&StopAnalysis,
-        title   => _ "Replaygain analysis"
+        title   => "Replaygain analysis"
     );
     process_next()
       unless $::Progress{replaygain}{current}
@@ -916,8 +932,8 @@ sub WriteRGtags {
     my $modif = shift @towrite;
     Songs::Set(
         $ID, $modif,
-        abortmsg        => _ "Abort ReplayGain analysis",
-        errormsg        => _ "Error while writing replaygain data",
+        abortmsg        => "Abort ReplayGain analysis",
+        errormsg        => "Error while writing replaygain data",
         abortcb         => \&StopAnalysis,
         callback_finish => \&WriteRGtags,
     );
@@ -1116,3 +1132,6 @@ sub get_connections {
 }
 
 1;
+
+# vim:sw=4:ts=4:sts=4:et:cc=80
+# End of file

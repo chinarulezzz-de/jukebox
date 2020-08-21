@@ -194,7 +194,7 @@ sub Play {
         $type = $::Alias_ext{$type} if $::Alias_ext{$type};
         my $re    = qr/\b$type\b/;
         my @hints = grep $Commands{$_}{type} =~ m/$re/, sort keys %Commands;
-        my $msg   = _("Can't play this file.") . "\n";
+        my $msg   = "Can't play this file.\n";
         $msg .=
           @hints > 1
           ? "One of these commands is required to play files of type {type} : {cmd}"
@@ -256,7 +256,7 @@ sub _eos_cb {
     Glib::Source->remove($WatchTag2);
     $WatchTag = $WatchTag2 = $ChildPID = undef;
     if ($Error) {
-        ::ErrorPlay($Error, _("Command used :") . "\n@cmd_and_args");
+        ::ErrorPlay($Error, "Command used :\n@cmd_and_args");
     }
     ::end_of_file();
     return 1;
@@ -478,8 +478,7 @@ sub GetVolume {
 }
 
 sub GetVolumeError {
-    _
-      "Can't change the volume. Needs amixer (packaged in alsa-utils) to change volume when using this audio backend.";
+    "Can't change the volume. Needs amixer (packaged in alsa-utils) to change volume when using this audio backend.";
 }
 sub GetMute {$Mute}
 

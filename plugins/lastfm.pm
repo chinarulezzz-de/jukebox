@@ -916,9 +916,7 @@ sub loaded {
                     $tag_header->{tip} = $name->{url};
 
                     if ($album_name eq $local_album) {
-                        my $img = $name->{image}[0]->{"#text"};
-                        print $img;
-
+                        #my $img = $name->{image}[0]->{"#text"};
                         $buffer->insert_with_tags($iter, "✔ $album_name\n",
                             $tag_header);
                     }

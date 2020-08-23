@@ -10,7 +10,7 @@
 =for gmbplugin MPRIS
 name	MPRIS v1
 title	MPRIS v1 support
-desc	Allows controlling gmusicbrowser via DBus using the MPRIS v1.0 standard
+desc	Allows controlling jukebox via DBus using the MPRIS v1.0 standard
 req	perl(Net::DBus, libnet-dbus-perl perl-Net-DBus)
 version 1.0
 =cut
@@ -25,12 +25,12 @@ use constant {OPT => 'PLUGIN_MPRIS_',};
 my $bus = $GMB::DBus::bus;
 die "Requires DBus support to be active\n"
   unless $bus
-  ; #only requires this to use the hack in gmusicbrowser_dbus.pm so that Net::DBus::GLib is not required, else could do just : use Net::DBus::GLib; $bus=Net::DBus::GLib->session;
+  ; #only requires this to use the hack in jukebox_dbus.pm so that Net::DBus::GLib is not required, else could do just : use Net::DBus::GLib; $bus=Net::DBus::GLib->session;
 
 my @Objects;
 
 sub Start {
-    my $service = $bus->export_service('org.mpris.gmusicbrowser');
+    my $service = $bus->export_service('org.mpris.jukebox');
     push @Objects, GMB::DBus::MPRIS->new($service);
 
     #push @Objects, GMB::DBus::MPRIS::TrackList->new($Objects[0]);
@@ -64,7 +64,7 @@ sub new {
 dbus_method('Identity', [], ['string']);
 
 sub Identity {
-    return 'gmusicbrowser ' . ::VERSIONSTRING;
+    return 'jukebox ' . ::VERSIONSTRING;
 }
 dbus_method('Quit', [], [], {no_return => 1});
 

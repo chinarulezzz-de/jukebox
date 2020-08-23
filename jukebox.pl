@@ -142,8 +142,8 @@ use lib $DATADIR;
 use constant {
     TRUE          => 1,
     FALSE         => 0,
-    VERSION       => '1.101502',
-    VERSIONSTRING => '1.1.15.2',
+    VERSION       => '1.101503',
+    VERSIONSTRING => '1.1.15.3',
     PIXPATH       => $DATADIR . SLASH . 'pix' . SLASH,
     PROGRAM_NAME  => 'jukebox',
 

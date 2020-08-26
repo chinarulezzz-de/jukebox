@@ -788,7 +788,7 @@ sub loaded {
     }
     $self->{url} = $prop{url} if $prop{url};    #for redirections
     $buffer->delete($buffer->get_bounds);
-    my $encoding;
+    my $encoding = 'utf-8';
     if ($type && $type =~ m#^text/.*; ?charset=([\w-]+)#) { $encoding = $1 }
     if ($data =~ m/xml version/) { $encoding = 'utf-8'; }
     $encoding = $1
@@ -908,7 +908,7 @@ sub loaded {
             );
             for my $album ($text->{topalbums}) {
                 for my $name (@{$album->{album}}) {
-                    my $album_name = $name->{name};#::decode_html($name->{name});
+                    my $album_name = ::decode_html($name->{name});
 
                     $tag_header = $buffer->create_tag(
                         undef,

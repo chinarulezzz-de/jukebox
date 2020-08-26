@@ -881,10 +881,14 @@ sub loaded {
     }
 
     elsif ($self->{site} eq "albums") {
-        use Data::Dumper;
-
-        my $aID         = Songs::Get_gid($::SongID, 'album');
-        my $local_album = Songs::Gid_to_Get("album", $aID);
+        my %local_album = ();
+        my $artistGID = Songs::Get_gid($::SongID, 'artist');
+        my $albumIDS = AA::GetIDs(artist => $artistGID);
+        for my $albumID (@{ $albumIDS }) {
+            my $album =
+                Songs::Gid_to_Get(album => Songs::Get_gid($albumID, 'album'));
+            $local_album{$album} = 1;
+        }
 
         my $json = JSON::PP->new->ascii->pretty->allow_nonref;
         my $text = $json->decode($data);
@@ -904,7 +908,7 @@ sub loaded {
             );
             for my $album ($text->{topalbums}) {
                 for my $name (@{$album->{album}}) {
-                    my $album_name = ::decode_html($name->{name});
+                    my $album_name = $name->{name};#::decode_html($name->{name});
 
                     $tag_header = $buffer->create_tag(
                         undef,
@@ -915,9 +919,9 @@ sub loaded {
                     $tag_header->{url} = $name->{url};
                     $tag_header->{tip} = $name->{url};
 
-                    if ($album_name eq $local_album) {
+                    if ($local_album{$album_name}) {
                         #my $img = $name->{image}[0]->{"#text"};
-                        $buffer->insert_with_tags($iter, "✔ $album_name\n",
+                        $buffer->insert_with_tags($iter, "✅ $album_name\n",
                             $tag_header);
                     }
                     else {

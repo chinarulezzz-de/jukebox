@@ -66,6 +66,14 @@ my @External = (
         "https://rutracker.org/forum/tracker.php?nm=%a",
         "Search for Artist on rutracker torrent tracker"
     ],
+    [   'rarbg',
+        "http://proxyrarbg.org/torrents.php?search=%a",
+        "Search for Artist on rarbg torrent tracker",
+    ],
+    [   'piratebay',
+        "https://www.pirate-bay.net/search?q=%a",
+        "Search for Artist on piratebay torrent tracker",
+    ],
     ['lastfm', "http://www.last.fm/music/%a", "Show Artist page on last.fm"],
     [   'wikipedia', "http://en.wikipedia.org/wiki/%a",
         "Show Artist page on wikipedia"

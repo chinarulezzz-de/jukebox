@@ -79,18 +79,6 @@ my %Sites
 #	}],
 #leoslyrics =>	['leolyrics','http://api.leoslyrics.com/api_search.php?artist=%a&songtitle=%t'],
 #google	=>	['google','http://www.google.com/search?q="%a"+"%t"'],
-    lyriki => [
-        'lyriki',
-        'http://lyriki.com/index.php?title=%a:%t',
-        undef,
-        sub {
-            my $no = $_[0] =~ m/<div class="noarticletext">/s;
-            $_[0]
-              =~ s/^.*<!--\s*start content\s*-->(.*?)<!--\s*end content\s*-->.*$/$1/s
-              && !$no;
-        }
-    ],
-
 #lyricsplugin => [lyricsplugin => 'http://www.lyricsplugin.com/winamp03/plugin/?title=%t&artist=%a',undef,
 #		sub { my $ok=$_[0]=~m#<div id="lyrics">.*\w\n.*\w.*</div>#s; $_[0]=~s/<div id="admin".*$//s if $ok; return $ok; }],
     lyricssongs => [
@@ -113,26 +101,6 @@ my %Sites
             return $l && !$is_suggestion;
         }
     ],
-    lyricwiki => [
-        lyricwiki => 'http://lyrics.wikia.com/%a:%t',
-        undef,
-        sub {
-            return 0, 'http://lyrics.wikia.com/' . $1
-              if $_[0] =~ m#<ul class="redirectText"><li><a href="/([^"]+)"#;
-            $_[0]
-              =~ s!.*<div class='lyricbox'>.*?((?:&\#\d+;|<br ?/>|</?[bi]>){5,}).*!$1!s
-              ;    #keep only the "lyric box"
-            return 0
-              if $_[0] =~ m!&#91;&#46;&#46;&#46;&#93;(?:<br ?/>)*<i>!
-              ; # truncated lyrics : "[...]" followed by italic explanation => not auto-saved
-            return !!$1;
-        }
-    ],
-
-#lyricwikiapi => [lyricwiki => 'http://lyricwiki.org/api.php?artist=%a&song=%t&fmt=html',undef,
-#	sub { $_[0]!~m#<pre>\W*Not found\W*</pre>#s }],
-#azlyrics => [ azlyrics => 'http://search.azlyrics.com/cgi-bin/azseek.cgi?q="%a"+"%t"'],
-#Lyricsfly ?
     AUTO => ["Auto",],    #special mode that search multiple sources
   );
 
@@ -452,7 +420,7 @@ sub load_from_web {
         delete $self->{trynext};
         if ($site eq 'AUTO') {
             ($site, @{$self->{trynext}}) =
-              qw/lyricssongs lyricwiki/;    #FIXME make it configurable
+              qw/lyricssongs/;    #FIXME make it configurable
         }
     }
     return unless $site;

@@ -45,3 +45,13 @@ Plugins:
   window.
 - Web context: provide context views using MozEmbed or WebKit wikipedia,
   lyrics, and custom webpages.
+
+
+Migration
+---------
+
+1/2. Set library source:
+sed -i 's@/mnt/data/oldmusic@/mnt/hd/actualmusic@g' jukeboxrc
+
+2/2. Fix jukeboxrc fingerprint:
+sed -i 's@gmbrc version=1.101502@jukeboxrc version=1.101503@g' jukeboxrc

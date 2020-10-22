@@ -352,7 +352,7 @@ our %Widgets = (
               : !defined $::Position
               ? ::__n("%d song", "%d songs", scalar @$::ListPlay)
               : ($::Position + 1) . '/' . @$::ListPlay;
-            $_[0]->set_markup_with_format('<small>%s</small>', $t);
+            $_[0]->set_markup_with_format('%s', $t);
         },
         event => 'Pos Queue Filter',
     },
@@ -360,10 +360,8 @@ our %Widgets = (
         class        => 'Layout::Label',
         group        => 'Play',
         minsize      => 20,
-        markup       => '<b><big>%S</big></b>%V',
-        markup_empty => '<b><big>&lt;'
-          . "Playlist Empty"
-          . '&gt;</big></b>',
+        markup       => '<b>%S</b>%V',
+        markup_empty => '<b>&lt;Playlist Empty&gt;</b>',
         click1 => \&PopupSongsFromAlbum,
         click3 => sub {
             my $ID = ::GetSelID($_[0]);
@@ -380,7 +378,7 @@ our %Widgets = (
         parent => 'Title',
         markup => ::__x(
             "{song} by {artist}",
-            song   => "<b><big>%S</big></b>%V",
+            song   => "<b>%S</b>%V",
             artist => "<b>%a</b>"
         ),
     },
@@ -624,7 +622,6 @@ our %Widgets = (
         group      => 'Play',
         expander   => 1,
         hide_empty => 1,
-        tabicon    => 'gtk-info',
         tabtitle   => "Song informations",
     },
     PictureBrowser => {
@@ -5001,8 +4998,8 @@ package Layout::SongInfo;
 use base 'Gtk2::ScrolledWindow';
 our @default_options = (
     markup_cat   => "<u>%s</u>",
-    markup_field => "<small>%s :</small>",
-    markup_value => "<small><b>%s</b></small>"
+    markup_field => "%s :",
+    markup_value => "<b>%s</b>"
 );
 
 sub new {

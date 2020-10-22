@@ -185,8 +185,6 @@ sub new {
       && !$sites{$self->{site}}[SITEURL]
       ;    #reset selected site if no longer defined
     $self->{site} ||= 'biography';    # biography is the default site
-    my $fontsize = $self->style->font_desc;
-    $self->{fontsize}   = $fontsize->get_size / Gtk2::Pango->scale;
     $self->{artist_esc} = "";
     my $statbox   = Gtk2::VBox->new(0, 0);
     my $artistpic = Gtk2::HBox->new(0, 0);
@@ -543,11 +541,9 @@ sub set_buffer {
     my ($self, $text) = @_;
     $self->{buffer}->set_text("");
     my $iter          = $self->{buffer}->get_start_iter;
-    my $fontsize      = $self->{fontsize};
     my $tag_noresults = $self->{buffer}->create_tag(
         undef,
         justification  => 'center',
-        font           => $fontsize * 2,
         foreground_gdk => $self->style->text_aa("normal")
     );
     $self->{buffer}->insert_with_tags($iter, "\n$text", $tag_noresults);
@@ -641,7 +637,7 @@ sub apiczoom {
     $label->set_line_wrap(1);
     $label->set_justify('center');
     $label->set_ellipsize('end');
-    $label->set_markup("<big><b>$artist</b></big>");
+    $label->set_markup("<b>$artist</b>");
     $item->add($label);
 
     $menu->append($apic);
@@ -720,11 +716,9 @@ sub ArtistChanged {
     $self->{artistrating}
       ->set_from_pixbuf(Songs::Stars($self->{artistratingvalue}, 'rating'));
     $self->{Ltitle}->set_markup(
-        AA::ReplaceFields($aID, "<big><b>%a</b></big>", "artist", 1));
+        AA::ReplaceFields($aID, "<b>%a</b>", "artist", 1));
     $self->{Lstats}->set_markup(
-        AA::ReplaceFields(
-            $aID, '%X « %s' . "\n<small>%y</small>", "artist", 1
-        )
+        AA::ReplaceFields($aID, '%X « %s' . "\n%y", "artist", 1)
     );
 
     for my $name (qw/Ltitle Lstats artistrating/) {
@@ -811,7 +805,6 @@ sub loaded {
     if ($encoding eq 'utf-8') { $data = ::decode_html($data); }
     my $iter = $buffer->get_start_iter;
 
-    my $fontsize    = $self->{fontsize};
     my $tag_warning = $buffer->create_tag(
         undef,
         foreground    => "#bf6161",
@@ -826,13 +819,11 @@ sub loaded {
     my $tag_noresults = $buffer->create_tag(
         undef,
         justification  => 'center',
-        font           => $fontsize * 2,
         foreground_gdk => $self->style->text_aa("normal")
     );
     my $tag_header = $buffer->create_tag(
         undef,
         justification => 'left',
-        font          => $fontsize + 1,
         weight        => Gtk2::Pango::PANGO_WEIGHT_BOLD
     );
     my $infoheader;
@@ -1053,7 +1044,6 @@ sub load_file {
         close $fh;
         if (my $utf8 = Encode::decode_utf8($text)) { $text = $utf8 }
     }
-    my $fontsize = $self->{fontsize};
     my $href     = $buffer->create_tag(
         undef,
         justification => 'left',
@@ -1063,7 +1053,6 @@ sub load_file {
     my $tag_header = $buffer->create_tag(
         undef,
         justification => 'left',
-        font          => $fontsize + 1,
         weight        => Gtk2::Pango::PANGO_WEIGHT_BOLD
     );
     my ($infoheader, $url);

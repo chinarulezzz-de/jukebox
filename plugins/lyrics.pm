@@ -362,11 +362,9 @@ sub Set_message {
     my ($self, $text) = @_;
     $self->{buffer}->set_text("");
     my $iter          = $self->{buffer}->get_start_iter;
-    my $fontsize      = $self->style->font_desc;
     my $tag_noresults = $self->{buffer}->create_tag(
         undef,
         justification  => 'center',
-        font           => $fontsize * 2,
         foreground_gdk => $self->style->text_aa("normal")
     );
     $self->{buffer}->insert_with_tags($iter, "\n$text", $tag_noresults);
